@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)" lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="ETUNI - Akıllı Etkinlik Yönetimi ve Katılım Analiz Platformu. Üniversite etkinliklerini keşfedin, katılın ve deneyimlerinizi paylaşın.">
+    <meta name="keywords" content="üniversite etkinlikleri, kampüs, etkinlik yönetimi, öğrenci kulüpleri, ETUNI">
+    <meta name="author" content="ETUNI Team">
+    <meta name="theme-color" content="#6366f1">
+    <title th:text="${title}">ETUNI - Akıllı Etkinlik Platformu</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo">ETUNI</a>
+            <div class="nav-links">
+                <a href="/events" class="nav-link">Etkinlikler</a>
+                <div id="guestLinks" class="flex items-center gap-2">
+                    <a href="/login" class="nav-link">Giriş Yap</a>
+                    <a href="/register" class="btn btn-primary">Kayıt Ol</a>
+                </div>
+                <div id="authLinks" class="hidden flex items-center gap-2">
+                    <a href="/dashboard" class="nav-link">Panelim</a>
+                    <button onclick="logout()" class="btn btn-secondary">Çıkış</button>
+                </div>
+                <button class="theme-toggle" onclick="Theme.toggle()" title="Tema Değiştir">☀️</button>
+            </div>
+        </div>
+    </nav>
+
+    <div th:replace="${content}"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 ETUNI. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script>
+        function checkAuth() {
+            // Check for the UI flag cookie
+            const isLoggedIn = document.cookie.includes('is_campus_user=true');
+            if (isLoggedIn) {
+                document.getElementById('guestLinks').style.display = 'none';
+                document.getElementById('authLinks').style.display = 'flex';
+            }
+        }
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+            } catch (ignored) { }
+
+            // Clear both cookies client-side too (just in case)
+            document.cookie = "jwt_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie = "is_campus_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            window.location.href = '/login';
+        }
+        checkAuth();
+    </script>
+    <!-- Chatbot Widget -->
+    <div id="chat-widget-btn" onclick="toggleChat()"
+        style="position: fixed; bottom: 30px; right: 30px; background: var(--primary); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; transition: transform 0.3s ease;">
+        <span style="font-size: 30px;">💬</span>
+    </div>
+
+    <div id="chat-window"
+        style="position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: none; flex-direction: column; z-index: 9999; backdrop-filter: blur(20px);">
+        <div
+            style="padding: 20px; border-bottom: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); border-radius: 20px 20px 0 0;">
+            <h4 style="margin: 0; font-weight: 700;">ETUNI Asistan 🤖</h4>
+            <p style="margin: 5px 0 0; font-size: 0.8rem; color: var(--text-muted);">Size nasıl yardımcı olabilirim?</p>
+        </div>
+
+        <div id="chat-messages"
+            style="flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
+            <div
+                style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px 12px 12px 0; align-self: flex-start; max-width: 80%;">
+                Merhaba! Ben ETUNI Asistan. Etkinlikler hakkında sorularınızı cevaplayabilirim.
+            </div>
+        </div>
+
+        <div style="padding: 20px; border-top: 1px solid var(--glass-border);">
+            <form onsubmit="sendMessage(event)" style="display: flex; gap: 10px;">
+                <input type="text" id="chat-input" placeholder="Bir soru sorun..."
+                    style="flex: 1; padding: 12px; border-radius: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: #fff; outline: none;">
+                <button type="submit"
+                    style="background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;">➤</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const w = document.getElementById('chat-window');
+            if (w.style.display === 'none') {
+                w.style.display = 'flex';
+                document.getElementById('chat-widget-btn').style.transform = 'scale(0.9)';
+            } else {
+                w.style.display = 'none';
+                document.getElementById('chat-widget-btn').style.transform = 'scale(1)';
+            }
+        }
+
+        async function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, 'user');
+            input.value = '';
+
+            // Auto scroll
+            const container = document.getElementById('chat-messages');
+
+            const loadingId = addMessage('...', 'bot');
+
+            try {
+                // Browser sends cookies automatically
+                const res = await fetch('/api/chat/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: msg })
+                });
+
+                document.getElementById(loadingId).remove();
+
+                if (res.ok) {
+                    const data = await res.json();
+                    addMessage(data.data.response, 'bot');
+                } else {
+                    addMessage('Üzgünüm, bağlantı hatası veya oturum süresi doldu.', 'bot');
+                }
+            } catch (err) {
+                console.error(err);
+                if (document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                addMessage('Bir hata oluştu.', 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            const id = 'msg-' + Date.now();
+            div.id = id;
+            div.style.padding = '12px';
+            div.style.maxWidth = '80%';
+            div.style.lineHeight = '1.4';
+            div.style.fontSize = '0.9rem';
+
+            if (sender === 'user') {
+                div.style.background = 'var(--primary)';
+                div.style.borderRadius = '12px 12px 0 12px';
+                div.style.alignSelf = 'flex-end';
+                div.style.color = '#fff';
+            } else {
+                div.style.background = 'rgba(255,255,255,0.1)';
+                div.style.borderRadius = '12px 12px 12px 0';
+                div.style.alignSelf = 'flex-start';
+                div.style.whiteSpace = 'pre-wrap';
+            }
+
+            div.textContent = text;
+            const c = document.getElementById('chat-messages');
+            c.appendChild(div);
+            c.scrollTop = c.scrollHeight;
+            return id;
+        }
+    </script>
+    <!-- ETUNI Frontend Utilities -->
+    <script th:src="@{/js/app.js}"></script>
+</body>
+
+</html>

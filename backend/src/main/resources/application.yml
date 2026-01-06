@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/etuni
+    username: etuni
+    password: etuni
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  # Email configuration (configure for production)
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+etuni:
+  jwt:
+    secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_AT_LEAST_32_CHARS"
+    accessTokenMinutes: 120
+  qr:
+    secret: "CHANGE_ME_TO_A_DIFFERENT_LONG_RANDOM_SECRET"
+    ttlMinutes: 240
+
+app:
+  name: ETUNI

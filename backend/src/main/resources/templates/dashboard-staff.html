@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div style="margin-bottom: 4rem;">
+                    <span
+                        style="color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Üniversite
+                        Sorumlusu Paneli</span>
+                    <h1 style="font-size: 3.5rem; font-weight: 800; margin-top: 1rem;"
+                        th:text="${user.selectedUniversityName}">Üniversite</h1>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 350px; gap: 3rem;">
+                    <div>
+                        <div th:if="${#lists.isEmpty(pendingRequests)}" class="feature-card" style="text-align: center;">
+                            <p style="color: var(--text-muted);">Bekleyen istek bulunmuyor.</p>
+                        </div>
+                        <div th:each="req : ${pendingRequests}" class="event-card"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <h4 style="font-size: 1.1rem; font-weight: 600;" th:text="${req.user.fullName}">Öğrenci Adı</h4>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;" th:text="${req.user.email}">E-posta</p>
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', true)'" class="btn btn-primary" style="padding: 0.5rem 1rem;">Onayla</button>
+                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', false)'" class="btn" style="background: var(--glass-heavy); border: 1px solid var(--glass-border); padding: 0.5rem 1rem; color: white;">Reddet</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="feature-card" style="padding: 2rem; margin-bottom: 2rem;">
+                            <h3>Hızlı İstatistik</h3>
+                            <div style="margin-top: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Toplam Organizatör</span>
+                                    <span style="color: var(--primary); font-weight: 700;">12</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Aktif Etkinlikler</span>
+                                    <span style="color: var(--secondary); font-weight: 700;">45</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-card" style="padding: 2rem;">
+                            <h3>Manüel Organizatör Ekle</h3>
+                            <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem;">Bir öğrenciyi
+                                e-posta ile organizatör yapın.</p>
+                            <input type="email" id="studentEmail" placeholder="ogrenci@uni.edu.tr"
+                                style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 0.75rem; border-radius: 8px; color: white; margin-bottom: 1rem;">
+                            <button onclick="promoteManual()" class="btn btn-primary" style="width: 100%;">Yetki
+                                Ver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            async function respondRequest(id, approved) {
+                const endpoint = approved ? `/api/promotion/approve/${id}` : `/api/promotion/reject/${id}`;
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    });
+                    if (response.ok) {
+                        alert(approved ? 'İstek onaylandı.' : 'İstek reddedildi.');
+                        location.reload();
+                    } else {
+                        const err = await response.text();
+                        alert('Bir hata oluştu: ' + err);
+                    }
+                } catch (e) {
+                    alert('Bir hata oluştu.');
+                }
+            }
+
+            async function promoteManual() {
+                const email = document.getElementById('studentEmail').value;
+                if (!email) return;
+
+                try {
+                    const response = await fetch(`/api/promotion/promote-manual?email=${encodeURIComponent(email)}`, {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    });
+                    if (response.ok) {
+                        alert('Öğrenci başarıyla organizatör yapıldı.');
+                        location.reload();
+                    } else {
+                        const err = await response.text();
+                        alert('Hata: ' + err);
+                    }
+                } catch (e) {
+                    alert('Bir hata oluştu.');
+                }
+            }
+        </script>
+    </main>
+</body>
+
+</html>

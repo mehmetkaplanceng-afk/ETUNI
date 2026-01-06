@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<body>
+    <main>
+        <section style="padding: 60px 0;" class="animate-fade">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                    <div>
+                        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Etkinlikler</h1>
+                        <p style="color: #94a3b8;">Üniversitendeki en son etkinlikleri takip et.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="text" placeholder="Etkinlik ara..."
+                            style="background: var(--glass); border: 1px solid var(--glass-border); padding: 0.6rem 1rem; border-radius: 8px; color: white;">
+                    </div>
+                </div>
+
+                <div class="event-grid">
+
+                    <!-- Recommendations Section -->
+                    <div th:if="${not #lists.isEmpty(recommendedEvents)}"
+                        style="grid-column: 1 / -1; margin-bottom: 2rem;">
+                        <h2
+                            style="font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            ✨ Sizin İçin Önerilenler
+                        </h2>
+                        <div class="event-grid">
+                            <div th:each="re : ${recommendedEvents}" class="event-card"
+                                style="border: 1px solid var(--primary); background: rgba(var(--primary-rgb), 0.05);">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                                    <span class="event-badge" th:text="${re.eventType}"
+                                        style="background: var(--primary);">Konferans</span>
+                                    <span style="font-weight: bold; color: var(--primary); font-size: 0.9rem;">
+                                        %<span th:text="${#numbers.formatInteger(re.totalScore * 100, 0)}">95</span>
+                                        Eşleşme
+                                    </span>
+                                </div>
+                                <h3 th:text="${re.title}">Başlık</h3>
+                                <p th:text="${re.explanation}"
+                                    style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; font-style: italic;">
+                                    Açıklama...
+                                </p>
+                                <div class="event-meta">
+                                    <span th:text="${re.eventDate}">Tarih</span>
+                                </div>
+                                <a th:href="@{/events/{id}(id=${re.eventId})}" class="btn"
+                                    style="width: 100%; margin-top: 1rem; background: var(--primary);">İncele</a>
+                            </div>
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 3rem 0;">
+                    </div>
+
+                    <div th:each="ae : ${events}" class="event-card">
+                        <span class="event-badge" th:text="${ae.eventType}">Konferans</span>
+                        <h3 th:text="${ae.title}">Etkinlik Başlığı</h3>
+                        <p th:text="${ae.description}"
+                            style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            Etkinlik açıklaması burada yer alacak ve iki satırla sınırlı kalacaktır.
+                        </p>
+                        <div class="event-meta">
+                            <span th:text="${ae.eventDate}">12.03.2026</span>
+                            <span th:text="${ae.startTime}">14:00</span>
+                        </div>
+                        <a th:href="@{/events/{id}(id=${ae.id})}" class="btn"
+                            style="width: 100%; margin-top: 1.5rem; text-align: center; border: 1px solid var(--glass-border); display: block;">Detayları
+                            Gör</a>
+                    </div>
+
+                    <!-- Empty state if no events -->
+                    <div th:if="${#lists.isEmpty(events)}"
+                        style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+                        <p style="color: #94a3b8;">Henüz hiç etkinlik bulunmuyor.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

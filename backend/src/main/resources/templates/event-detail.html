@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<body>
+    <main>
+        <section style="padding: 60px 0;" class="animate-fade">
+            <div class="container" style="max-width: 800px;">
+                <a href="/events"
+                    style="display: inline-block; margin-bottom: 2rem; color: #94a3b8; font-size: 0.875rem;">← Geri
+                    Dön</a>
+
+                <div class="event-card">
+                    <span class="event-badge" th:text="${event.eventType}">Konferans</span>
+                    <h1 th:text="${event.title}" style="font-size: 2.5rem; margin-bottom: 1.5rem;">Etkinlik Başlığı</h1>
+
+                    <div style="display: flex; gap: 2rem; margin-bottom: 2.5rem; color: #94a3b8;">
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; text-transform: uppercase;">Tarih</span>
+                            <strong th:text="${event.eventDate}" style="color: white;">12.03.2026</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; text-transform: uppercase;">Saat</span>
+                            <strong th:text="${event.startTime}" style="color: white;">14:00</strong>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; text-transform: uppercase;">Kategori</span>
+                            <strong th:text="${event.category}" style="color: white;">Bilişim</strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 3rem;">
+                        <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Etkinlik Hakkında</h2>
+                        <p th:text="${event.description}" style="color: #94a3b8; line-height: 1.8;">
+                            Etkinlik detaylı açıklaması burada yer alacaktır.
+                        </p>
+                    </div>
+
+                    <div
+                        style="padding-top: 2rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #94a3b8;">Durum: <strong th:text="${event.status}"
+                                style="color: #4ade80;">ACTIVE</strong></span>
+                        <div>
+                            <button class="btn btn-primary" id="joinBtn">Etkinliğe Katıl</button>
+                            <button
+                                th:if="${user != null and (user.role == 'ADMIN' or (user.role == 'UNIVERSITY_STAFF' and user.selectedUniversityId == event.universityId))}"
+                                id="deleteBtn" class="btn"
+                                style="margin-left:0.75rem; background:var(--glass-heavy); border:1px solid var(--glass-border); color:white;">Etkinliği
+                                Sil</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script th:inline="javascript">
+            document.getElementById('joinBtn').addEventListener('click', async () => {
+                // Ensure auth check via UI cookie or just let the backend handle 401
+                const btn = document.getElementById('joinBtn');
+                btn.disabled = true;
+                btn.innerText = 'İşleniyor...';
+
+                const eventId = /*[[${event.id}]]*/ 0;
+
+                try {
+                    const response = await fetch('/api/attendance/join/' + eventId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                            // Authorization header removed; browser sends cookie automatically
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Etkinliğe başarıyla kayıt oldunuz! Biletinize profilinizden ulaşabilirsiniz.');
+                        window.location.href = '/dashboard';
+                    } else {
+                        const err = await response.text();
+                        if (response.status === 403 || response.status === 401) {
+                            alert('Oturumunuzun süresi dolmuş veya giriş yapmamışsınız. Lütfen tekrar giriş yapın.');
+                            window.location.href = '/login';
+                        } else {
+                            alert('Katılım başarısız: ' + err);
+                        }
+                        btn.disabled = false;
+                        btn.innerText = 'Etkinliğe Katıl';
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Bir hata oluştu.');
+                    btn.disabled = false;
+                    btn.innerText = 'Etkinliğe Katıl';
+                }
+            });
+
+            const delBtn = document.getElementById('deleteBtn');
+            if (delBtn) {
+                delBtn.addEventListener('click', async () => {
+                    if (!confirm('Bu etkinliği silmek istediğinize emin misiniz?')) return;
+                    const eventId = /*[[${event.id}]]*/ 0;
+                    try {
+                        const res = await fetch('/api/events/' + eventId, { method: 'DELETE', credentials: 'same-origin' });
+                        const json = await res.json();
+                        if (res.ok) {
+                            alert('Etkinlik silindi.');
+                            window.location.href = '/events';
+                        } else {
+                            alert('Hata: ' + (json.message || ''));
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Silme sırasında hata oluştu.');
+                    }
+                });
+            }
+        </script>
+    </main>
+</body>
+
+</html>
