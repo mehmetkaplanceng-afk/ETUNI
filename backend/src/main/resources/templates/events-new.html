@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div class="auth-container"
+                    style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; position: relative; overflow: hidden;">
+                    <!-- Blob Effect -->
+                    <div
+                        style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+                    <div
+                        style="position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: var(--secondary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h1
+                            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">
+                            Yeni Etkinlik Oluştur</h1>
+                        <p style="color: var(--text-muted);">Etkinlik detaylarını girerek platformda yayınlayın.</p>
+                    </div>
+
+                    <form id="createEventForm">
+                        <input type="hidden" id="universityId" th:value="${user.selectedUniversityId}">
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                Başlığı</label>
+                            <input type="text" id="title" class="form-control" placeholder="Örn: Teknoloji Zirvesi 2024"
+                                required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Açıklama</label>
+                            <textarea id="description" class="form-control" rows="4"
+                                placeholder="Etkinlik hakkında detaylı bilgi..." required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                    Türü</label>
+                                <select id="eventType" class="form-control" required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: #1e1b4b; border: 1px solid var(--glass-border); color: #fff;">
+                                    <option value="KONFERANS">Konferans</option>
+                                    <option value="WORKSHOP">Workshop</option>
+                                    <option value="SEMİNER">Seminer</option>
+                                    <option value="SOSYAL">Sosyal</option>
+                                    <option value="DİĞER">Diğer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kategori</label>
+                                <select id="category" class="form-control" required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: #1e1b4b; border: 1px solid var(--glass-border); color: #fff;">
+                                    <option value="Teknoloji">Teknoloji</option>
+                                    <option value="Sanat">Sanat</option>
+                                    <option value="Spor">Spor</option>
+                                    <option value="Kariyer">Kariyer</option>
+                                    <option value="Müzik">Müzik</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tarih</label>
+                                <input type="date" id="eventDate" class="form-control" required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Saat</label>
+                                <input type="time" id="startTime" class="form-control" required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Hedef Kitle</label>
+                            <input type="text" id="targetAudience" class="form-control"
+                                placeholder="Örn: Mühendislik Öğrencileri" required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; padding: 16px; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <span>Etkinliği Yayınla</span>
+                            <div id="loading" class="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <script>
+            console.log("Create Event Script Loaded");
+            document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log("Form submitted");
+
+                const btn = e.target.querySelector('button');
+                const loading = document.getElementById('loading');
+
+                const universityIdVal = document.getElementById('universityId').value;
+                if (!universityIdVal) {
+                    alert("Hata: Üniversite bilginiz bulunamadı. Lütfen profilinizi kontrol edin.");
+                    return;
+                }
+
+                btn.disabled = true;
+                loading.style.display = 'block';
+
+                const payload = {
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value,
+                    universityId: parseInt(universityIdVal),
+                    eventType: document.getElementById('eventType').value,
+                    category: document.getElementById('category').value,
+                    targetAudience: document.getElementById('targetAudience').value,
+                    eventDate: document.getElementById('eventDate').value,
+                    startTime: document.getElementById('startTime').value + ":00"
+                };
+
+                console.log("Payload:", payload);
+
+                try {
+                    const res = await fetch('/api/events', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await res.json();
+                    console.log("Response:", data);
+
+                    if (data.success) {
+                        alert('Etkinlik başarıyla oluşturuldu!');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                } catch (err) {
+                    console.error("Submission Error:", err);
+                    alert('Bir hata oluştu: ' + err.message);
+                } finally {
+                    btn.disabled = false;
+                    loading.style.display = 'none';
+                }
+            });
+        </script>
+    </main>
+
+    <style>
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</body>
+
+</html>

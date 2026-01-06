@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<body>
+    <main>
+        <section class="hero animate-fade">
+            <div class="container" style="text-align: left;">
+                <h1>Kampüs Hayatını <br> <span style="color: var(--primary);">Yapay Zeka</span> İle Yönet</h1>
+                <p>Üniversite hayatınızı zenginleştiren, ilgi alanlarınıza göre özelleştirilmiş en yeni etkinlikleri
+                    keşfedin. Artık kaçırma korkusu yok.</p>
+                <div style="display: flex; gap: 1.5rem;">
+                    <a href="/events" class="btn btn-primary">Etkinlikleri Keşfet</a>
+                    <a href="/register" class="btn"
+                        style="background: var(--glass-heavy); border: 1px solid var(--glass-border);">Hemen Üye Ol</a>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 120px 0;">
+            <div class="container">
+                <div style="text-align: left; margin-bottom: 5rem; max-width: 600px;">
+                    <span
+                        style="color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Özellikler</span>
+                    <h2 style="font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-top: 1rem;">Neden ETUNI'yi
+                        <br> Seçmelisiniz?</h2>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>Akıllı Öneriler</h3>
+                        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 1rem;">Gelişmiş AI
+                            algoritmalarımız geçmiş katılım verilerinizi analiz ederek size özel etkinlik listeleri
+                            oluşturur.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Hızlı Katılım</h3>
+                        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 1rem;">Karmaşık formlarla
+                            uğraşmayın. Tek tıkla kaydolun ve QR kodunuzla saniyeler içinde giriş yapın.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Derin Analiz</h3>
+                        <p style="color: var(--text-muted); font-size: 1rem; margin-top: 1rem;">Kulüp yöneticileri için
+                            tasarlanan dashboard'lar ile etkinlik başarınızı sayısal verilerle ölçün.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

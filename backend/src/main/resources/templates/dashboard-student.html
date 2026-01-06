@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem;">
+                    <div>
+                        <span
+                            style="color: var(--primary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Öğrenci
+                            Paneli</span>
+                        <h1 style="font-size: 3.5rem; font-weight: 800; margin-top: 1rem;"
+                            th:text="${'Merhaba, ' + user.fullName}">Merhaba, Öğrenci</h1>
+                    </div>
+                    <div id="promotionSection">
+                        <button onclick="requestPromotion()" class="btn"
+                            style="background: var(--glass-heavy); border: 1px solid var(--glass-border); color: white;">Organizatör
+                            Olmak İste</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <div class="feature-card">
+                        <h3>Bildirimler</h3>
+                        <div th:if="${notifications == null or #lists.isEmpty(notifications)}" style="color: var(--text-muted); margin-top: 0.5rem;">Yeni bildiriminiz yok.</div>
+                        <ul th:if="${notifications != null and not #lists.isEmpty(notifications)}" style="list-style: none; padding: 0; margin-top: 1rem;">
+                            <li th:each="n : ${notifications}" style="padding: 10px; border-bottom: 1px solid var(--glass-border);">
+                                <strong th:text="${n.title}" style="display:block; color:white;"></strong>
+                                <div th:text="${n.message}" style="font-size:0.9rem; color:var(--text-muted); white-space:pre-wrap;"></div>
+                                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;" th:text="${#dates.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="feature-grid" style="margin-top: 0;">
+                    <div class="feature-card">
+                        <div class="feature-icon">📅</div>
+                        <h3>Katıldığım Etkinlikler</h3>
+                        <div th:if="${attendanceCheck == null or #lists.isEmpty(attendanceCheck.items)}">
+                            <p style="color: var(--text-muted); margin-top: 1rem;">Henüz bir etkinliğe katılmadınız.</p>
+                        </div>
+                        <ul th:if="${attendanceCheck != null and not #lists.isEmpty(attendanceCheck.items)}"
+                            style="list-style: none; padding: 0; margin-top: 1rem;">
+                            <li th:each="item : ${attendanceCheck.items}"
+                                style="padding: 10px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong th:text="${item.eventTitle}" style="display: block; color:white;">Etkinlik
+                                        Adı</strong>
+                                    <span th:text="${item.eventType}"
+                                        style="font-size: 0.8rem; color: var(--text-muted);">TÜR</span>
+                                </div>
+                                <span th:text="${item.verified ? '✅ Onaylandı' : '⏳ Bekliyor'}"
+                                    style="font-size: 0.9rem;">Durum</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>İlgi Alanlarım</h3>
+                        <p style="color: var(--text-muted); margin-top: 1rem;"
+                            th:text="${#lists.isEmpty(user.interests) ? 'İlgi alanı eklenmemiş.' : #strings.listJoin(user.interests, ', ')}">
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏛️</div>
+                        <h3>Üniversitem</h3>
+                        <p style="color: var(--text-muted); margin-top: 1rem;" th:text="${user.selectedUniversityName}">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            async function requestPromotion() {
+                // Rely on HttpOnly cookie
+                try {
+                        const response = await fetch('/api/promotion/request', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    if (response.ok) {
+                        alert('İsteğiniz üniversite sorumlusuna iletildi.');
+                        location.reload();
+                    } else {
+                        const err = await response.text();
+                        alert('Hata: ' + err);
+                    }
+                } catch (e) {
+                    alert('Bir hata oluştu.');
+                }
+            }
+        </script>
+    </main>
+</body>
+
+</html>

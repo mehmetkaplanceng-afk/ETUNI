@@ -1,0 +1,84 @@
+# ETUNI Project - Git Ignore
+
+# ===== Java / Maven =====
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ===== IDE =====
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+.factorypath
+
+### VS Code ###
+.vscode/
+
+### Qodo ###
+.qodo/
+
+# ===== Compiled files =====
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ===== Logs =====
+*.log
+logs/
+
+# ===== OS Files =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== Node / React Native =====
+node_modules/
+npm-debug.log
+yarn-error.log
+.expo/
+*.jks
+*.keystore
+
+# Android
+android/app/build/
+android/.gradle/
+android/build/
+*.apk
+*.aab
+
+# iOS
+ios/Pods/
+ios/build/
+
+# ===== Environment =====
+.env
+.env.local
+.env.production
+*.env
+
+# ===== Secrets (NEVER commit) =====
+**/application-prod.yml
+**/application-production.yml
+secrets/
+*.pem
+*.key
+
+# ===== Miscellaneous =====
+*.swp
+*.swo
+*~
+.cache/

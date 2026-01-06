@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<body>
+    <main>
+        <div class="container" style="padding: 100px 0; max-width: 600px;">
+            <div class="auth-container animate-fade">
+                <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; text-align: center;">Tekrar Hoş
+                    Geldin</h1>
+                <p style="color: var(--text-muted); text-align: center; margin-bottom: 3rem;">Hesabına giriş yaparak
+                    kampüs dünyasına adım at.</p>
+
+                <form id="loginForm">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Kurumsal
+                            E-posta</label>
+                        <input type="email" id="email" required placeholder="isim@uni.edu.tr"
+                            style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem 1.25rem; border-radius: 12px; color: white; transition: all 0.3s;">
+                    </div>
+                    <div style="margin-bottom: 2.5rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Şifre</label>
+                        <input type="password" id="password" required placeholder="••••••••"
+                            style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem 1.25rem; border-radius: 12px; color: white; transition: all 0.3s;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.25rem;">Giriş
+                        Yap</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 2rem; color: #94a3b8; font-size: 0.875rem;">
+                    Hesabın yok mu? <a href="/register" style="color: var(--primary); font-weight: 600;">Hemen Kayıt
+                        Ol</a>
+                </p>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem('token', data.token);
+                        // Cookie is now set by the backend (HttpOnly)
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                }
+            });
+        </script>
+    </main>
+</body>
+
+</html>

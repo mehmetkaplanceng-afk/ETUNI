@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<body>
+    <main>
+        <div class="container" style="padding: 100px 0; max-width: 650px;">
+            <div class="auth-container animate-fade">
+                <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; text-align: center;">Üyeliğini
+                    Başlat</h1>
+                <p style="color: var(--text-muted); text-align: center; margin-bottom: 3rem;">Üniversitendeki en iyi
+                    etkinlik yönetim platformuna adım at.</p>
+
+                <form id="registerForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div>
+                            <label
+                                style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Ad
+                                Soyad</label>
+                            <input type="text" id="fullName" required placeholder="Adınız Soyadınız"
+                                style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; color: white;">
+                        </div>
+                        <div>
+                            <label
+                                style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">E-posta</label>
+                            <input type="email" id="email" required placeholder="isim@uni.edu.tr"
+                                style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; color: white;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Üniversite</label>
+                        <select id="universityId" required
+                            style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; color: white;">
+                            <option th:each="uni : ${universities}" th:value="${uni.id}" th:text="${uni.name}">
+                                Üniversite Seç</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 3rem;">
+                        <label
+                            style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Şifre</label>
+                        <input type="password" id="password" required placeholder="En az 8 karakter"
+                            style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; color: white;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.25rem;">Kaydı
+                        Tamamla</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 2rem; color: #94a3b8; font-size: 0.875rem;">
+                    Zaten hesabın var mı? <a href="/login" style="color: var(--primary); font-weight: 600;">Giriş
+                        Yap</a>
+                </p>
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const universityId = document.getElementById('universityId').value;
+
+                try {
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fullName, email, password, universityId })
+                    });
+
+                    if (response.ok) {
+                        alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+                        window.location.href = '/login';
+                    } else {
+                        alert('Kayıt başarısız. Lütfen tekrar deneyin.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Bir hata oluştu.');
+                }
+            });
+        </script>
+    </main>
+</body>
+
+</html>

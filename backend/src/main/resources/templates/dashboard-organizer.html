@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem;">
+                    <div>
+                        <span
+                            style="color: var(--secondary); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Organizatör
+                            Paneli</span>
+                        <h1 style="font-size: 3.5rem; font-weight: 800; margin-top: 1rem;" th:text="${user.fullName}">
+                            Kulüp Başkanı</h1>
+                    </div>
+                    <a href="/events/new" class="btn btn-primary">Yeni Etkinlik Oluştur</a>
+                </div>
+
+                <div class="feature-grid" style="margin-top: 0;">
+                    <div class="feature-card" style="grid-column: 1 / -1;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3 style="margin: 0;">Etkinliklerim</h3>
+                            <span class="badge" style="background: var(--primary); color: #fff;"
+                                th:text="${events.size()} + ' Etkinlik'">0</span>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; color: #fff;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--glass-border); text-align: left;">
+                                        <th style="padding: 15px;">Başlık</th>
+                                        <th style="padding: 15px;">Tarih</th>
+                                        <th style="padding: 15px;">Tür</th>
+                                        <th style="padding: 15px;">Durum</th>
+                                        <th style="padding: 15px; text-align: right;">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="event : ${events}"
+                                        style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                        <td style="padding: 15px; font-weight: 600;" th:text="${event.title}">Başlık
+                                        </td>
+                                        <td style="padding: 15px;"
+                                            th:text="${event.eventDate} + ' ' + ${event.startTime}">Tarih</td>
+                                        <td style="padding: 15px;"><span class="badge"
+                                                th:text="${event.eventType}">Tür</span></td>
+                                        <td style="padding: 15px;">
+                                            <span th:if="${event.status == 'ACTIVE'}"
+                                                style="color: #4ade80;">Yayında</span>
+                                            <span th:if="${event.status == 'CANCELLED'}"
+                                                style="color: #ef4444;">İptal</span>
+                                        </td>
+                                        <td style="padding: 15px; text-align: right;">
+                                            <button th:onclick="'showApplicants(' + ${event.id} + ')'"
+                                                class="btn btn-sm"
+                                                style="background: var(--primary); padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;">Başvurular</button>
+                                            <a th:href="@{'/events/' + ${event.id}}" class="btn btn-sm"
+                                                style="background: rgba(255,255,255,0.1); padding: 5px 10px; font-size: 0.8rem;">Görüntüle</a>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${events.empty}">
+                                        <td colspan="5"
+                                            style="padding: 30px; text-align: center; color: var(--text-muted);">Henüz
+                                            bir etkinlik oluşturmadınız.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Applicants Modal -->
+                    <div id="applicantsModal"
+                        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+                        <div class="feature-card"
+                            style="width: 100%; max-width: 600px; padding: 30px; position: relative;">
+                            <button onclick="closeModal()"
+                                style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                            <h3 id="modalTitle">Etkinlik Başvuruları</h3>
+                            <div id="applicantsList" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                                <p style="color: var(--text-muted);">Yükleniyor...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>Katılım İstatistikleri</h3>
+                        <p style="color: var(--text-muted); margin-top: 1rem;">Etkinliklerinize olan ilgiyi buradan
+                            takip edin.</p>
+                    </div>
+
+                    <script>
+                        async function showApplicants(eventId) {
+                            const modal = document.getElementById('applicantsModal');
+                            const list = document.getElementById('applicantsList');
+                            modal.style.display = 'flex';
+                            list.innerHTML = '<p style="color: var(--text-muted);">Yükleniyor...</p>';
+
+                            try {
+                                const res = await fetch(`/api/attendance/event/${eventId}/pending`);
+                                const json = await res.json();
+                                if (json.data && json.data.length > 0) {
+                                    list.innerHTML = json.data.map(app => `
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--glass-border);">
+                                            <div>
+                                                <div style="font-weight: 600;">${app.userFullName}</div>
+                                                <div style="font-size: 0.8rem; color: var(--text-muted);">${app.userEmail}</div>
+                                            </div>
+                                            <div style="display: flex; gap: 5px;">
+                                                <button onclick="respondApplicant(${app.attendanceId}, true)" class="btn btn-sm" style="background: #4ade80; padding: 5px 10px;">Onayla</button>
+                                                <button onclick="respondApplicant(${app.attendanceId}, false)" class="btn btn-sm" style="background: #ef4444; padding: 5px 10px;">Reddet</button>
+                                            </div>
+                                        </div>
+                                    `).join('');
+                                } else {
+                                    list.innerHTML = '<p style="color: var(--text-muted);">Bekleyen başvuru bulunmuyor.</p>';
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                list.innerHTML = '<p style="color: #ef4444;">Hata oluştu.</p>';
+                            }
+                        }
+
+                        function closeModal() {
+                            document.getElementById('applicantsModal').style.display = 'none';
+                        }
+
+                        async function respondApplicant(attendanceId, approved) {
+                            const endpoint = approved ? `/api/attendance/${attendanceId}/approve` : `/api/attendance/${attendanceId}/reject`;
+                            try {
+                                const res = await fetch(endpoint, { method: 'POST' });
+                                if (res.ok) {
+                                    alert(approved ? 'Onaylandı' : 'Reddedildi');
+                                    closeModal();
+                                    // Refresh dashboard
+                                    window.location.reload();
+                                }
+                            } catch (e) {
+                                alert('İşlem başarısız');
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
