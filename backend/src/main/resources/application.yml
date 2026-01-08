@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/etuni
-    username: etuni
-    password: etuni
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/etuni}
+    username: ${SPRING_DATASOURCE_USERNAME:etuni}
+    password: ${SPRING_DATASOURCE_PASSWORD:etuni}
   jpa:
     hibernate:
       ddl-auto: update
