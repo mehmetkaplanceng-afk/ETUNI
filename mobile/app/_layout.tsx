@@ -3,10 +3,11 @@ import React from "react";
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>   
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="odeme" />
-      <Stack.Screen name="index" />
     </Stack>
   );
 }

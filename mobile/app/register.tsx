@@ -7,7 +7,6 @@ import {
     KeyboardAvoidingView,
     Modal,
     Platform,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,6 +14,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { API_URL } from "../api/authFetch";
 
 type University = {
@@ -82,7 +82,7 @@ export default function RegisterScreen() {
             const txt = await res.text();
             if (res.ok) {
                 Alert.alert("Başarılı", "Kayıt oluşturuldu. Giriş yapabilirsiniz.", [
-                    { text: "Tamam", onPress: () => router.replace("/") }
+                    { text: "Tamam", onPress: () => router.replace("/login") }
                 ]);
             } else {
                 Alert.alert("Kayıt Başarısız", txt);

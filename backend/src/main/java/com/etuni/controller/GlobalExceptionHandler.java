@@ -108,6 +108,24 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Handle missing resources (e.g. 404 for static files)
+   */
+  @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+  public ResponseEntity<ApiErrorResponse> handleNoResourceFoundException(
+      org.springframework.web.servlet.resource.NoResourceFoundException ex, HttpServletRequest request) {
+
+    log.warn("Resource not found: {} - {}", request.getRequestURI(), ex.getMessage());
+
+    ApiErrorResponse error = new ApiErrorResponse(
+        404,
+        "RESOURCE_NOT_FOUND",
+        "İstenen kaynak bulunamadı",
+        request.getRequestURI());
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  /**
    * Handle legacy RuntimeException (backward compatibility)
    */
   @ExceptionHandler(RuntimeException.class)

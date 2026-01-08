@@ -60,6 +60,48 @@ public class UserProfileService {
         return toDto(userRepo.save(user));
     }
 
+    @Transactional
+    public UserProfileResponse updateProfile(Long userId, UpdateProfileRequest req) {
+        UserEntity user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+
+        // Update fullName if provided
+        if (req.fullName() != null && !req.fullName().trim().isEmpty()) {
+            user.setFullName(req.fullName().trim());
+        }
+
+        // Update email if provided and different from current
+        if (req.email() != null && !req.email().trim().isEmpty()) {
+            String newEmail = req.email().trim().toLowerCase();
+            if (!newEmail.equals(user.getEmail())) {
+                // Check if email is already taken by another user
+                if (userRepo.findByEmail(newEmail).isPresent()) {
+                    throw new RuntimeException("EMAIL_ALREADY_EXISTS");
+                }
+                user.setEmail(newEmail);
+            }
+        }
+
+        // Update university if provided
+        if (req.universityId() != null) {
+            University uni = universityRepo.findById(req.universityId())
+                    .orElseThrow(() -> new RuntimeException("UNIVERSITY_NOT_FOUND"));
+            user.setUniversity(uni);
+        }
+
+        // Update interests if provided
+        if (req.interests() != null) {
+            user.setInterests(req.interests());
+        }
+
+        // Update preferred time range if provided
+        if (req.preferredTimeRange() != null) {
+            user.setPreferredTimeRange(req.preferredTimeRange());
+        }
+
+        return toDto(userRepo.save(user));
+    }
+
     @Transactional(readOnly = true)
     public AttendanceHistoryResponse getAttendanceHistory(Long userId) {
         userRepo.findById(userId)
@@ -68,16 +110,16 @@ public class UserProfileService {
         List<Attendance> attendances = attendanceRepo.findByUserIdOrderByScannedAtDesc(userId);
 
         List<AttendanceHistoryItem> items = attendances.stream()
-            .map(a -> new AttendanceHistoryItem(
-                a.getId(),
-                a.getEvent().getId(),
-                a.getEvent().getTitle(),
-                a.getEvent().getEventType(),
-                a.getScannedAt(),
-                a.isVerified(),
-                a.getStatus(),
-                a.getTicketCode()))
-            .toList();
+                .map(a -> new AttendanceHistoryItem(
+                        a.getId(),
+                        a.getEvent().getId(),
+                        a.getEvent().getTitle(),
+                        a.getEvent().getEventType(),
+                        a.getScannedAt(),
+                        a.isVerified(),
+                        a.getStatus(),
+                        a.getTicketCode()))
+                .toList();
 
         return new AttendanceHistoryResponse(items.size(), items);
     }
@@ -95,6 +137,7 @@ public class UserProfileService {
                 user.getFullName(),
                 user.getEmail(),
                 user.getRole(),
+                user.getStatus(),
                 uniId,
                 uniName,
                 user.getInterests(),

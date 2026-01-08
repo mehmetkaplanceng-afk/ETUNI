@@ -44,4 +44,12 @@ public class UserProfileController {
         Long userId = Long.valueOf(auth.getPrincipal().toString());
         return ApiResponse.ok("OK", userProfileService.getAttendanceHistory(userId));
     }
+
+    @PutMapping("/update")
+    public ApiResponse<UserProfileResponse> updateProfile(
+            Authentication auth,
+            @Valid @RequestBody UpdateProfileRequest req) {
+        Long userId = Long.valueOf(auth.getPrincipal().toString());
+        return ApiResponse.ok("PROFILE_UPDATED", userProfileService.updateProfile(userId, req));
+    }
 }

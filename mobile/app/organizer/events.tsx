@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authFetch } from '../../api/authFetch';
 
@@ -8,6 +9,7 @@ type Event = {
   title: string;
   eventDate?: string;
   startTime?: string;
+  price?: number;
 };
 
 export default function OrganizerEvents() {
@@ -45,18 +47,31 @@ export default function OrganizerEvents() {
 
   const openScanner = (eventId: number) => {
     console.log("Scanner açılıyor, ID:", eventId);
-    
+
     // YANLIŞ OLAN (Seni detay sayfasına geri atar):
     // router.push(`/organizer/event/${eventId}`); 
 
     // DOĞRU OLAN (Seni tarama sayfasına ID ile gönderir):
     router.push(`/organizer/scan?eventId=${eventId}`);
-};
+  };
   const renderItem = ({ item }: { item: Event }) => (
     <View style={styles.card}>
       <View style={{ flex: 1 }}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.meta}>{item.eventDate} {item.startTime}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6 }}>
+          <Text style={styles.meta}>{item.eventDate} {item.startTime}</Text>
+          {item.price !== undefined && item.price !== null && (
+            item.price > 0 ? (
+              <View style={styles.priceBadgePaid}>
+                <Text style={styles.priceBadgeTextPaid}>₺{item.price.toFixed(2)}</Text>
+              </View>
+            ) : (
+              <View style={styles.priceBadgeFree}>
+                <Text style={styles.priceBadgeTextFree}>ÜCRETSİZ</Text>
+              </View>
+            )
+          )}
+        </View>
       </View>
       <TouchableOpacity style={styles.btn} onPress={() => openScanner(item.id)}>
         <Text style={{ color: '#fff', fontWeight: '700' }}>QR Tara</Text>
@@ -80,6 +95,14 @@ export default function OrganizerEvents() {
         onRefresh={onRefresh}
         ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 24, color: '#94a3b8' }}>Etkinlik bulunamadı.</Text>}
       />
+
+      {/* Floating Create Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push('/organizer/create-event')}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -88,5 +111,44 @@ const styles = StyleSheet.create({
   card: { flexDirection: 'row', backgroundColor: '#fff', padding: 16, borderRadius: 12, marginBottom: 12, alignItems: 'center' },
   title: { fontSize: 16, fontWeight: '700', color: '#1e293b' },
   meta: { color: '#64748b', marginTop: 6 },
-  btn: { backgroundColor: '#4f46e5', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 }
+  btn: { backgroundColor: '#4f46e5', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 10 },
+  fab: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 90 : 20,
+    right: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#3b82f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5
+  },
+  fabText: { fontSize: 32, color: '#fff', fontWeight: '300', marginTop: -2 },
+  priceBadgePaid: {
+    backgroundColor: '#a855f7',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  priceBadgeTextPaid: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 10,
+  },
+  priceBadgeFree: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  priceBadgeTextFree: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 10,
+  },
 });

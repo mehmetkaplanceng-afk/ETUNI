@@ -13,6 +13,8 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+  thymeleaf:
+    cache: false
   # Email configuration (configure for production)
   mail:
     host: localhost

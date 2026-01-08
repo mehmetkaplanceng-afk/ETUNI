@@ -47,9 +47,12 @@ public class SecurityConfig {
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/health", "/api/auth/**", "/", "/index.html", "/css/**", "/js/**", "/images/**",
-                "/favicon.ico", "/error", "/events/**", "/login", "/register", "/api/chat/**", "/api/universities","/api/attendance/*/qr", // <--- ADD THIS LINE
+                "/favicon.ico", "/error", "/events", "/events/**", "/login", "/register", "/api/chat/**",
+                "/api/universities", "/api/attendance/*/qr", // <--- ADD THIS LINE
                 "/api/universities/**")
             .permitAll()
+            .requestMatchers("/dashboard", "/dashboard/**", "/profile", "/profile/**")
+            .authenticated()
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -1,5 +1,4 @@
 
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { debug } from "../utils/logger";
 
@@ -11,24 +10,50 @@ const BASE_HEADERS = {
   "ngrok-skip-browser-warning": "1",
 };
 
+// Memory cache for the token to avoid AsyncStorage latency during redirects
+let cachedToken: string | null = null;
+let isInitialized = false;
+
 export async function setToken(token: string) {
   let t = (token || "").trim();
   if (t.toLowerCase().startsWith("bearer ")) {
     t = t.slice(7).trim();
   }
+  cachedToken = t;
   await AsyncStorage.setItem("token", t);
 }
 
 export async function getToken() {
-  const t = await AsyncStorage.getItem("token");
-  if (!t) return null;
-  const trimmed = t.trim();
-  if (trimmed === "" || trimmed === "null" || trimmed === "undefined") return null;
-  return trimmed;
+  // If not initialized, load from storage once
+  if (!isInitialized) {
+    const t = await AsyncStorage.getItem("token");
+    if (t) {
+      const trimmed = t.trim();
+      if (trimmed !== "" && trimmed !== "null" && trimmed !== "undefined") {
+        cachedToken = trimmed;
+      }
+    }
+    isInitialized = true;
+  }
+
+  return cachedToken;
 }
 
 export async function clearToken() {
+  cachedToken = null;
+  isInitialized = true; // Mark as initialized so it doesn't try to reload the deleted token
   await AsyncStorage.multiRemove(["token", "universityId"]);
+  debug("AUTH: Token cleared from memory and storage");
+}
+
+export async function logoutFromServer() {
+  try {
+    await authFetch("/api/auth/logout", { method: "POST" });
+  } catch (e) {
+    debug("AUTH: Server logout failed or already cleared");
+  } finally {
+    await clearToken();
+  }
 }
 
 export async function authFetch(path: string, options: RequestInit = {}) {

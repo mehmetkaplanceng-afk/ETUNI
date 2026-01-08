@@ -3,11 +3,13 @@ import React, { useCallback, useState } from "react";
 import { Platform, View, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getToken } from "../../api/authFetch";
+import { debug } from "../../utils/logger";
 
 export default function TabLayout() {
   const router = useRouter();
   // Varsayılan olarak yükleniyor olsun, böylece ekran hemen açılmaz
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -19,15 +21,17 @@ export default function TabLayout() {
     try {
       const token = await getToken();
       if (!token) {
-        // Token yoksa hemen Login'e şutla
-        router.replace("/");
+        debug("TabLayout: No token found, redirecting to login");
+        router.replace("/login");
       } else {
-        // Token varsa yükleniyor'u kaldır ve sekmeleri göster
+        const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+        const role = await AsyncStorage.getItem("userRole");
+        setUserRole(role);
         setIsLoading(false);
       }
     } catch (e) {
-      // Hata durumunda da Login'e at
-      router.replace("/");
+      debug("TabLayout: Auth check error, redirecting to login");
+      router.replace("/login");
     }
   };
 
@@ -73,6 +77,7 @@ export default function TabLayout() {
         options={{
           title: "Organizatör",
           tabBarIcon: ({ color }) => <Ionicons name="people" size={24} color={color} />,
+          href: (userRole === "ORGANIZER" || userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/organizer" : null,
         }}
       />
       <Tabs.Screen

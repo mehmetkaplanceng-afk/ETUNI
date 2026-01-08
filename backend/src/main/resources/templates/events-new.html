@@ -79,11 +79,102 @@
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-bottom: 2rem;">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Hedef Kitle</label>
                             <input type="text" id="targetAudience" class="form-control"
                                 placeholder="Örn: Mühendislik Öğrencileri" required
                                 style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <!-- Price Section -->
+                        <div
+                            style="margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #a855f7;">
+                                💰 Etkinlik Ücreti
+                            </h3>
+
+                            <!-- Free/Paid Radio Buttons -->
+                            <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="eventPricing" value="free" checked
+                                        style="width: 20px; height: 20px; margin-right: 8px; cursor: pointer;">
+                                    <span style="font-weight: 600; color: #fff;">Ücretsiz Etkinlik</span>
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="eventPricing" value="paid"
+                                        style="width: 20px; height: 20px; margin-right: 8px; cursor: pointer;">
+                                    <span style="font-weight: 600; color: #fff;">Ücretli Etkinlik</span>
+                                </label>
+                            </div>
+
+                            <!-- Price Input (Hidden by default) -->
+                            <div id="priceInputContainer" style="display: none;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                    Ücreti (₺)</label>
+                                <input type="number" id="price" class="form-control" step="0.01" min="0"
+                                    placeholder="Örn: 50.00"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                    💡 Ücreti Türk Lirası (₺) cinsinden girin
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Location Section -->
+                        <div
+                            style="margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px;">
+                            <h3
+                                style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">
+                                📍 Konum Bilgileri (Opsiyonel)
+                            </h3>
+                            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Etkinliğinizin haritada görünmesi için konum bilgilerini girebilirsiniz. Haritadan konum
+                                seçebilirsiniz.
+                            </p>
+
+                            <div id="mapSelector"
+                                style="height: 300px; margin-bottom: 1rem; border-radius: 12px; z-index: 1; border: 1px solid var(--glass-border);">
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Konum
+                                    Adı</label>
+                                <input type="text" id="location" class="form-control"
+                                    placeholder="Örn: Bilkent Üniversitesi Kütüphane"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Enlem
+                                        (Latitude)</label>
+                                    <input type="number" id="latitude" class="form-control" step="0.000001"
+                                        placeholder="Örn: 39.8686"
+                                        style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Boylam
+                                        (Longitude)</label>
+                                    <input type="number" id="longitude" class="form-control" step="0.000001"
+                                        placeholder="Örn: 32.7482"
+                                        style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                                <button type="button" id="useCurrentLocation" class="btn btn-secondary"
+                                    style="flex: 1; padding: 10px; font-size: 0.9rem;">
+                                    📍 Mevcut Konumumu Kullan
+                                </button>
+                                <button type="button" id="clearLocation" class="btn btn-secondary"
+                                    style="padding: 10px; font-size: 0.9rem;">
+                                    🗑️ Temizle
+                                </button>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                💡 Koordinatları Google Maps'ten veya benzeri harita uygulamalarından
+                                kopyalayabilirsiniz.
+                            </p>
                         </div>
 
                         <button type="submit" class="btn btn-primary"
@@ -95,8 +186,110 @@
                 </div>
             </div>
         </section>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script>
             console.log("Create Event Script Loaded");
+
+            let map;
+            let marker;
+
+            // Initialize map
+            document.addEventListener('DOMContentLoaded', () => {
+                // Default center (Ankara)
+                map = L.map('mapSelector').setView([39.9334, 32.8597], 6);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+
+                // Map click handler
+                map.on('click', function (e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+
+                    updateLocationInputs(lat, lng);
+                });
+            });
+
+            function updateLocationInputs(lat, lng) {
+                document.getElementById('latitude').value = lat.toFixed(6);
+                document.getElementById('longitude').value = lng.toFixed(6);
+
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                    marker.on('dragend', function (event) {
+                        var marker = event.target;
+                        var position = marker.getLatLng();
+                        document.getElementById('latitude').value = position.lat.toFixed(6);
+                        document.getElementById('longitude').value = position.lng.toFixed(6);
+                    });
+                }
+            }
+
+            // Current Location handler
+            document.getElementById('useCurrentLocation').addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    const btn = document.getElementById('useCurrentLocation');
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Konum alınıyor...';
+
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+
+                            updateLocationInputs(lat, lng);
+                            map.setView([lat, lng], 15);
+
+                            btn.disabled = false;
+                            btn.textContent = '✅ Konum alındı!';
+                            setTimeout(() => {
+                                btn.textContent = '📍 Mevcut Konumumu Kullan';
+                            }, 2000);
+                        },
+                        (error) => {
+                            console.error('Geolocation error:', error);
+                            alert('Konum alınamadı. Lütfen tarayıcınızın konum iznini kontrol edin.');
+                            btn.disabled = false;
+                            btn.textContent = '📍 Mevcut Konumumu Kullan';
+                        }
+                    );
+                } else {
+                    alert('Tarayıcınız konum servislerini desteklemiyor.');
+                }
+            });
+
+            // Price toggle handler
+            const pricingRadios = document.querySelectorAll('input[name="eventPricing"]');
+            const priceInputContainer = document.getElementById('priceInputContainer');
+
+            pricingRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'paid') {
+                        priceInputContainer.style.display = 'block';
+                    } else {
+                        priceInputContainer.style.display = 'none';
+                        document.getElementById('price').value = '';
+                    }
+                });
+            });
+
+            // Clear Location handler
+            document.getElementById('clearLocation').addEventListener('click', () => {
+                document.getElementById('location').value = '';
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                if (marker) {
+                    map.removeLayer(marker);
+                    marker = null;
+                }
+                map.setView([39.9334, 32.8597], 6);
+            });
+
             document.getElementById('createEventForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 console.log("Form submitted");
@@ -123,6 +316,20 @@
                     eventDate: document.getElementById('eventDate').value,
                     startTime: document.getElementById('startTime').value + ":00"
                 };
+
+                // Add location fields if provided
+                const location = document.getElementById('location').value.trim();
+                const latitude = document.getElementById('latitude').value;
+                const longitude = document.getElementById('longitude').value;
+
+                if (location) payload.location = location;
+                if (latitude) payload.latitude = parseFloat(latitude);
+                if (longitude) payload.longitude = parseFloat(longitude);
+
+                // Add price field
+                const isPaid = document.querySelector('input[name="eventPricing"]:checked').value === 'paid';
+                const priceValue = document.getElementById('price').value;
+                payload.price = isPaid && priceValue ? parseFloat(priceValue) : 0;
 
                 console.log("Payload:", payload);
 

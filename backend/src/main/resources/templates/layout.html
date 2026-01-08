@@ -28,12 +28,14 @@
             <a href="/" class="logo">ETUNI</a>
             <div class="nav-links">
                 <a href="/events" class="nav-link">Etkinlikler</a>
+                <a href="/map" class="nav-link">🗺️ Harita</a>
                 <div id="guestLinks" class="flex items-center gap-2">
                     <a href="/login" class="nav-link">Giriş Yap</a>
                     <a href="/register" class="btn btn-primary">Kayıt Ol</a>
                 </div>
                 <div id="authLinks" class="hidden flex items-center gap-2">
                     <a href="/dashboard" class="nav-link">Panelim</a>
+                    <a href="/profile" class="nav-link">Profilim</a>
                     <button onclick="logout()" class="btn btn-secondary">Çıkış</button>
                 </div>
                 <button class="theme-toggle" onclick="Theme.toggle()" title="Tema Değiştir">☀️</button>
@@ -54,8 +56,10 @@
             // Check for the UI flag cookie
             const isLoggedIn = document.cookie.includes('is_campus_user=true');
             if (isLoggedIn) {
-                document.getElementById('guestLinks').style.display = 'none';
-                document.getElementById('authLinks').style.display = 'flex';
+                document.getElementById('guestLinks').classList.add('hidden');
+                const authLinks = document.getElementById('authLinks');
+                authLinks.classList.remove('hidden');
+                authLinks.classList.add('flex');
             }
         }
         async function logout() {

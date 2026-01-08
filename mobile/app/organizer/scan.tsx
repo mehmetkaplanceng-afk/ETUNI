@@ -4,11 +4,12 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { authFetch } from '../../api/authFetch';
 import { useRouter, useLocalSearchParams } from 'expo-router'; // useLocalSearchParams EKLENDİ
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OrganizerScan() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  
+
   // --- DÜZELTME BURADA ---
   // params.eventId bazen ["5"] (array) bazen "5" (string) gelebilir.
   // Bunu garanti bir şekilde sayıya çevirelim.
@@ -20,7 +21,7 @@ export default function OrganizerScan() {
 
   const [code, setCode] = useState('');
   const [permission, requestPermission] = useCameraPermissions();
-  
+
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
   const [scanResult, setScanResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -46,30 +47,30 @@ export default function OrganizerScan() {
       const res = await authFetch('/api/attendance/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            qrPayload: payload,
-            currentEventId: currentEventId // <--- BURASI ÇOK ÖNEMLİ
+        body: JSON.stringify({
+          qrPayload: payload,
+          currentEventId: currentEventId // <--- BURASI ÇOK ÖNEMLİ
         }),
       });
       const txt = await res.text();
       const json = JSON.parse(txt);
       const data = json.data || json;
-      
+
       // ÖZEL HATA KONTROLÜ: YANLIŞ ETKİNLİK
       if (data.message === 'WRONG_EVENT') {
         setScanResult({ success: false, message: 'Bu bilet BAŞKA bir etkinliğe ait!' });
         // Hata mesajını 2.5 saniye göster (biraz daha uzun kalsın ki okusunlar)
         setTimeout(() => { setScanResult(null); setScanned(false); }, 2500);
-      } 
+      }
       else if (res.ok && data && (data.valid === true || data.valid === 'true')) {
         // BAŞARILI DURUM
         setScanResult({ success: true, message: data.message || 'Giriş Başarılı!' });
-        setTimeout(() => { 
-          setScanResult(null); 
+        setTimeout(() => {
+          setScanResult(null);
           setScanned(false);
           handleGoBack();
         }, 1500);
-      } 
+      }
       else {
         // DİĞER HATALAR (Geçersiz QR, Süresi Dolmuş vb.)
         setScanResult({ success: false, message: data.message || 'QR doğrulanamadı' });
@@ -100,12 +101,12 @@ export default function OrganizerScan() {
       const txt = await res.text();
       const json = JSON.parse(txt);
       const data = json.data || json;
-      
+
       if (res.ok && data && (data.valid === true || data.valid === 'true')) {
         setScanResult({ success: true, message: data.message || 'Giriş Başarılı!' });
-        setTimeout(() => { 
-            setScanResult(null);
-            handleGoBack();
+        setTimeout(() => {
+          setScanResult(null);
+          handleGoBack();
         }, 1500);
       } else {
         setScanResult({ success: false, message: data.message || 'Kod doğrulanamadı.' });
@@ -119,44 +120,44 @@ export default function OrganizerScan() {
   };
 
   if (!permission) {
-    return <View style={styles.container}><Text>Kamera izni yükleniyor...</Text></View>;
+    return <SafeAreaView style={styles.container}><Text>Kamera izni yükleniyor...</Text></SafeAreaView>;
   }
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-            <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-                <Ionicons name="arrow-back" size={24} color="#1f2937" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>İzin Gerekli</Text>
+          <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#1f2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>İzin Gerekli</Text>
         </View>
         <View style={styles.content}>
-            <Text style={{ marginBottom: 20, textAlign: 'center' }}>QR okumak için kameraya erişim izni vermelisiniz.</Text>
-            <Button onPress={requestPermission} title="İzin Ver" />
-            <View style={{ marginTop: 40, width: '100%' }}>
-                <Text style={{ marginBottom: 8, fontWeight: 'bold' }}>Veya Kod Girin:</Text>
-                <TextInput
-                    placeholder="Bilet kodunu girin"
-                    value={code}
-                    onChangeText={setCode}
-                    style={styles.input}
-                />
-                <TouchableOpacity style={styles.btn} onPress={() => validateManualCode(code)} disabled={loading}>
-                    <Text style={styles.btnText}>{loading ? 'İşleniyor...' : 'Kodu Doğrula'}</Text>
-                </TouchableOpacity>
-            </View>
+          <Text style={{ marginBottom: 20, textAlign: 'center' }}>QR okumak için kameraya erişim izni vermelisiniz.</Text>
+          <Button onPress={requestPermission} title="İzin Ver" />
+          <View style={{ marginTop: 40, width: '100%' }}>
+            <Text style={{ marginBottom: 8, fontWeight: 'bold' }}>Veya Kod Girin:</Text>
+            <TextInput
+              placeholder="Bilet kodunu girin"
+              value={code}
+              onChangeText={setCode}
+              style={styles.input}
+            />
+            <TouchableOpacity style={styles.btn} onPress={() => validateManualCode(code)} disabled={loading}>
+              <Text style={styles.btnText}>{loading ? 'İşleniyor...' : 'Kodu Doğrula'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      
+    <SafeAreaView style={styles.container}>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={28} color="#1f2937" />
+          <Ionicons name="arrow-back" size={28} color="#1f2937" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>QR / Kod Okuma</Text>
         <View style={{ width: 28 }} />
@@ -174,25 +175,25 @@ export default function OrganizerScan() {
           />
           <View style={styles.overlayFrame} />
         </View>
-        
+
         <Text style={styles.instructionText}>
-            QR kodu kare içine tutun.
-            {currentEventId ? ` (Etkinlik ID: ${currentEventId})` : ''}
+          QR kodu kare içine tutun.
+          {currentEventId ? ` (Etkinlik ID: ${currentEventId})` : ''}
         </Text>
 
         {scanResult && (
           <View style={[
-            styles.resultOverlay, 
+            styles.resultOverlay,
             { backgroundColor: scanResult.success ? 'rgba(16,185,129,0.95)' : 'rgba(239,68,68,0.95)' }
           ]}>
-            <Ionicons 
-                name={scanResult.success ? "checkmark-circle" : "alert-circle"} 
-                size={32} 
-                color="white" 
-                style={{ marginBottom: 5 }}
+            <Ionicons
+              name={scanResult.success ? "checkmark-circle" : "alert-circle"}
+              size={32}
+              color="white"
+              style={{ marginBottom: 5 }}
             />
             <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16, textAlign: 'center' }}>
-                {scanResult.message}
+              {scanResult.message}
             </Text>
           </View>
         )}
@@ -200,29 +201,29 @@ export default function OrganizerScan() {
 
       <View style={styles.manualEntryContainer}>
         <TextInput
-            placeholder="Veya bilet kodunu yazın"
-            value={code}
-            onChangeText={setCode}
-            style={styles.input}
-            placeholderTextColor="#9ca3af"
+          placeholder="Veya bilet kodunu yazın"
+          value={code}
+          onChangeText={setCode}
+          style={styles.input}
+          placeholderTextColor="#9ca3af"
         />
 
         <TouchableOpacity style={styles.btn} onPress={() => validateManualCode(code)} disabled={loading}>
-            <Text style={styles.btnText}>{loading ? 'İşleniyor...' : 'Kodu Doğrula'}</Text>
+          <Text style={styles.btnText}>{loading ? 'İşleniyor...' : 'Kodu Doğrula'}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc', paddingTop: 50 },
-  header: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    paddingHorizontal: 20, 
-    paddingBottom: 15 
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingBottom: 15
   },
   backButton: { padding: 5 },
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#1f2937' },
@@ -253,31 +254,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14
   },
-  resultOverlay: { 
-    position: 'absolute', 
-    top: 100, 
-    left: 40, 
-    right: 40, 
-    padding: 20, 
-    borderRadius: 12, 
+  resultOverlay: {
+    position: 'absolute',
+    top: 100,
+    left: 40,
+    right: 40,
+    padding: 20,
+    borderRadius: 12,
     alignItems: 'center',
     zIndex: 20,
     elevation: 10
   },
   manualEntryContainer: { padding: 20 },
-  input: { 
-    backgroundColor: '#fff', 
-    padding: 15, 
-    borderRadius: 12, 
-    borderWidth: 1, 
-    borderColor: '#e5e7eb', 
+  input: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
     marginBottom: 12,
     fontSize: 16
   },
-  btn: { 
-    backgroundColor: '#4f46e5', 
-    padding: 15, 
-    borderRadius: 12, 
+  btn: {
+    backgroundColor: '#4f46e5',
+    padding: 15,
+    borderRadius: 12,
     alignItems: 'center',
     shadowColor: "#4f46e5",
     shadowOffset: { width: 0, height: 4 },

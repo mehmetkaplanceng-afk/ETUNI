@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container" style="max-width: 600px; margin: 0 auto;">
+                <div class="auth-container"
+                    style="background: var(--card-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px;">
+
+                    <!-- Header -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h1 style="font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">💳 Ödeme</h1>
+                        <p style="color: var(--text-muted);">Güvenli ödeme ekranı</p>
+                    </div>
+
+                    <!-- Event Info Card -->
+                    <div
+                        style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px; padding: 20px; margin-bottom: 2rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;"
+                            th:text="${event.title}">Etkinlik Başlığı</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1rem;"><span
+                                th:text="${event.eventDate}">2026-01-10</span> · <span
+                                th:text="${event.startTime}">14:00</span></p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-muted);">Tutar:</span>
+                            <span style="font-size: 1.5rem; font-weight: 800; color: #a855f7;">₺<span
+                                    th:text="${#numbers.formatDecimal(event.price, 1, 2)}">50.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form id="paymentForm">
+                        <input type="hidden" id="eventId" th:value="${event.id}">
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kart
+                                Numarası</label>
+                            <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456"
+                                maxlength="19" required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Son
+                                    Kullanma</label>
+                                <input type="text" id="expiry" class="form-control" placeholder="MM/YY" maxlength="5"
+                                    required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">CVV</label>
+                                <input type="text" id="cvv" class="form-control" placeholder="123" maxlength="3"
+                                    required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kart Üzerindeki
+                                İsim</label>
+                            <input type="text" id="cardName" class="form-control" placeholder="MEHMET YILMAZ" required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; text-transform: uppercase;">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; padding: 16px; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 10px; background: linear-gradient(135deg, #a855f7, #ec4899);">
+                            <span id="btnText">Ödemeyi Tamamla</span>
+                            <div id="loading" class="spinner" style="display: none;"></div>
+                        </button>
+
+                        <p style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 1rem;">
+                            🔒 Bu bir demo ödeme ekranıdır. Gerçek ödeme işlemi yapılmamaktadır.
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // Format card number
+            document.getElementById('cardNumber').addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\s/g, '');
+                let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                e.target.value = formattedValue;
+            });
+
+            // Format expiry
+            document.getElementById('expiry').addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+
+            // Only numbers for CVV
+            document.getElementById('cvv').addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+
+            document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const btn = e.target.querySelector('button');
+                const btnText = document.getElementById('btnText');
+                const loading = document.getElementById('loading');
+                const eventId = document.getElementById('eventId').value;
+
+                btn.disabled = true;
+                btnText.textContent = 'İşleniyor...';
+                loading.style.display = 'block';
+
+                try {
+                    // Simulate payment processing
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Initiate payment
+                    const res = await fetch('/api/payments/initiate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ eventId: parseInt(eventId) })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success && data.data.success) {
+                        // Join the event
+                        const joinRes = await fetch(`/api/attendance/join/${eventId}`, {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+
+                        if (joinRes.ok) {
+                            window.location.href = `/payment/success?txn=${data.data.transactionId}`;
+                        } else {
+                            const errorText = await joinRes.text();
+                            console.error('Join failed:', joinRes.status, errorText);
+                            alert('Ödeme başarılı ancak etkinliğe katılım sırasında hata oluştu.');
+                        }
+                    } else {
+                        alert('Ödeme başarısız: ' + data.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Bir hata oluştu.');
+                } finally {
+                    btn.disabled = false;
+                    btnText.textContent = 'Ödemeyi Tamamla';
+                    loading.style.display = 'none';
+                }
+            });
+        </script>
+
+        <style>
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </main>
+</body>
+
+</html>

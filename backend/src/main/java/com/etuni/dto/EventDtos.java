@@ -1,6 +1,7 @@
 package com.etuni.dto;
 
 import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -23,7 +24,13 @@ public class EventDtos {
 
                         @NotNull(message = "Etkinlik tarihi belirtilmelidir") @FutureOrPresent(message = "Etkinlik tarihi geçmiş bir tarih olamaz") LocalDate eventDate,
 
-                        @NotNull(message = "Başlangıç saati belirtilmelidir") LocalTime startTime) {
+                        @NotNull(message = "Başlangıç saati belirtilmelidir") LocalTime startTime,
+
+                        String location,
+                        Double latitude,
+                        Double longitude,
+
+                        BigDecimal price) {
         }
 
         public record EventUpdateRequest(
@@ -39,7 +46,13 @@ public class EventDtos {
 
                         LocalTime startTime,
 
-                        @Pattern(regexp = "^(ACTIVE|CANCELLED|DRAFT)$", message = "Geçersiz durum değeri") String status) {
+                        @Pattern(regexp = "^(ACTIVE|CANCELLED|DRAFT)$", message = "Geçersiz durum değeri") String status,
+
+                        String location,
+                        Double latitude,
+                        Double longitude,
+
+                        BigDecimal price) {
         }
 
         public record EventResponse(
@@ -53,6 +66,10 @@ public class EventDtos {
                         String targetAudience,
                         LocalDate eventDate,
                         LocalTime startTime,
-                        String status) {
+                        String status,
+                        String location,
+                        Double latitude,
+                        Double longitude,
+                        BigDecimal price) {
         }
 }

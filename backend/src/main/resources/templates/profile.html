@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<main>
+    <div class="container" style="padding-top: 3rem;">
+        <div class="auth-container" style="max-width: 600px;">
+            <div class="auth-header" th:if="${user != null}">
+                <h1>👤 Profilim</h1>
+                <p th:text="${user.fullName}" class="text-lg">Kullanıcı Adı</p>
+            </div>
+            <div class="auth-header" th:if="${user == null}">
+                <h1>👤 Profilim</h1>
+                <p class="text-lg">Profil yüklenemedi</p>
+            </div>
+        </div>
+
+        <div class="card mb-3" th:if="${user != null}">
+            <div class="card-header">
+                <h3 class="card-title">✏️ Profil Düzenle</h3>
+            </div>
+            <form id="profileForm" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Personal Information Section -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-muted);">Kişisel
+                        Bilgiler</h4>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Ad Soyad</label>
+                        <input type="text" id="fullName" class="form-input"
+                            th:value="${user != null ? user.fullName : ''}" placeholder="Ad Soyad" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" id="email" class="form-input" th:value="${user != null ? user.email : ''}"
+                            placeholder="ornek@email.com" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Üniversite</label>
+                        <select id="university" class="form-input form-select" th:if="${universities != null}">
+                            <option value="">Üniversite Seçiniz...</option>
+                            <option th:each="uni : ${universities}" th:if="${uni != null}" th:value="${uni.id}"
+                                th:text="${uni.name}"
+                                th:selected="${user != null and user.selectedUniversityId == uni.id}">Üniversite
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between items-center"
+                        style="padding: 0.75rem; border-radius: 8px; background: rgba(255,255,255,0.03);">
+                        <span class="text-muted">Rol</span>
+                        <span class="badge badge-primary" th:text="${user.role}">STUDENT</span>
+                    </div>
+
+                    <div class="flex justify-between items-center"
+                        style="padding: 0.75rem; border-radius: 8px; background: rgba(255,255,255,0.03);">
+                        <span class="text-muted">Durum</span>
+                        <span class="badge"
+                            th:classappend="${user.status == 'ACTIVE' ? 'badge-success' : 'badge-warning'}"
+                            th:text="${user.status}">ACTIVE</span>
+                    </div>
+                </div>
+
+                <!-- Preferences Section -->
+                <div
+                    style="display: flex; flex-direction: column; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">
+                    <h4 style="font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-muted);">
+                        Tercihlerim</h4>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">İlgi Alanları (virgülle ayırın)</label>
+                        <input type="text" id="interests" class="form-input" placeholder="Teknoloji, Müzik, Spor...">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Tercih Ettiğim Saat Aralığı</label>
+                        <select id="timeRange" class="form-input form-select">
+                            <option value="">Seçiniz...</option>
+                            <option value="09-12" th:selected="${user != null and user.preferredTimeRange == '09-12'}">
+                                Sabah (09:00 -
+                                12:00)</option>
+                            <option value="12-15" th:selected="${user != null and user.preferredTimeRange == '12-15'}">
+                                Öğle (12:00 -
+                                15:00)</option>
+                            <option value="15-18" th:selected="${user != null and user.preferredTimeRange == '15-18'}">
+                                Öğleden Sonra
+                                (15:00 - 18:00)</option>
+                            <option value="18-21" th:selected="${user != null and user.preferredTimeRange == '18-21'}">
+                                Akşam (18:00 -
+                                21:00)</option>
+                            <option value="21-24" th:selected="${user != null and user.preferredTimeRange == '21-24'}">
+                                Gece (21:00 -
+                                00:00)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                    💾 Değişiklikleri Kaydet
+                </button>
+            </form>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <a href="/dashboard" class="btn btn-secondary" style="flex: 1; text-align: center;">
+                ← Panele Dön
+            </a>
+        </div>
+    </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Populate interests from server-side data
+        const userInterests = /*[[${user.interests}]]*/[];
+        if (userInterests && Array.isArray(userInterests) && userInterests.length > 0) {
+            document.getElementById('interests').value = userInterests.join(', ');
+        }
+        /*]]>*/
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            // Collect all form data
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const universityId = document.getElementById('university').value;
+            const interests = document.getElementById('interests').value
+                .split(',')
+                .map(s => s.trim())
+                .filter(s => s.length > 0);
+            const timeRange = document.getElementById('timeRange').value;
+
+            // Build request object (only include fields that have values)
+            const updateData = {};
+            if (fullName) updateData.fullName = fullName;
+            if (email) updateData.email = email;
+            if (universityId) updateData.universityId = parseInt(universityId);
+            if (interests.length > 0) updateData.interests = interests;
+            if (timeRange) updateData.preferredTimeRange = timeRange;
+
+            try {
+                const res = await fetch('/api/profile/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (res.ok) {
+                    Toast.success('Profil başarıyla güncellendi!');
+                    // Reload page after short delay to show updated data
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    const data = await res.json();
+                    if (data.message === 'EMAIL_ALREADY_EXISTS') {
+                        Toast.error('Bu e-posta adresi zaten kullanılıyor!');
+                    } else {
+                        Toast.error(data.message || 'Güncelleme başarısız');
+                    }
+                }
+            } catch (err) {
+                console.error('Profile update error:', err);
+                Toast.error('Bağlantı hatası');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+    </script>
+</main>
+
+</html>
