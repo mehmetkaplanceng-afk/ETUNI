@@ -26,6 +26,17 @@
                             <span style="display: block; font-size: 0.75rem; text-transform: uppercase;">Kategori</span>
                             <strong th:text="${event.category}" style="color: white;">Bilişim</strong>
                         </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; text-transform: uppercase;">Ücret</span>
+                            <strong th:if="${event.price != null and event.price > 0}"
+                                style="color: #a855f7; font-size: 1.1rem;">
+                                ₺<span th:text="${#numbers.formatDecimal(event.price, 1, 2)}">50.00</span>
+                            </strong>
+                            <strong th:if="${event.price == null or event.price == 0}"
+                                style="color: #10b981; font-size: 1.1rem;">
+                                ÜCRETSİZ
+                            </strong>
+                        </div>
                     </div>
 
                     <div style="margin-bottom: 3rem;">
@@ -33,6 +44,13 @@
                         <p th:text="${event.description}" style="color: #94a3b8; line-height: 1.8;">
                             Etkinlik detaylı açıklaması burada yer alacaktır.
                         </p>
+                    </div>
+
+                    <div th:if="${event.latitude != null and event.longitude != null}" style="margin-bottom: 3rem;">
+                        <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">📍 Konum</h2>
+                        <div id="eventMap"
+                            style="height: 300px; border-radius: 12px; z-index: 1; border: 1px solid var(--glass-border);">
+                        </div>
                     </div>
 
                     <div
@@ -52,21 +70,54 @@
             </div>
         </section>
 
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
         <script th:inline="javascript">
+            // Initialize Map if location exists
+            /*[+
+            const hasLocation = [[${event.latitude != null && event.longitude != null}]];
+            const eventLat = [[${event.latitude}]];
+            const eventLng = [[${event.longitude}]];
+            const eventTitle = [[${event.title}]];
+            +]*/
+
+            document.addEventListener('DOMContentLoaded', () => {
+                if (hasLocation && document.getElementById('eventMap')) {
+                    const map = L.map('eventMap').setView([eventLat, eventLng], 14);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    L.marker([eventLat, eventLng])
+                        .addTo(map)
+                        .bindPopup(`<b>${eventTitle}</b><br>Etkinlik Konumu`)
+                        .openPopup();
+                }
+            });
+
             document.getElementById('joinBtn').addEventListener('click', async () => {
-                // Ensure auth check via UI cookie or just let the backend handle 401
+                const eventId = /*[[${event.id}]]*/ 0;
+                const eventPrice = /*[[${event.price}]]*/ 0;
+
+                // Check if event is paid
+                if (eventPrice && eventPrice > 0) {
+                    // Redirect to payment page
+                    window.location.href = `/payment/${eventId}`;
+                    return;
+                }
+
+                // Free event - join directly
                 const btn = document.getElementById('joinBtn');
                 btn.disabled = true;
                 btn.innerText = 'İşleniyor...';
-
-                const eventId = /*[[${event.id}]]*/ 0;
 
                 try {
                     const response = await fetch('/api/attendance/join/' + eventId, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
-                            // Authorization header removed; browser sends cookie automatically
                         }
                     });
 

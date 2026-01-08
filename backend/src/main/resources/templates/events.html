@@ -62,6 +62,14 @@
                         <div class="event-meta">
                             <span th:text="${ae.eventDate}">12.03.2026</span>
                             <span th:text="${ae.startTime}">14:00</span>
+                            <span th:if="${ae.price != null and ae.price > 0}"
+                                style="background: linear-gradient(135deg, #a855f7, #ec4899); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
+                                ₺<span th:text="${#numbers.formatDecimal(ae.price, 1, 2)}">50.00</span>
+                            </span>
+                            <span th:if="${ae.price == null or ae.price == 0}"
+                                style="background: linear-gradient(135deg, #10b981, #059669); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
+                                ÜCRETSİZ
+                            </span>
                         </div>
                         <a th:href="@{/events/{id}(id=${ae.id})}" class="btn"
                             style="width: 100%; margin-top: 1.5rem; text-align: center; border: 1px solid var(--glass-border); display: block;">Detayları

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+
+<main>
+    <div class="container" style="padding-top: 3rem;">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <div class="auth-header" style="margin-bottom: 2rem;">
+                <h1>🗺️ Etkinlik Haritası</h1>
+                <p>Yakınınızdaki etkinlikleri keşfedin</p>
+            </div>
+
+            <!-- Map Container -->
+            <div class="card">
+                <div id="map" style="height: 600px; border-radius: 8px; overflow: hidden;"></div>
+            </div>
+
+            <!-- Event List -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3 class="card-title">📍 Haritadaki Etkinlikler</h3>
+                </div>
+                <div id="eventList" style="padding: 1rem;">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        Yükleniyor...
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <a href="/dashboard" class="btn btn-secondary">← Panele Dön</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        .event-marker {
+            background-color: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .event-popup {
+            font-family: inherit;
+        }
+
+        .event-popup h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .event-popup p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .event-popup a {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .event-popup a:hover {
+            background: var(--primary-hover);
+        }
+
+        .event-list-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .event-list-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .event-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-list-item h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .event-list-item p {
+            margin: 0.25rem 0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+    </style>
+
+    <script>
+        let map;
+        let markers = [];
+
+        // Initialize map
+        function initMap() {
+            // Default to Ankara, Turkey
+            map = L.map('map').setView([39.9334, 32.8597], 6);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Try to get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude } = position.coords;
+                        map.setView([latitude, longitude], 13);
+
+                        // Add user location marker
+                        L.marker([latitude, longitude], {
+                            icon: L.divIcon({
+                                className: 'user-location-marker',
+                                html: '<div style="background: #ef4444; border: 3px solid white; border-radius: 50%; width: 20px; height: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+                                iconSize: [20, 20]
+                            })
+                        }).addTo(map).bindPopup('📍 Konumunuz');
+                    },
+                    (error) => {
+                        console.log('Geolocation error:', error);
+                    }
+                );
+            }
+
+            // Load and display events
+            loadEvents();
+        }
+
+        async function loadEvents() {
+            try {
+                const res = await fetch('/api/events');
+                if (res.ok) {
+                    const data = await res.json();
+                    const events = data.data || data || [];
+                    displayEvents(events);
+                } else {
+                    document.getElementById('eventList').innerHTML =
+                        '<div style="text-align: center; padding: 2rem; color: var(--danger);">Etkinlikler yüklenemedi</div>';
+                }
+            } catch (err) {
+                console.error('Event loading error:', err);
+                document.getElementById('eventList').innerHTML =
+                    '<div style="text-align: center; padding: 2rem; color: var(--danger);">Bağlantı hatası</div>';
+            }
+        }
+
+        function displayEvents(events) {
+            // Clear existing markers
+            markers.forEach(marker => marker.remove());
+            markers = [];
+
+            // Filter events that have location data
+            const eventsWithLocation = events.filter(event =>
+                event.latitude && event.longitude
+            );
+
+            if (eventsWithLocation.length === 0) {
+                document.getElementById('eventList').innerHTML =
+                    '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">🗺️ Konum bilgisi olan etkinlik bulunamadı.<br><small>Etkinlikler oluşturulurken konum eklendikçe haritada görünecekler.</small></div>';
+                return;
+            }
+
+            // Add markers for each event
+            eventsWithLocation.forEach(event => {
+                const marker = L.marker([event.latitude, event.longitude], {
+                    icon: L.divIcon({
+                        className: 'event-marker',
+                        html: '<div class="event-marker">📍</div>',
+                        iconSize: [30, 30]
+                    })
+                }).addTo(map);
+
+                const popupContent = `
+                    <div class="event-popup">
+                        <h4>${event.title || 'İsimsiz Etkinlik'}</h4>
+                        <p>📅 ${formatDate(event.eventDate)}</p>
+                        <p>📍 ${event.location || 'Konum belirtilmemiş'}</p>
+                        ${event.description ? `<p>${event.description.substring(0, 100)}...</p>` : ''}
+                        <a href="/event/${event.id}">Detayları Gör</a>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+
+            // Display event list
+            const listHtml = eventsWithLocation.map(event => `
+                <div class="event-list-item" onclick="focusEvent(${event.latitude}, ${event.longitude})">
+                    <h4>${event.title || 'İsimsiz Etkinlik'}</h4>
+                    <p>📅 ${formatDate(event.eventDate)} | 📍 ${event.location || 'Konum belirtilmemiş'}</p>
+                    <p style="font-size: 0.8rem;">Tıklayarak haritada görüntüle</p>
+                </div>
+            `).join('');
+
+            document.getElementById('eventList').innerHTML = listHtml;
+
+            // Fit map to show all markers if there are any
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        function focusEvent(lat, lng) {
+            map.setView([lat, lng], 15);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Tarih belirtilmemiş';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('tr-TR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</main>
+
+</html>

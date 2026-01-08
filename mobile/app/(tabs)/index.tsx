@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,6 +10,7 @@ import {
   Alert,
   RefreshControl
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { authFetch } from "../../api/authFetch";
@@ -24,7 +24,11 @@ type EventApi = {
   eventType: string;
   eventDate: string;
   startTime: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
   category?: string;
+  price?: number;
 };
 
 type RecommendedEvent = {
@@ -37,11 +41,11 @@ export default function EventsScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // Data State
   const [events, setEvents] = useState<EventApi[]>([]);
   const [recommended, setRecommended] = useState<RecommendedEvent[]>([]);
-  
+
   // Search State
   const [searchText, setSearchText] = useState("");
 
@@ -108,24 +112,38 @@ export default function EventsScreen() {
   };
 
   // --- Search Logic ---
-  const filteredEvents = events.filter(e => 
-    e.title.toLowerCase().includes(searchText.toLowerCase()) || 
+  const filteredEvents = events.filter(e =>
+    e.title.toLowerCase().includes(searchText.toLowerCase()) ||
     e.description.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // --- Renderers ---
 
   const renderEvent = ({ item }: { item: EventApi }) => (
-    <TouchableOpacity 
-      style={styles.card} 
-      activeOpacity={0.9} 
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.9}
       onPress={() => goToDetail(item.id)}
     >
       <View style={styles.badge}>
         <Text style={styles.badgeText}>{item.eventType}</Text>
       </View>
       <Text style={styles.cardTitle}>{item.title}</Text>
-      <Text style={styles.cardSub}>{item.eventDate} - {item.startTime}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>
+        <Text style={styles.cardSub}>{item.eventDate} - {item.startTime}</Text>
+        {item.price !== undefined && item.price !== null && (
+          item.price > 0 ? (
+            <View style={styles.priceBadgePaid}>
+              <Text style={styles.priceBadgeTextPaid}>₺{item.price.toFixed(2)}</Text>
+            </View>
+          ) : (
+            <View style={styles.priceBadgeFree}>
+              <Text style={styles.priceBadgeTextFree}>ÜCRETSİZ</Text>
+            </View>
+          )
+        )}
+      </View>
+      {item.location && <Text style={styles.locationText}>📍 {item.location}</Text>}
       <Text numberOfLines={2} style={styles.desc}>{item.description}</Text>
 
       <TouchableOpacity
@@ -138,22 +156,22 @@ export default function EventsScreen() {
   );
 
   const renderRecommended = ({ item }: { item: RecommendedEvent }) => (
-    <TouchableOpacity 
-        style={[styles.card, styles.recommendedCard]}
-        onPress={() => goToDetail(item.event.id)}
+    <TouchableOpacity
+      style={[styles.card, styles.recommendedCard]}
+      onPress={() => goToDetail(item.event.id)}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{item.event.eventType}</Text>
         </View>
         <Text style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: 12 }}>
-            %{Math.round(item.totalScore * 100)} Eşleşme
+          %{Math.round(item.totalScore * 100)} Eşleşme
         </Text>
       </View>
       <Text style={styles.cardTitle}>{item.event.title}</Text>
       <Text style={styles.cardSub}>{item.event.eventDate}</Text>
       <Text numberOfLines={2} style={styles.desc}>{item.explanation}</Text>
-      
+
       <TouchableOpacity
         style={[styles.btn, { backgroundColor: '#e0e7ff' }]}
         onPress={() => goToDetail(item.event.id)}
@@ -172,12 +190,12 @@ export default function EventsScreen() {
 
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#94a3b8" style={{ marginRight: 8 }} />
-        <TextInput 
-            placeholder="Etkinlik ara..." 
-            style={styles.searchInput}
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholderTextColor="#94a3b8"
+        <TextInput
+          placeholder="Etkinlik ara..."
+          style={styles.searchInput}
+          value={searchText}
+          onChangeText={setSearchText}
+          placeholderTextColor="#94a3b8"
         />
       </View>
 
@@ -186,7 +204,7 @@ export default function EventsScreen() {
         data={filteredEvents}
         keyExtractor={(e, idx) => String(e?.id ?? idx)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        
+
         ListHeaderComponent={
           recommended.length > 0 && searchText === "" ? (
             <View style={{ marginBottom: 24 }}>
@@ -205,11 +223,11 @@ export default function EventsScreen() {
 
         renderItem={({ item }) => renderEvent({ item })}
         ListEmptyComponent={
-            <View style={{ marginTop: 40, alignItems: 'center' }}>
-                <Text style={styles.empty}>
-                    {searchText ? "Aramanızla eşleşen etkinlik bulunamadı." : "Henüz etkinlik yok."}
-                </Text>
-            </View>
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
+            <Text style={styles.empty}>
+              {searchText ? "Aramanızla eşleşen etkinlik bulunamadı." : "Henüz etkinlik yok."}
+            </Text>
+          </View>
         }
       />
     </SafeAreaView>
@@ -220,15 +238,15 @@ const styles = StyleSheet.create({
   header: { padding: 16, flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: "#fff" },
   title: { fontSize: 28, fontWeight: "800", color: "#1e293b" },
   sectionTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12, color: '#1e293b', marginLeft: 4 },
-  
-  searchContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    backgroundColor: '#fff', 
-    marginHorizontal: 16, 
-    marginTop: 8, 
-    marginBottom: 8, 
-    padding: 12, 
+
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    padding: 12,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#e2e8f0'
@@ -237,16 +255,40 @@ const styles = StyleSheet.create({
 
   card: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
   recommendedCard: { width: 300, marginRight: 16, borderWidth: 1, borderColor: '#e0e7ff' },
-  
+
   cardTitle: { fontSize: 18, fontWeight: "700", marginBottom: 4, color: "#1e293b" },
   cardSub: { color: "#64748b", marginBottom: 8, fontSize: 13, fontWeight: '500' },
+  locationText: { color: "#4f46e5", fontSize: 13, fontWeight: "600", marginBottom: 8 },
   desc: { color: "#475569", marginBottom: 16, lineHeight: 20 },
-  
+
   badge: { alignSelf: "flex-start", backgroundColor: "#e0e7ff", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginBottom: 10 },
   badgeText: { color: "#4338ca", fontWeight: "700", fontSize: 12 },
-  
+
   btn: { backgroundColor: "#4f46e5", paddingVertical: 12, borderRadius: 12, alignItems: "center" },
   btnText: { color: "#fff", fontWeight: "700" },
-  
+
+  priceBadgePaid: {
+    backgroundColor: '#a855f7',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  priceBadgeTextPaid: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 11,
+  },
+  priceBadgeFree: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  priceBadgeTextFree: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 11,
+  },
+
   empty: { textAlign: "center", color: "#94a3b8", fontSize: 16 },
 });

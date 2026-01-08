@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class WebController {
@@ -90,15 +91,31 @@ public class WebController {
         try {
             var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
             if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                logger.warn("Unauthenticated dashboard access attempt");
                 return "redirect:/login";
             }
 
-            Long userId = Long.parseLong(auth.getPrincipal().toString());
+            String principal = auth.getPrincipal().toString();
+            Long userId;
+            try {
+                userId = Long.parseLong(principal);
+            } catch (NumberFormatException e) {
+                logger.error("Invalid principal in security context: {}", principal);
+                return "redirect:/login";
+            }
+
             var profile = userProfileService.getProfile(userId);
+            if (profile == null) {
+                logger.error("Profile not found for authenticated user ID: {}", userId);
+                return "redirect:/login";
+            }
+
             model.addAttribute("user", profile);
             model.addAttribute("title", "Panelim | ETUNI");
 
             String role = profile.role();
+            logger.info("Accessing dashboard for user: {}, role: {}", userId, role);
+
             if ("ADMIN".equals(role)) {
                 model.addAttribute("universities", universityService.list());
                 model.addAttribute("totalEvents", eventService.count());
@@ -115,13 +132,28 @@ public class WebController {
                 model.addAttribute("events", eventService.listAllByUniversity(profile.selectedUniversityId()));
                 return "dashboard-organizer";
             }
-            // STUDENT
-            model.addAttribute("attendanceCheck", userProfileService.getAttendanceHistory(userId));
-            model.addAttribute("notifications", notificationService.listForUser(userId));
+
+            // Default: STUDENT
+            try {
+                var attendance = userProfileService.getAttendanceHistory(userId);
+                model.addAttribute("attendanceCheck", attendance);
+
+                var notifications = notificationService.listForUser(userId);
+                model.addAttribute("notifications", notifications);
+
+                // Add relevant events for the student
+                var upcomingEvents = eventService.listAllByUniversity(profile.selectedUniversityId());
+                model.addAttribute("events", upcomingEvents);
+
+            } catch (Exception inner) {
+                logger.error("Error loading student data for userId: {}", userId, inner);
+                model.addAttribute("error", "Veriler yüklenirken bir hata oluştu.");
+            }
+
             return "dashboard-student";
         } catch (Exception e) {
-            logger.error("Dashboard rendering failed", e);
-            throw e;
+            logger.error("Critical dashboard rendering failure", e);
+            return "redirect:/error";
         }
     }
 
@@ -168,5 +200,62 @@ public class WebController {
     public String register(Model model) {
         model.addAttribute("universities", universityService.list());
         return "register";
+    }
+
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                logger.warn("Unauthorized profile access attempt");
+                return "redirect:/login";
+            }
+
+            String principal = auth.getPrincipal().toString();
+            Long userId;
+            try {
+                userId = Long.parseLong(principal);
+            } catch (NumberFormatException e) {
+                logger.error("Invalid principal for profile access: {}", principal);
+                return "redirect:/login";
+            }
+
+            var profile = userProfileService.getProfile(userId);
+            if (profile == null) {
+                logger.error("Profile not found for userId: {}", userId);
+                return "redirect:/dashboard";
+            }
+
+            model.addAttribute("user", profile);
+            model.addAttribute("universities", universityService.list());
+            model.addAttribute("title", "Profilim | ETUNI");
+
+            logger.info("Profile successfully loaded for user: {}", userId);
+            return "profile";
+        } catch (Exception e) {
+            logger.error("Profile page loading failed", e);
+            return "redirect:/dashboard";
+        }
+    }
+
+    @GetMapping("/map")
+    public String map(Model model) {
+        model.addAttribute("title", "Etkinlik Haritası | ETUNI");
+        return "map";
+    }
+
+    @GetMapping("/payment/{eventId}")
+    public String paymentPage(@PathVariable("eventId") Long eventId, Model model) {
+        var event = eventService.get(eventId);
+        model.addAttribute("event", event);
+        return "payment";
+    }
+
+    @GetMapping("/payment/success")
+    public String paymentSuccess(@RequestParam("txn") String transactionId, Model model) {
+        model.addAttribute("transactionId", transactionId);
+        // In a real system, fetch event details from transaction
+        model.addAttribute("eventTitle", "Etkinlik");
+        return "payment-success";
     }
 }

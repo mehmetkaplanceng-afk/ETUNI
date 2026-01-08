@@ -57,6 +57,10 @@ public class EventService {
     e.setEventDate(req.eventDate());
     e.setStartTime(req.startTime());
     e.setStatus("ACTIVE");
+    e.setLocation(req.location());
+    e.setLatitude(req.latitude());
+    e.setLongitude(req.longitude());
+    e.setPrice(req.price() != null ? req.price() : java.math.BigDecimal.ZERO);
 
     Event saved = eventRepo.save(e);
     saved.setQrPayload(qrUtil.generateForEvent(saved.getId()));
@@ -119,6 +123,14 @@ public class EventService {
       e.setStartTime(req.startTime());
     if (req.status() != null)
       e.setStatus(req.status());
+    if (req.location() != null)
+      e.setLocation(req.location());
+    if (req.latitude() != null)
+      e.setLatitude(req.latitude());
+    if (req.longitude() != null)
+      e.setLongitude(req.longitude());
+    if (req.price() != null)
+      e.setPrice(req.price());
 
     return toDto(eventRepo.save(e));
   }
@@ -157,7 +169,11 @@ public class EventService {
         e.getTargetAudience(),
         e.getEventDate(),
         e.getStartTime(),
-        e.getStatus());
+        e.getStatus(),
+        e.getLocation(),
+        e.getLatitude(),
+        e.getLongitude(),
+        e.getPrice() != null ? e.getPrice() : java.math.BigDecimal.ZERO);
   }
 
   public long count() {

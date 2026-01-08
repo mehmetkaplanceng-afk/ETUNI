@@ -15,11 +15,20 @@ public class UserProfileDtos {
                         Long universityId) {
         }
 
+        public record UpdateProfileRequest(
+                        String fullName,
+                        String email,
+                        Long universityId,
+                        List<String> interests,
+                        String preferredTimeRange) {
+        }
+
         public record UserProfileResponse(
                         Long id,
                         String fullName,
                         String email,
                         String role,
+                        String status,
                         Long selectedUniversityId,
                         String selectedUniversityName,
                         List<String> interests,

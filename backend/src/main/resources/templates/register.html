@@ -35,11 +35,14 @@
                                 Üniversite Seç</option>
                         </select>
                     </div>
-                    <div style="margin-bottom: 3rem;">
+                    <div style="margin-bottom: 2rem;">
                         <label
                             style="display: block; margin-bottom: 0.75rem; font-size: 0.9rem; font-weight: 600;">Şifre</label>
                         <input type="password" id="password" required placeholder="En az 8 karakter"
                             style="width: 100%; background: var(--dark-muted); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 12px; color: white;">
+                        <small style="display: block; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.8rem;">
+                            En az 8 karakter, bir büyük harf, bir küçük harf ve bir rakam içermelidir.
+                        </small>
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1.25rem;">Kaydı
@@ -72,11 +75,28 @@
                         alert('Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
                         window.location.href = '/login';
                     } else {
-                        alert('Kayıt başarısız. Lütfen tekrar deneyin.');
+                        const data = await response.json();
+                        console.error('Registration error:', data);
+
+                        // Show detailed error message
+                        let errorMsg = 'Kayıt başarısız.\n\n';
+
+                        if (data.fieldErrors) {
+                            // Show individual field errors
+                            for (const [field, message] of Object.entries(data.fieldErrors)) {
+                                errorMsg += `• ${message}\n`;
+                            }
+                        } else if (data.message) {
+                            errorMsg += data.message;
+                        } else {
+                            errorMsg += 'Lütfen tüm alanları doğru formatta doldurun.';
+                        }
+
+                        alert(errorMsg);
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Bir hata oluştu.');
+                    alert('Bir hata oluştu. Lütfen tekrar deneyin.');
                 }
             });
         </script>

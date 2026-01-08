@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
-    SafeAreaView,
     StyleSheet,
     Text,
     View,
@@ -13,6 +12,7 @@ import {
     Modal,
     Linking,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { authFetch, API_URL } from "../../api/authFetch";
 
 type Ticket = {
@@ -133,7 +133,7 @@ export default function TicketsScreen() {
                 ListEmptyComponent={<Text style={styles.empty}>Henüz biletiniz yok.</Text>}
             />
             <Modal visible={!!previewUri} transparent animationType="fade" onRequestClose={() => setPreviewUri(null)}>
-                <View style={{ flex:1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableOpacity style={{ position: 'absolute', top: 40, right: 20 }} onPress={() => setPreviewUri(null)}>
                         <Text style={{ color: '#fff', fontWeight: '700' }}>Kapat</Text>
                     </TouchableOpacity>

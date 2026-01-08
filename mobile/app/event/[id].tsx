@@ -2,13 +2,14 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
+import { WebView } from "react-native-webview";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { authFetch } from "../../api/authFetch";
 
 type EventDetail = {
@@ -21,6 +22,10 @@ type EventDetail = {
     category?: string;
     targetAudience?: string;
     universityId?: number;
+    location?: string;
+    latitude?: number;
+    longitude?: number;
+    price?: number;
 };
 
 export default function EventDetailScreen() {
@@ -36,21 +41,20 @@ export default function EventDetailScreen() {
     }, [id]);
 
     const fetchDetails = async () => {
-        // We don't have a single event endpoint in controller yet?
-        // WebController has it, but it returns HTML.
-        // EventController needs getById.
-        // Let's check EventController. If missing, I'll use list and find (inefficient) or add endpoint.
-        // Assuming /api/events/list returns all, I can filter.
-        // Better: Add /api/events/{id} to backend if missing.
-        // For now, I will try to fetch list and find.
         setLoading(true);
         try {
-            const res = await authFetch(`/api/events/list?universityId=1`, { method: "GET" }); // Mock uni ID
+            const res = await authFetch(`/api/events/${id}`, { method: "GET" });
             if (res.ok) {
-                const list: EventDetail[] = await res.json();
-                const found = list.find(e => String(e.id) === String(id));
-                if (found) setEvent(found);
+                const json = await res.json();
+                // Unwrap ApiResponse { data: EventDetail, ... }
+                if (json && json.data) {
+                    setEvent(json.data);
+                }
+            } else {
+                console.error("Event fetch failed:", res.status);
             }
+        } catch (e) {
+            console.error("Event fetch error:", e);
         } finally {
             setLoading(false);
         }
@@ -58,6 +62,14 @@ export default function EventDetailScreen() {
 
     const joinEvent = async () => {
         try {
+            // Check if event is paid
+            if (event && event.price && event.price > 0) {
+                // Navigate to payment screen
+                router.push(`/payment?eventId=${id}&price=${event.price}&title=${encodeURIComponent(event.title)}`);
+                return;
+            }
+
+            // Free event - join directly
             setLoading(true);
             const res = await authFetch(`/api/attendance/join/${id}`, { method: "POST" });
             if (res.ok) {
@@ -85,6 +97,17 @@ export default function EventDetailScreen() {
                 <View style={styles.meta}>
                     <Text style={styles.metaText}>📅 {event.eventDate}</Text>
                     <Text style={styles.metaText}>⏰ {event.startTime}</Text>
+                    {event.price !== undefined && event.price !== null && (
+                        event.price > 0 ? (
+                            <View style={styles.priceBadgePaid}>
+                                <Text style={styles.priceBadgeTextPaid}>₺{event.price.toFixed(2)}</Text>
+                            </View>
+                        ) : (
+                            <View style={styles.priceBadgeFree}>
+                                <Text style={styles.priceBadgeTextFree}>ÜCRETSİZ</Text>
+                            </View>
+                        )
+                    )}
                 </View>
 
                 <View style={styles.divider} />
@@ -97,6 +120,48 @@ export default function EventDetailScreen() {
 
                 <Text style={styles.sectionTitle}>Hedef Kitle</Text>
                 <Text style={styles.tag}>{event.targetAudience || "Herkes"}</Text>
+
+                {event.location && (
+                    <>
+                        <Text style={styles.sectionTitle}>Konum</Text>
+                        <Text style={styles.metaText}>📍 {event.location}</Text>
+                    </>
+                )}
+
+                {event.latitude && event.longitude && (
+                    <View style={styles.mapContainer}>
+                        <WebView
+                            originWhitelist={['*']}
+                            source={{
+                                html: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <style>
+                  body { margin: 0; padding: 0; }
+                  #map { height: 100vh; width: 100vw; }
+                </style>
+              </head>
+              <body>
+                <div id="map"></div>
+                <script>
+                  var map = L.map('map', {
+                    zoomControl: false,
+                    attributionControl: false
+                  }).setView([${event.latitude}, ${event.longitude}], 15);
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                  L.marker([${event.latitude}, ${event.longitude}]).addTo(map);
+                </script>
+              </body>
+              </html>
+            `}}
+                            style={{ flex: 1 }}
+                        />
+                    </View>
+                )}
 
                 <TouchableOpacity style={styles.btn} onPress={joinEvent}>
                     <Text style={styles.btnText}>Etkinliğe Katıl</Text>
@@ -119,6 +184,36 @@ const styles = StyleSheet.create({
     sectionTitle: { fontSize: 18, fontWeight: "800", marginBottom: 8, color: "#334155" },
     desc: { fontSize: 16, lineHeight: 24, color: "#475569", marginBottom: 20 },
     tag: { backgroundColor: "#f1f5f9", alignSelf: "flex-start", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, overflow: "hidden", color: "#64748b", marginBottom: 20 },
+    mapContainer: {
+        height: 200,
+        borderRadius: 16,
+        overflow: 'hidden',
+        marginVertical: 15,
+        borderWidth: 1,
+        borderColor: '#e2e8f0'
+    },
     btn: { backgroundColor: "#4f46e5", paddingVertical: 16, borderRadius: 16, alignItems: "center", marginTop: 20, shadowColor: "#4f46e5", shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
     btnText: { color: "#fff", fontWeight: "800", fontSize: 18 },
+    priceBadgePaid: {
+        backgroundColor: '#a855f7',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    priceBadgeTextPaid: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 13,
+    },
+    priceBadgeFree: {
+        backgroundColor: '#10b981',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    priceBadgeTextFree: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 13,
+    },
 });

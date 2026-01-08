@@ -56,7 +56,11 @@ public class EventController {
           req.category(),
           req.targetAudience(),
           req.eventDate(),
-          req.startTime());
+          req.startTime(),
+          req.location(),
+          req.latitude(),
+          req.longitude(),
+          req.price());
       return ApiResponse.ok("EVENT_CREATED", eventService.create(updatedReq));
     }
     return ApiResponse.ok("EVENT_CREATED", eventService.create(req));
