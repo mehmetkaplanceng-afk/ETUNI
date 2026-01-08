@@ -1,0 +1,1442 @@
+[
+    {
+        "No": 1,
+        "Adı": "Abant İzzet Baysal Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Bolu",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ibu.edu.tr"
+    },
+    {
+        "No": 2,
+        "Adı": "Abdullah Gül Üniversitesi**",
+        "Kuruluşu": "2010",
+        "İli": "Kayseri",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "agu.edu.tr"
+    },
+    {
+        "No": 3,
+        "Adı": "Adana Bilim ve Teknoloji Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "Adana",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "adanabtu.edu.tr"
+    },
+    {
+        "No": 4,
+        "Adı": "Adıyaman Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Adıyaman",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "adiyaman.edu.tr"
+    },
+    {
+        "No": 5,
+        "Adı": "Adnan Menderes Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Aydın",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "adu.edu.tr"
+    },
+    {
+        "No": 6,
+        "Adı": "Afyon Kocatepe Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Afyonkarahisar",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "aku.edu.tr"
+    },
+    {
+        "No": 7,
+        "Adı": "Ağrı İbrahim Çeçen Üniversitesi**",
+        "Kuruluşu": "2007",
+        "İli": "Ağrı",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "agri.edu.tr"
+    },
+    {
+        "No": 8,
+        "Adı": "Ahi Evran Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Kırşehir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ahievran.edu.tr"
+    },
+    {
+        "No": 9,
+        "Adı": "Akdeniz Üniversitesi",
+        "Kuruluşu": "1982",
+        "İli": "Antalya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "akdeniz.edu.tr"
+    },
+    {
+        "No": 10,
+        "Adı": "Aksaray Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Aksaray",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "aksaray.edu.tr"
+    },
+    {
+        "No": 11,
+        "Adı": "Alanya Alaaddin Keykubat Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "Antalya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "alanyaaku.edu.tr"
+    },
+    {
+        "No": 12,
+        "Adı": "Amasya Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Amasya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "amasya.edu.tr"
+    },
+    {
+        "No": 13,
+        "Adı": "Anadolu Üniversitesi",
+        "Kuruluşu": "1958/1982",
+        "İli": "Eskişehir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "anadolu.edu.tr"
+    },
+    {
+        "No": 14,
+        "Adı": "Ankara Üniversitesi",
+        "Kuruluşu": "1946",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ankara.edu.tr"
+    },
+    {
+        "No": 15,
+        "Adı": "Ankara Sosyal Bilimler Üniversitesi",
+        "Kuruluşu": "2013",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "asbu.edu.tr"
+    },
+    {
+        "No": 16,
+        "Adı": "Ardahan Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Ardahan",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ardahan.edu.tr"
+    },
+    {
+        "No": 17,
+        "Adı": "Artvin Çoruh Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Artvin",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "artvin.edu.tr"
+    },
+    {
+        "No": 18,
+        "Adı": "Atatürk Üniversitesi",
+        "Kuruluşu": "1954",
+        "İli": "Erzurum",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "atauni.edu.tr"
+    },
+    {
+        "No": 19,
+        "Adı": "Balıkesir Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Balıkesir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "balikesir.edu.tr"
+    },
+    {
+        "No": 20,
+        "Adı": "Bandırma Onyedi Eylül Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "Balıkesir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bandirma.edu.tr"
+    },
+    {
+        "No": 21,
+        "Adı": "Bartın Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Bartın",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bartin.edu.tr"
+    },
+    {
+        "No": 22,
+        "Adı": "Batman Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Batman",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "batman.edu.tr"
+    },
+    {
+        "No": 23,
+        "Adı": "Bayburt Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Bayburt",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bayburt.edu.tr"
+    },
+    {
+        "No": 24,
+        "Adı": "Bilecik Şeyh Edebali Üniversitesi**",
+        "Kuruluşu": "2007",
+        "İli": "Bilecik",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bilecik.edu.tr"
+    },
+    {
+        "No": 25,
+        "Adı": "Bingöl Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Bingöl",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bingol.edu.tr"
+    },
+    {
+        "No": 26,
+        "Adı": "Bitlis Eren Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Bitlis",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "beu.edu.tr"
+    },
+    {
+        "No": 27,
+        "Adı": "Boğaziçi Üniversitesi",
+        "Kuruluşu": "1863/1971",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "boun.edu.tr"
+    },
+    {
+        "No": 28,
+        "Adı": "Bozok Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Yozgat",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bozok.edu.tr"
+    },
+    {
+        "No": 29,
+        "Adı": "Bursa Teknik Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "Bursa",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "btu.edu.tr"
+    },
+    {
+        "No": 30,
+        "Adı": "Celal Bayar Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Manisa",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "bayar.edu.tr"
+    },
+    {
+        "No": 31,
+        "Adı": "Cumhuriyet Üniversitesi",
+        "Kuruluşu": "1974",
+        "İli": "Sivas",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "cumhuriyet.edu.tr"
+    },
+    {
+        "No": 32,
+        "Adı": "Çanakkale Onsekiz Mart Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Çanakkale",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "comu.edu.tr"
+    },
+    {
+        "No": 33,
+        "Adı": "Çankırı Karatekin Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Çankırı",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "karatekin.edu.tr"
+    },
+    {
+        "No": 34,
+        "Adı": "Çukurova Üniversitesi",
+        "Kuruluşu": "1973",
+        "İli": "Adana",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "cu.edu.tr"
+    },
+    {
+        "No": 35,
+        "Adı": "Deniz Harp Okulu",
+        "Kuruluşu": "1773",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "dho.edu.tr"
+    },
+    {
+        "No": 36,
+        "Adı": "Dicle Üniversitesi",
+        "Kuruluşu": "1974",
+        "İli": "Diyarbakır",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "dicle.edu.tr"
+    },
+    {
+        "No": 37,
+        "Adı": "Dokuz Eylül Üniversitesi",
+        "Kuruluşu": "1982",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "deu.edu.tr"
+    },
+    {
+        "No": 38,
+        "Adı": "Dumlupınar Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kütahya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "dpu.edu.tr"
+    },
+    {
+        "No": 39,
+        "Adı": "Düzce Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Düzce",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "duzce.edu.tr"
+    },
+    {
+        "No": 40,
+        "Adı": "Ege Üniversitesi",
+        "Kuruluşu": "1955",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "erciyes.edu.tr"
+    },
+    {
+        "No": 42,
+        "Adı": "Erzincan Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Erzincan",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "erzincan.edu.tr"
+    },
+    {
+        "No": 43,
+        "Adı": "Erzurum Teknik Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "Erzurum",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "erzurum.edu.tr"
+    },
+    {
+        "No": 44,
+        "Adı": "Eskişehir Osmangazi Üniversitesi",
+        "Kuruluşu": "1970/1993",
+        "İli": "Eskişehir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ogu.edu.tr"
+    },
+    {
+        "No": 45,
+        "Adı": "Fırat Üniversitesi",
+        "Kuruluşu": "1967/1975",
+        "İli": "Elâzığ",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "firat.edu.tr"
+    },
+    {
+        "No": 46,
+        "Adı": "Galatasaray Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gsu.edu.tr"
+    },
+    {
+        "No": 47,
+        "Adı": "Gazi Üniversitesi",
+        "Kuruluşu": "1926",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gazi.edu.tr"
+    },
+    {
+        "No": 48,
+        "Adı": "Gaziantep Üniversitesi",
+        "Kuruluşu": "1973/1987",
+        "İli": "Gaziantep",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gantep.edu.tr"
+    },
+    {
+        "No": 49,
+        "Adı": "Gaziosmanpaşa Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Tokat",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gop.edu.tr"
+    },
+    {
+        "No": 50,
+        "Adı": "Gebze Teknik Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kocaeli",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gtu.edu.tr"
+    },
+    {
+        "No": 51,
+        "Adı": "Giresun Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Giresun",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "giresun.edu.tr"
+    },
+    {
+        "No": 53,
+        "Adı": "Gümüşhane Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Gümüşhane",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "gumushane.edu.tr"
+    },
+    {
+        "No": 54,
+        "Adı": "Hacettepe Üniversitesi",
+        "Kuruluşu": "1957/1967",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "hacettepe.edu.tr"
+    },
+    {
+        "No": 55,
+        "Adı": "Hakkari Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Hakkari",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "hakkari.edu.tr"
+    },
+    {
+        "No": 56,
+        "Adı": "Harran Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Şanlıurfa",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "harran.edu.tr"
+    },
+    {
+        "No": 57,
+        "Adı": "Hava Harp Okulu",
+        "Kuruluşu": "1951",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "hho.edu.tr"
+    },
+    {
+        "No": 58,
+        "Adı": "Hitit Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Çorum",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "hitit.edu.tr"
+    },
+    {
+        "No": 59,
+        "Adı": "Iğdır Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Iğdır",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "igdir.edu.tr"
+    },
+    {
+        "No": 60,
+        "Adı": "İnönü Üniversitesi",
+        "Kuruluşu": "1975",
+        "İli": "Malatya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "inonu.edu.tr"
+    },
+    {
+        "No": 61,
+        "Adı": "İskenderun Teknik Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "Hatay",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "iste.edu.tr"
+    },
+    {
+        "No": 62,
+        "Adı": "İstanbul Medeniyet Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "medeniyet.edu.tr"
+    },
+    {
+        "No": 63,
+        "Adı": "İstanbul Üniversitesi",
+        "Kuruluşu": "1453/1933",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "istanbul.edu.tr"
+    },
+    {
+        "No": 64,
+        "Adı": "İstanbul Teknik Üniversitesi",
+        "Kuruluşu": "1773/1944",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "itu.edu.tr"
+    },
+    {
+        "No": 65,
+        "Adı": "İzmir Bakırçay Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 66,
+        "Adı": "İzmir Demokrasi Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 67,
+        "Adı": "İzmir Kâtip Çelebi Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ikc.edu.tr"
+    },
+    {
+        "No": 68,
+        "Adı": "İzmir Yüksek Teknoloji Enstitüsü",
+        "Kuruluşu": "1992",
+        "İli": "İzmir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "iyte.edu.tr"
+    },
+    {
+        "No": 69,
+        "Adı": "Kafkas Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kars",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kafkas.edu.tr"
+    },
+    {
+        "No": 70,
+        "Adı": "Kahramanmaraş Sütçü İmam Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kahramanmaraş",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ksu.edu.tr"
+    },
+    {
+        "No": 71,
+        "Adı": "Karabük Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Karabük",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "karabuk.edu.tr"
+    },
+    {
+        "No": 72,
+        "Adı": "Karadeniz Teknik Üniversitesi",
+        "Kuruluşu": "1955",
+        "İli": "Trabzon",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ktu.edu.tr"
+    },
+    {
+        "No": 73,
+        "Adı": "Karamanoğlu Mehmetbey Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Karaman",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kmu.edu.tr"
+    },
+    {
+        "No": 74,
+        "Adı": "Kara Harp Okulu",
+        "Kuruluşu": "1834",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "Kara Harp Okulu"
+    },
+    {
+        "No": 75,
+        "Adı": "Kastamonu Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Kastamonu",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kastamonu.edu.tr"
+    },
+    {
+        "No": 76,
+        "Adı": "Kırıkkale Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kırıkkale",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kku.edu.tr"
+    },
+    {
+        "No": 77,
+        "Adı": "Kırklareli Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Kırklareli",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kirklareli.edu.tr"
+    },
+    {
+        "No": 78,
+        "Adı": "Kilis 7 Aralık Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Kilis",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kilis.edu.tr"
+    },
+    {
+        "No": 79,
+        "Adı": "Kocaeli Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Kocaeli",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "kocaeli.edu.tr"
+    },
+    {
+        "No": 80,
+        "Adı": "Necmettin Erbakan Üniversitesi**",
+        "Kuruluşu": "2010",
+        "İli": "Konya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "konya.edu.tr"
+    },
+    {
+        "No": 81,
+        "Adı": "Mardin Artuklu Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Mardin",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "artuklu.edu.tr"
+    },
+    {
+        "No": 82,
+        "Adı": "Marmara Üniversitesi",
+        "Kuruluşu": "1883/1982",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "marmara.edu.tr"
+    },
+    {
+        "No": 83,
+        "Adı": "Mehmet Akif Ersoy Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Burdur",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "mehmetakif.edu.tr"
+    },
+    {
+        "No": 84,
+        "Adı": "Mersin Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Mersin",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "mersin.edu.tr"
+    },
+    {
+        "No": 85,
+        "Adı": "Mimar Sinan Güzel Sanatlar Üniversitesi",
+        "Kuruluşu": "1882/1982",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "msgsu.edu.tr"
+    },
+    {
+        "No": 86,
+        "Adı": "Muğla Sıtkı Koçman Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Muğla",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "mu.edu.tr"
+    },
+    {
+        "No": 87,
+        "Adı": "Milli Savunma Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "",
+        "Türü": "Devlet",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 88,
+        "Adı": "Mustafa Kemal Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Hatay",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "mku.edu.tr"
+    },
+    {
+        "No": 89,
+        "Adı": "Muş Alparslan Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Muş",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "alparslan.edu.tr"
+    },
+    {
+        "No": 90,
+        "Adı": "Namık Kemal Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Tekirdağ",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "nku.edu.tr"
+    },
+    {
+        "No": 91,
+        "Adı": "Nevşehir Hacı Bektaş Veli Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Nevşehir",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "nevsehir.edu.tr"
+    },
+    {
+        "No": 92,
+        "Adı": "Niğde Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "Niğde",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "nigde.edu.tr"
+    },
+    {
+        "No": 93,
+        "Adı": "Ondokuz Mayıs Üniversitesi",
+        "Kuruluşu": "1975",
+        "İli": "Samsun",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "omu.edu.tr"
+    },
+    {
+        "No": 94,
+        "Adı": "Ordu Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Ordu",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "odu.edu.tr"
+    },
+    {
+        "No": 95,
+        "Adı": "Orta Doğu Teknik Üniversitesi",
+        "Kuruluşu": "1956",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "odtu.edu.tr"
+    },
+    {
+        "No": 96,
+        "Adı": "Osmaniye Korkut Ata Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Osmaniye",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "osmaniye.edu.tr"
+    },
+    {
+        "No": 97,
+        "Adı": "Pamukkale Üniversitesi",
+        "Kuruluşu": "1976/1992",
+        "İli": "Denizli",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "pamukkale.edu.tr"
+    },
+    {
+        "No": 98,
+        "Adı": "Polis Akademisi",
+        "Kuruluşu": "1937",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "pa.edu.tr"
+    },
+    {
+        "No": 99,
+        "Adı": "Recep Tayyip Erdoğan Üniversitesi**",
+        "Kuruluşu": "2006",
+        "İli": "Rize",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "erdogan.edu.tr"
+    },
+    {
+        "No": 100,
+        "Adı": "Sahil Güvenlik Akademisi",
+        "Kuruluşu": "2016",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sga.edu.tr[41]"
+    },
+    {
+        "No": 101,
+        "Adı": "Sakarya Üniversitesi",
+        "Kuruluşu": "1970/1992",
+        "İli": "Sakarya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sakarya.edu.tr"
+    },
+    {
+        "No": 102,
+        "Adı": "Selçuk Üniversitesi",
+        "Kuruluşu": "1975",
+        "İli": "Konya",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "selcuk.edu.tr"
+    },
+    {
+        "No": 103,
+        "Adı": "Siirt Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Siirt",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "siirt.edu.tr"
+    },
+    {
+        "No": 104,
+        "Adı": "Sinop Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "Sinop",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sinop.edu.tr"
+    },
+    {
+        "No": 105,
+        "Adı": "Süleyman Demirel Üniversitesi",
+        "Kuruluşu": "1976/1992",
+        "İli": "Isparta",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sdu.edu.tr"
+    },
+    {
+        "No": 106,
+        "Adı": "Şırnak Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Şırnak",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sirnak.edu.tr"
+    },
+    {
+        "No": 107,
+        "Adı": "Trakya Üniversitesi",
+        "Kuruluşu": "1982",
+        "İli": "Edirne",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "trakya.edu.tr"
+    },
+    {
+        "No": 108,
+        "Adı": "Tunceli Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Tunceli",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "tunceli.edu.tr"
+    },
+    {
+        "No": 109,
+        "Adı": "Türk Alman Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "tau.edu.tr"
+    },
+    {
+        "No": 110,
+        "Adı": "Sağlık Bilimleri Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "sbu.edu.tr"
+    },
+    {
+        "No": 111,
+        "Adı": "Türkiye Uluslararası İslam, Bilim ve Teknoloji Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 112,
+        "Adı": "Uludağ Üniversitesi",
+        "Kuruluşu": "1970/1975",
+        "İli": "Bursa",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "uludag.edu.tr"
+    },
+    {
+        "No": 113,
+        "Adı": "Uşak Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "Uşak",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "usak.edu.tr"
+    },
+    {
+        "No": 114,
+        "Adı": "Yalova Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Yalova",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "yalova.edu.tr"
+    },
+    {
+        "No": 115,
+        "Adı": "Yıldız Teknik Üniversitesi",
+        "Kuruluşu": "1911/1982",
+        "İli": "İstanbul",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "yildiz.edu.tr"
+    },
+    {
+        "No": 116,
+        "Adı": "Yıldırım Beyazıt Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "Ankara",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "ybu.edu.tr"
+    },
+    {
+        "No": 117,
+        "Adı": "Yüzüncü Yıl Üniversitesi",
+        "Kuruluşu": "1982",
+        "İli": "Van",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "yyu.edu.tr"
+    },
+    {
+        "No": 118,
+        "Adı": "Bülent Ecevit Üniversitesi**",
+        "Kuruluşu": "1992",
+        "İli": "Zonguldak",
+        "Türü": "Devlet",
+        "İnternet Sitesi": "beun.edu.tr"
+    },
+    {
+        "No": 119,
+        "Adı": "Acıbadem Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "acibadem.edu.tr"
+    },
+    {
+        "No": 120,
+        "Adı": "Akev Üniversitesi",
+        "Kuruluşu": "2014",
+        "İli": "Antalya",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "akev.edu.tr"
+    },
+    {
+        "No": 121,
+        "Adı": "Alanya Hamdullah Emin Paşa Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "Antalya",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "ahap.edu.tr"
+    },
+    {
+        "No": 122,
+        "Adı": "Anka Teknoloji Üniversitesi",
+        "Kuruluşu": "2013",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "anka.edu.tr"
+    },
+    {
+        "No": 123,
+        "Adı": "Atılım Üniversitesi",
+        "Kuruluşu": "1996",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "atilim.edu.tr"
+    },
+    {
+        "No": 124,
+        "Adı": "Avrasya Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "Trabzon",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "avrasya.edu.tr"
+    },
+    {
+        "No": 125,
+        "Adı": "Bahçeşehir Üniversitesi",
+        "Kuruluşu": "1998",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "bahcesehir.edu.tr"
+    },
+    {
+        "No": 126,
+        "Adı": "Başkent Üniversitesi",
+        "Kuruluşu": "1994",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "baskent.edu.tr"
+    },
+    {
+        "No": 127,
+        "Adı": "Beykent Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "beykent.edu.tr"
+    },
+    {
+        "No": 128,
+        "Adı": "Beykoz Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "beykoz.edu.tr"
+    },
+    {
+        "No": 129,
+        "Adı": "Bezmiâlem Vakıf Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "bezmialem.edu.tr"
+    },
+    {
+        "No": 130,
+        "Adı": "Bilkent Üniversitesi",
+        "Kuruluşu": "1984",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "bilkent.edu.tr"
+    },
+    {
+        "No": 131,
+        "Adı": "Biruni Üniversitesi",
+        "Kuruluşu": "2014",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "biruni.edu.tr"
+    },
+    {
+        "No": 132,
+        "Adı": "Çankaya Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "cankaya.edu.tr"
+    },
+    {
+        "No": 133,
+        "Adı": "Çağ Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "Mersin",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "cag.edu.tr"
+    },
+    {
+        "No": 134,
+        "Adı": "Doğuş Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "dogus.edu.tr"
+    },
+    {
+        "No": 135,
+        "Adı": "Fatih Sultan Mehmet Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "fatihsultan.edu.tr"
+    },
+    {
+        "No": 136,
+        "Adı": "Fenerbahçe Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 137,
+        "Adı": "Gedik Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "gedik.edu.tr"
+    },
+    {
+        "No": 138,
+        "Adı": "Haliç Üniversitesi",
+        "Kuruluşu": "1998",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "halic.edu.tr"
+    },
+    {
+        "No": 139,
+        "Adı": "Hasan Kalyoncu Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "Gaziantep",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "hku.edu.tr"
+    },
+    {
+        "No": 140,
+        "Adı": "Işık Üniversitesi",
+        "Kuruluşu": "1996",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "isikun.edu.tr"
+    },
+    {
+        "No": 141,
+        "Adı": "İbn-u Haldun Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": ""
+    },
+    {
+        "No": 142,
+        "Adı": "İstanbul 29 Mayıs Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "29mayis.edu.tr"
+    },
+    {
+        "No": 143,
+        "Adı": "İstanbul Arel Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "arel.edu.tr"
+    },
+    {
+        "No": 144,
+        "Adı": "İstanbul Aydın Üniversitesi",
+        "Kuruluşu": "2003",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "aydin.edu.tr"
+    },
+    {
+        "No": 145,
+        "Adı": "İstanbul Bilgi Üniversitesi",
+        "Kuruluşu": "1994",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "bilgi.edu.tr"
+    },
+    {
+        "No": 146,
+        "Adı": "İstanbul Bilim Üniversitesi",
+        "Kuruluşu": "2006",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "istanbulbilim.edu.tr"
+    },
+    {
+        "No": 147,
+        "Adı": "İstanbul Esenyurt Üniversitesi",
+        "Kuruluşu": "2013",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "esenyurt.edu.tr"
+    },
+    {
+        "No": 148,
+        "Adı": "İstanbul Gelişim Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "gelisim.edu.tr"
+    },
+    {
+        "No": 149,
+        "Adı": "İstanbul Kemerburgaz Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "kemerburgaz.edu.tr"
+    },
+    {
+        "No": 151,
+        "Adı": "İstanbul Kent Üniversitesi",
+        "Kuruluşu": "2016",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "[]"
+    },
+    {
+        "No": 152,
+        "Adı": "İstanbul Kültür Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "iku.edu.tr"
+    },
+    {
+        "No": 153,
+        "Adı": "İstanbul Medipol Üniversitesi",
+        "Kuruluşu": "2009",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "medipol.edu.tr"
+    },
+    {
+        "No": 154,
+        "Adı": "İstanbul Rumeli Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "rumeli.edu.tr"
+    },
+    {
+        "No": 155,
+        "Adı": "İstanbul Sabahattin Zaim Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "iszu.edu.tr"
+    },
+    {
+        "No": 156,
+        "Adı": "İstanbul Şehir Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "sehir.edu.tr"
+    },
+    {
+        "No": 157,
+        "Adı": "İstanbul Ticaret Üniversitesi",
+        "Kuruluşu": "2001",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "iticu.edu.tr"
+    },
+    {
+        "No": 158,
+        "Adı": "İstinye Üniversitesi",
+        "Kuruluşu": "2015",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "istinye.edu.tr"
+    },
+    {
+        "No": 159,
+        "Adı": "İzmir Ekonomi Üniversitesi",
+        "Kuruluşu": "2001",
+        "İli": "İzmir",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "ieu.edu.tr"
+    },
+    {
+        "No": 160,
+        "Adı": "Kadir Has Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "khas.edu.tr"
+    },
+    {
+        "No": 161,
+        "Adı": "Karatay Üniversitesi",
+        "Kuruluşu": "2010",
+        "İli": "Konya",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "karatay.edu.tr"
+    },
+    {
+        "No": 162,
+        "Adı": "Koç Üniversitesi",
+        "Kuruluşu": "1992",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "ku.edu.tr"
+    },
+    {
+        "No": 163,
+        "Adı": "Konya Gıda Tarım Üniversitesi",
+        "Kuruluşu": "2013",
+        "İli": "Konya",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "gidatarim.edu.tr"
+    },
+    {
+        "No": 164,
+        "Adı": "Maltepe Üniversitesi",
+        "Kuruluşu": "1997",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "maltepe.edu.tr"
+    },
+    {
+        "No": 165,
+        "Adı": "MEF Üniversitesi",
+        "Kuruluşu": "2012",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "mef.edu.tr"
+    },
+    {
+        "No": 166,
+        "Adı": "Nişantaşı Üniversitesi",
+        "Kuruluşu": "2012",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "nisantasi.edu.tr"
+    },
+    {
+        "No": 167,
+        "Adı": "Nuh Naci Yazgan Üniversitesi",
+        "Kuruluşu": "2009",
+        "İli": "Kayseri",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "nny.edu.tr"
+    },
+    {
+        "No": 168,
+        "Adı": "Okan Üniversitesi",
+        "Kuruluşu": "1999",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "okan.edu.tr"
+    },
+    {
+        "No": 169,
+        "Adı": "Özyeğin Üniversitesi",
+        "Kuruluşu": "2007",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "ozyegin.edu.tr"
+    },
+    {
+        "No": 170,
+        "Adı": "Piri Reis Üniversitesi",
+        "Kuruluşu": "2008",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "pirireis.edu.tr"
+    },
+    {
+        "No": 171,
+        "Adı": "Sabancı Üniversitesi",
+        "Kuruluşu": "1994",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "sabanciuniv.edu.tr"
+    },
+    {
+        "No": 172,
+        "Adı": "Sanko Üniversitesi",
+        "Kuruluşu": "2013",
+        "İli": "Gaziantep",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "sanko.edu.tr"
+    },
+    {
+        "No": 173,
+        "Adı": "TED Üniversitesi",
+        "Kuruluşu": "2009",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "tedu.edu.tr"
+    },
+    {
+        "No": 174,
+        "Adı": "TOBB Ekonomi ve Teknoloji Üniversitesi",
+        "Kuruluşu": "2003",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "etu.edu.tr"
+    },
+    {
+        "No": 175,
+        "Adı": "Toros Üniversitesi",
+        "Kuruluşu": "2009",
+        "İli": "Mersin",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "toros.edu.tr"
+    },
+    {
+        "No": 176,
+        "Adı": "Türk Hava Kurumu Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "thk.edu.tr"
+    },
+    {
+        "No": 177,
+        "Adı": "Ufuk Üniversitesi",
+        "Kuruluşu": "1999",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "ufuk.edu.tr"
+    },
+    {
+        "No": 178,
+        "Adı": "Uluslararası Antalya Üniversitesi",
+        "Kuruluşu": "2012",
+        "İli": "Antalya",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "antalya.edu.tr"
+    },
+    {
+        "No": 179,
+        "Adı": "Üsküdar Üniversitesi",
+        "Kuruluşu": "2011",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "uskudar.edu.tr"
+    },
+    {
+        "No": 180,
+        "Adı": "Yaşar Üniversitesi",
+        "Kuruluşu": "2001",
+        "İli": "İzmir",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "yasar.edu.tr"
+    },
+    {
+        "No": 181,
+        "Adı": "Yeditepe Üniversitesi",
+        "Kuruluşu": "1996",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "yeditepe.edu.tr"
+    },
+    {
+        "No": 182,
+        "Adı": "Yeni Yüzyıl Üniversitesi",
+        "Kuruluşu": "2009",
+        "İli": "İstanbul",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "yeniyuzyil.edu.tr"
+    },
+    {
+        "No": 183,
+        "Adı": "Yüksek İhtisas Üniversitesi**",
+        "Kuruluşu": "2013",
+        "İli": "Ankara",
+        "Türü": "Vakıf",
+        "İnternet Sitesi": "yuksekihtisasuniversitesi.edu.tr"
+    }
+];
