@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div class="auth-container"
+                    style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; position: relative; overflow: hidden;">
+                    <!-- Blob Effect -->
+                    <div
+                        style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+                    <div
+                        style="position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: var(--secondary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <h1
+                            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">
+                            Etkinliği Düzenle</h1>
+                        <p style="color: var(--text-muted);">Etkinlik bilgilerini güncelleyin.</p>
+                    </div>
+
+                    <form id="editEventForm">
+                        <input type="hidden" id="eventId" th:value="${event.id}">
+                        <input type="hidden" id="universityId" th:value="${user.selectedUniversityId}">
+
+                        <!-- Club Selection -->
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                                Kulüp (Opsiyonel)
+                            </label>
+                            <select id="clubId" class="form-control" th:data-selected="${event.clubId}"
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: #1e1b4b; border: 1px solid var(--glass-border); color: #fff;">
+                                <option value="">-- Kulüp Yükleniyor... --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                Başlığı</label>
+                            <input type="text" id="title" class="form-control" th:value="${event.title}" required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Açıklama</label>
+                            <textarea id="description" class="form-control" rows="4" th:text="${event.description}"
+                                required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                    Türü</label>
+                                <select id="eventType" class="form-control" required th:value="${event.eventType}"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: #1e1b4b; border: 1px solid var(--glass-border); color: #fff;">
+                                    <option value="KONFERANS" th:selected="${event.eventType == 'KONFERANS'}">Konferans
+                                    </option>
+                                    <option value="WORKSHOP" th:selected="${event.eventType == 'WORKSHOP'}">Workshop
+                                    </option>
+                                    <option value="SEMİNER" th:selected="${event.eventType == 'SEMİNER'}">Seminer
+                                    </option>
+                                    <option value="SOSYAL" th:selected="${event.eventType == 'SOSYAL'}">Sosyal</option>
+                                    <option value="DİĞER" th:selected="${event.eventType == 'DİĞER'}">Diğer</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kategori</label>
+                                <select id="category" class="form-control" required
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: #1e1b4b; border: 1px solid var(--glass-border); color: #fff;">
+                                    <option value="Teknoloji" th:selected="${event.category == 'Teknoloji'}">Teknoloji
+                                    </option>
+                                    <option value="Sanat" th:selected="${event.category == 'Sanat'}">Sanat</option>
+                                    <option value="Spor" th:selected="${event.category == 'Spor'}">Spor</option>
+                                    <option value="Kariyer" th:selected="${event.category == 'Kariyer'}">Kariyer
+                                    </option>
+                                    <option value="Müzik" th:selected="${event.category == 'Müzik'}">Müzik</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Tarih</label>
+                                <input type="date" id="eventDate" class="form-control" required
+                                    th:value="${event.eventDate}"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Saat</label>
+                                <input type="time" id="startTime" class="form-control" required
+                                    th:value="${event.startTime}"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Hedef Kitle</label>
+                            <input type="text" id="targetAudience" class="form-control"
+                                th:value="${event.targetAudience}" required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <!-- Price Section -->
+                        <div
+                            style="margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px;">
+                            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #a855f7;">
+                                💰 Etkinlik Ücreti
+                            </h3>
+
+                            <div style="display: flex; gap: 1.5rem; margin-bottom: 1rem;">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="eventPricing" value="free"
+                                        th:checked="${event.price == 0}"
+                                        style="width: 20px; height: 20px; margin-right: 8px; cursor: pointer;">
+                                    <span style="font-weight: 600; color: #fff;">Ücretsiz Etkinlik</span>
+                                </label>
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="radio" name="eventPricing" value="paid" th:checked="${event.price > 0}"
+                                        style="width: 20px; height: 20px; margin-right: 8px; cursor: pointer;">
+                                    <span style="font-weight: 600; color: #fff;">Ücretli Etkinlik</span>
+                                </label>
+                            </div>
+
+                            <div id="priceInputContainer"
+                                th:style="${event.price > 0 ? 'display: block;' : 'display: none;'}">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Etkinlik
+                                    Ücreti (₺)</label>
+                                <input type="number" id="price" class="form-control" step="0.01" min="0"
+                                    th:value="${event.price}" placeholder="Örn: 50.00"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+                        </div>
+
+                        <!-- Location Section -->
+                        <div
+                            style="margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px;">
+                            <h3
+                                style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary);">
+                                📍 Konum Bilgileri
+                            </h3>
+
+                            <div id="mapSelector"
+                                style="height: 300px; margin-bottom: 1rem; border-radius: 12px; z-index: 1; border: 1px solid var(--glass-border);">
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Konum
+                                    Adı</label>
+                                <input type="text" id="location" class="form-control" th:value="${event.location}"
+                                    style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Enlem</label>
+                                    <input type="number" id="latitude" class="form-control" step="0.000001"
+                                        th:value="${event.latitude}"
+                                        style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                                </div>
+                                <div>
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Boylam</label>
+                                    <input type="number" id="longitude" class="form-control" step="0.000001"
+                                        th:value="${event.longitude}"
+                                        style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                                <button type="button" id="useCurrentLocation" class="btn btn-secondary"
+                                    style="flex: 1; padding: 10px; font-size: 0.9rem;">
+                                    📍 Mevcut Konumumu Kullan
+                                </button>
+                                <button type="button" id="clearLocation" class="btn btn-secondary"
+                                    style="padding: 10px; font-size: 0.9rem;">
+                                    🗑️ Temizle
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; padding: 16px; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <span>Değişiklikleri Kaydet</span>
+                            <div id="loading" class="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script>
+            let map;
+            let marker;
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const initLat = parseFloat(document.getElementById('latitude').value) || 39.9334;
+                const initLng = parseFloat(document.getElementById('longitude').value) || 32.8597;
+
+                map = L.map('mapSelector').setView([initLat, initLng], 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors', maxZoom: 19
+                }).addTo(map);
+
+                if (document.getElementById('latitude').value && document.getElementById('longitude').value) {
+                    marker = L.marker([initLat, initLng], { draggable: true }).addTo(map);
+                    map.setView([initLat, initLng], 15);
+                    setupMarkerEvents();
+                }
+
+                map.on('click', function (e) {
+                    updateLocationInputs(e.latlng.lat, e.latlng.lng);
+                });
+
+                // Fetch clubs
+                const universityId = document.getElementById('universityId').value;
+                const selectedClubId = document.getElementById('clubId').getAttribute('data-selected');
+
+                if (universityId) {
+                    fetch(`/api/clubs/university/${universityId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const clubSelect = document.getElementById('clubId');
+                            clubSelect.innerHTML = '<option value="">-- Kulüp Seçin (Opsiyonel) --</option>';
+                            if (data.success && data.data) {
+                                data.data.forEach((club) => {
+                                    const option = document.createElement('option');
+                                    option.value = club.id;
+                                    option.textContent = club.name;
+                                    if (selectedClubId && club.id == selectedClubId) option.selected = true;
+                                    clubSelect.appendChild(option);
+                                });
+                            }
+                        });
+                }
+            });
+
+            function updateLocationInputs(lat, lng) {
+                document.getElementById('latitude').value = lat.toFixed(6);
+                document.getElementById('longitude').value = lng.toFixed(6);
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+                    setupMarkerEvents();
+                }
+            }
+
+            function setupMarkerEvents() {
+                marker.on('dragend', function (event) {
+                    var position = event.target.getLatLng();
+                    document.getElementById('latitude').value = position.lat.toFixed(6);
+                    document.getElementById('longitude').value = position.lng.toFixed(6);
+                });
+            }
+
+            // Price toggle
+            const pricingRadios = document.querySelectorAll('input[name="eventPricing"]');
+            const priceInputContainer = document.getElementById('priceInputContainer');
+            pricingRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'paid') {
+                        priceInputContainer.style.display = 'block';
+                    } else {
+                        priceInputContainer.style.display = 'none';
+                        document.getElementById('price').value = '0';
+                    }
+                });
+            });
+
+            // Use Current Location
+            document.getElementById('useCurrentLocation').addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(pos => {
+                        updateLocationInputs(pos.coords.latitude, pos.coords.longitude);
+                        map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+                    });
+                }
+            });
+
+            document.getElementById('clearLocation').addEventListener('click', () => {
+                document.getElementById('location').value = '';
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                if (marker) { map.removeLayer(marker); marker = null; }
+            });
+
+            document.getElementById('editEventForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = e.target.querySelector('button[type="submit"]');
+                const loading = document.getElementById('loading');
+                const eventId = document.getElementById('eventId').value;
+
+                btn.disabled = true; loading.style.display = 'block';
+
+                const payload = {
+                    title: document.getElementById('title').value,
+                    description: document.getElementById('description').value,
+                    eventType: document.getElementById('eventType').value,
+                    category: document.getElementById('category').value,
+                    targetAudience: document.getElementById('targetAudience').value,
+                    eventDate: document.getElementById('eventDate').value,
+                    startTime: document.getElementById('startTime').value.length === 5 ? document.getElementById('startTime').value + ":00" : document.getElementById('startTime').value,
+                    clubId: document.getElementById('clubId').value ? parseInt(document.getElementById('clubId').value) : null,
+                    location: document.getElementById('location').value,
+                    latitude: document.getElementById('latitude').value ? parseFloat(document.getElementById('latitude').value) : null,
+                    longitude: document.getElementById('longitude').value ? parseFloat(document.getElementById('longitude').value) : null,
+                    price: document.querySelector('input[name="eventPricing"]:checked').value === 'paid' ? parseFloat(document.getElementById('price').value) : 0
+                };
+
+                try {
+                    const res = await fetch(`/api/events/${eventId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('Güncellendi!');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                } catch (err) {
+                    alert('Hata: ' + err.message);
+                } finally {
+                    btn.disabled = false; loading.style.display = 'none';
+                }
+            });
+        </script>
+        <style>
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top-color: #fff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </main>
+</body>
+
+</html>

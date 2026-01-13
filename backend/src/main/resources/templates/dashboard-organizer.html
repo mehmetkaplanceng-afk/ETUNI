@@ -60,6 +60,13 @@
                                             <button th:onclick="'showApplicants(' + ${event.id} + ')'"
                                                 class="btn btn-sm"
                                                 style="background: var(--primary); padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;">Başvurular</button>
+
+                                            <a th:href="@{'/events/' + ${event.id} + '/edit'}" class="btn btn-sm"
+                                                style="background: #f59e0b; padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;">Düzenle</a>
+
+                                            <button th:onclick="'deleteEvent(' + ${event.id} + ')'" class="btn btn-sm"
+                                                style="background: #ef4444; padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;">Sil</button>
+
                                             <a th:href="@{'/events/' + ${event.id}}" class="btn btn-sm"
                                                 style="background: rgba(255,255,255,0.1); padding: 5px 10px; font-size: 0.8rem;">Görüntüle</a>
                                         </td>
@@ -136,6 +143,19 @@
                                 }
                             } catch (e) {
                                 alert('İşlem başarısız');
+                            }
+                        }
+                        async function deleteEvent(id) {
+                            if (!confirm('Bu etkinliği silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')) return;
+                            try {
+                                const res = await fetch('/api/events/' + id, { method: 'DELETE' });
+                                if (res.ok) {
+                                    window.location.reload();
+                                } else {
+                                    alert('Silinemedi. Yetkiniz olmayabilir.');
+                                }
+                            } catch (e) {
+                                alert('Hata oluştu');
                             }
                         }
                     </script>

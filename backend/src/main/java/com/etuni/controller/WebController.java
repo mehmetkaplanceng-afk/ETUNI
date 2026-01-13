@@ -201,6 +201,25 @@ public class WebController {
         return "events-new";
     }
 
+    @GetMapping("/events/{id}/edit")
+    public String editEvent(@PathVariable("id") Long id, Model model) {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/login";
+        }
+        Long userId = Long.parseLong(auth.getPrincipal().toString());
+        var profile = userProfileService.getProfile(userId);
+
+        if (!"ORGANIZER".equals(profile.role()) && !"UNIVERSITY_STAFF".equals(profile.role())
+                && !"ADMIN".equals(profile.role())) {
+            return "redirect:/dashboard";
+        }
+
+        model.addAttribute("event", eventService.get(id));
+        model.addAttribute("user", profile);
+        return "events-edit";
+    }
+
     @GetMapping("/clubs/new")
     public String createClub(Model model) {
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();

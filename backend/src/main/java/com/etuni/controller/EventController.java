@@ -100,7 +100,7 @@ public class EventController {
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF')")
+  @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF','ORGANIZER')")
   public ApiResponse<String> delete(@PathVariable("id") Long id) {
     var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
     Long userId = Long.parseLong(auth.getPrincipal().toString());
@@ -114,11 +114,19 @@ public class EventController {
       return ApiResponse.ok("DELETED", "Event deleted");
     }
 
-    // University staff can delete events only for their university
-    if ("UNIVERSITY_STAFF".equals(profile.role())) {
-      Long staffUni = profile.selectedUniversityId();
+    // Staff and Organizer can delete events only for their university
+    if ("UNIVERSITY_STAFF".equals(profile.role()) || "ORGANIZER".equals(profile.role())) {
+      Long userUni = profile.selectedUniversityId();
       Long eventUni = eventEntity.getUniversity() == null ? null : eventEntity.getUniversity().getId();
-      if (staffUni != null && staffUni.equals(eventUni)) {
+
+      if (userUni != null && userUni.equals(eventUni)) {
+        // Extra check for Organizer: Can only delete if they created it?
+        // Current requirement is just "Organizer can delete/edit".
+        // Usually Organizer manages all events of their uni (in this simple
+        // implementation)
+        // OR we should check clubId matching.
+        // Since Club integration is partial, checking University match is the baseline
+        // safety.
         eventService.delete(id);
         return ApiResponse.ok("DELETED", "Event deleted");
       }
