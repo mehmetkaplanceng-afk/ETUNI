@@ -45,7 +45,7 @@ public class WebController {
     }
 
     @GetMapping("/events")
-    public String events(@RequestParam(required = false) String search, Model model) {
+    public String events(@RequestParam(name = "search", required = false) String search, Model model) {
         Long universityId = 1L; // Fallback
 
         // Try to get logged in user's university
