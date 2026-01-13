@@ -14,7 +14,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
   long countByEventIdAndVerifiedTrue(Long eventId);
 
-  List<Attendance> findByUserIdOrderByScannedAtDesc(Long userId);
+  @Query("SELECT a FROM Attendance a LEFT JOIN FETCH a.event WHERE a.user.id = :userId ORDER BY a.scannedAt DESC")
+  List<Attendance> findByUserIdOrderByScannedAtDesc(@Param("userId") Long userId);
+
+  @Query("SELECT a.event.id, COUNT(a) FROM Attendance a WHERE a.verified = true GROUP BY a.event.id")
+  List<Object[]> findEventPopularityCounts();
 
   @Query("SELECT e.eventType, COUNT(a) FROM Attendance a JOIN a.event e WHERE a.verified = true GROUP BY e.eventType")
   List<Object[]> countByEventType();

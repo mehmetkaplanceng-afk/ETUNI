@@ -106,8 +106,8 @@ export default function EventsScreen() {
           {
             text: 'Devam Et',
             onPress: () => {
-              // Open payment page in browser
-              Linking.openURL(`${API_URL}/payment/${eventId}`);
+              // Navigate to native payment screen
+              router.push(`/payment?eventId=${event.id}&price=${event.price}&title=${encodeURIComponent(event.title)}`);
             }
           }
         ]

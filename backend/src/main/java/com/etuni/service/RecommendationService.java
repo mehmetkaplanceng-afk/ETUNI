@@ -142,10 +142,10 @@ public class RecommendationService {
 
   private Map<Long, Long> calculateEventPopularity() {
     Map<Long, Long> popularity = new HashMap<>();
-    List<Attendance> all = attendanceRepo.findAll();
-    for (Attendance a : all) {
-      if (a.isVerified()) {
-        popularity.merge(a.getEvent().getId(), 1L, Long::sum);
+    List<Object[]> counts = attendanceRepo.findEventPopularityCounts();
+    for (Object[] row : counts) {
+      if (row[0] != null && row[1] != null) {
+        popularity.put((Long) row[0], ((Number) row[1]).longValue());
       }
     }
     return popularity;

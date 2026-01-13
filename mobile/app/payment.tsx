@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { authFetch } from '../api/authFetch';
@@ -75,7 +76,13 @@ export default function PaymentScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <View style={styles.header}>
+                <View style={[styles.header, { position: 'relative' }]}>
+                    <TouchableOpacity
+                        style={{ position: 'absolute', left: 0, top: 2, padding: 4, zIndex: 10 }}
+                        onPress={() => router.back()}
+                    >
+                        <Ionicons name="arrow-back" size={28} color="#1e293b" />
+                    </TouchableOpacity>
                     <Text style={styles.title}>💳 Ödeme</Text>
                     <Text style={styles.subtitle}>Güvenli ödeme ekranı</Text>
                 </View>
