@@ -173,6 +173,24 @@ public class WebController {
         }
     }
 
+    @GetMapping("/admin/users")
+    public String adminUsers(Model model) {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/login";
+        }
+        Long userId = Long.parseLong(auth.getPrincipal().toString());
+        var profile = userProfileService.getProfile(userId);
+
+        if (!"ADMIN".equals(profile.role())) {
+            return "redirect:/dashboard";
+        }
+
+        model.addAttribute("user", profile);
+        model.addAttribute("users", userProfileService.findAllUsers());
+        return "admin-users";
+    }
+
     @GetMapping("/events/{id}")
     public String eventDetail(@PathVariable("id") Long id, Model model) {
         model.addAttribute("event", eventService.get(id));

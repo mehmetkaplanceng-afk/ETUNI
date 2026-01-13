@@ -128,6 +128,13 @@ public class UserProfileService {
         return userRepo.count();
     }
 
+    @Transactional(readOnly = true)
+    public List<UserProfileResponse> findAllUsers() {
+        return userRepo.findAll().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
     private UserProfileResponse toDto(UserEntity user) {
         Long uniId = user.getUniversity() != null ? user.getUniversity().getId() : null;
         String uniName = user.getUniversity() != null ? user.getUniversity().getName() : null;

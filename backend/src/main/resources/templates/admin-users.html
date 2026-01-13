@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <a href="/dashboard"
+                            style="text-decoration: none; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">&larr;
+                            Panele Dön</a>
+                        <h1 style="font-size: 2.5rem; font-weight: 800;">Tüm Kullanıcılar</h1>
+                    </div>
+                </div>
+
+                <div class="feature-card" style="padding: 0; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(255,255,255,0.05); text-align: left;">
+                                <th style="padding: 1.5rem; color: var(--text-muted); font-weight: 600;">ID</th>
+                                <th style="padding: 1.5rem; color: var(--text-muted); font-weight: 600;">Ad Soyad</th>
+                                <th style="padding: 1.5rem; color: var(--text-muted); font-weight: 600;">E-posta</th>
+                                <th style="padding: 1.5rem; color: var(--text-muted); font-weight: 600;">Rol</th>
+                                <th style="padding: 1.5rem; color: var(--text-muted); font-weight: 600;">Üniversite</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}" style="border-bottom: 1px solid var(--glass-border);">
+                                <td style="padding: 1.5rem;" th:text="${user.id}">1</td>
+                                <td style="padding: 1.5rem; font-weight: 600;" th:text="${user.fullName}">Ad Soyad</td>
+                                <td style="padding: 1.5rem; color: var(--text-muted);" th:text="${user.email}">
+                                    email@test.com</td>
+                                <td style="padding: 1.5rem;">
+                                    <span th:text="${user.role}"
+                                        style="background: rgba(99, 102, 241, 0.2); color: #6366f1; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">ROLE</span>
+                                </td>
+                                <td style="padding: 1.5rem;" th:text="${user.universityName}">Üniversite</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
