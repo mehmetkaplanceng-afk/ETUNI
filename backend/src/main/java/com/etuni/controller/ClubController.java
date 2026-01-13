@@ -26,17 +26,17 @@ public class ClubController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF','ORGANIZER')")
-    public ApiResponse<ClubResponse> update(@PathVariable Long id, @Valid @RequestBody ClubRequest req) {
+    public ApiResponse<ClubResponse> update(@PathVariable("id") Long id, @Valid @RequestBody ClubRequest req) {
         return ApiResponse.ok("CLUB_UPDATED", clubService.update(id, req));
     }
 
     @GetMapping("/university/{universityId}")
-    public ApiResponse<List<ClubResponse>> listByUniversity(@PathVariable Long universityId) {
+    public ApiResponse<List<ClubResponse>> listByUniversity(@PathVariable("universityId") Long universityId) {
         return ApiResponse.ok("OK", clubService.listByUniversity(universityId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<ClubResponse> get(@PathVariable Long id) {
+    public ApiResponse<ClubResponse> get(@PathVariable("id") Long id) {
         return ApiResponse.ok("OK", clubService.get(id));
     }
 }
