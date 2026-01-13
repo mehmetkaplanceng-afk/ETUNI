@@ -10,7 +10,13 @@
                     Dön</a>
 
                 <div class="event-card">
-                    <span class="event-badge" th:text="${event.eventType}">Konferans</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
+                        <span class="event-badge" th:text="${event.eventType}">Konferans</span>
+                        <span th:if="${event.clubName}" class="event-badge"
+                            style="background: rgba(99, 102, 241, 0.2); color: #6366f1;">
+                            🏛️ <span th:text="${event.clubName}">Kulüp</span>
+                        </span>
+                    </div>
                     <h1 th:text="${event.title}" style="font-size: 2.5rem; margin-bottom: 1.5rem;">Etkinlik Başlığı</h1>
 
                     <div style="display: flex; gap: 2rem; margin-bottom: 2.5rem; color: #94a3b8;">

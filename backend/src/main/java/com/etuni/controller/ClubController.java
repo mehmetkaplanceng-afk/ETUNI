@@ -19,7 +19,7 @@ public class ClubController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF','ORGANIZER')")
     public ApiResponse<ClubResponse> create(@Valid @RequestBody ClubRequest req) {
         return ApiResponse.ok("CLUB_CREATED", clubService.create(req));
     }

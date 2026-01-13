@@ -24,6 +24,8 @@ type EventApi = {
   eventType: string;
   eventDate: string;
   startTime: string;
+  clubId?: number;
+  clubName?: string;
   location?: string;
   latitude?: number;
   longitude?: number;
@@ -125,8 +127,17 @@ export default function EventsScreen() {
       activeOpacity={0.9}
       onPress={() => goToDetail(item.id)}
     >
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>{item.eventType}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{item.eventType}</Text>
+        </View>
+        {item.clubName && (
+          <View style={{ ...styles.badge, backgroundColor: '#e0e7ff' }}>
+            <Text style={{ ...styles.badgeText, color: '#4338ca' }}>
+              🏛️ {item.clubName}
+            </Text>
+          </View>
+        )}
       </View>
       <Text style={styles.cardTitle}>{item.title}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 8 }}>

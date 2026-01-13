@@ -81,6 +81,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="create-club"
+        options={{
+          title: "Kulüp Ekle",
+          tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={24} color={color} />,
+          href: (userRole === "ORGANIZER" || userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/create-club" : null,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profil",

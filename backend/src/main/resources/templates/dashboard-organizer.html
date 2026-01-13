@@ -13,7 +13,12 @@
                         <h1 style="font-size: 3.5rem; font-weight: 800; margin-top: 1rem;" th:text="${user.fullName}">
                             Kulüp Başkanı</h1>
                     </div>
-                    <a href="/events/new" class="btn btn-primary">Yeni Etkinlik Oluştur</a>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="/clubs/new" class="btn"
+                            style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);">Kulüp
+                            Ekle</a>
+                        <a href="/events/new" class="btn btn-primary">Yeni Etkinlik Oluştur</a>
+                    </div>
                 </div>
 
                 <div class="feature-grid" style="margin-top: 0;">

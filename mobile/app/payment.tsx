@@ -138,7 +138,7 @@ export default function PaymentScreen() {
                             style={[styles.input, { textTransform: 'uppercase' }]}
                             value={cardName}
                             onChangeText={setCardName}
-                            placeholder="MEHMET YILMAZ"
+                            placeholder="MEHMET KAPLAN"
                             placeholderTextColor="#94a3b8"
                             autoCapitalize="characters"
                         />

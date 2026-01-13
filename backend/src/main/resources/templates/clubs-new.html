@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <div class="auth-container"
+                    style="max-width: 700px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--glass-border); padding: 40px; border-radius: 24px; position: relative; overflow: hidden;">
+                    <!-- Blob Effect -->
+                    <div
+                        style="position: absolute; top: -50px; left: -50px; width: 150px; height: 150px; background: var(--primary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+                    <div
+                        style="position: absolute; bottom: -50px; right: -50px; width: 150px; height: 150px; background: var(--secondary); filter: blur(80px); opacity: 0.2;">
+                    </div>
+
+                    <div style="text-align: center; margin-bottom: 2.5rem;">
+                        <h1
+                            style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">
+                            Yeni Kulüp Oluştur</h1>
+                        <p style="color: var(--text-muted);">Üniversiteniz için yeni bir kulüp ekleyin</p>
+                    </div>
+
+                    <form id="createClubForm">
+                        <input type="hidden" id="universityId" th:value="${user.selectedUniversityId}">
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Kulüp Adı</label>
+                            <input type="text" id="name" class="form-control" placeholder="Örn: Teknoloji Kulübü"
+                                required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Açıklama</label>
+                            <textarea id="description" class="form-control" rows="5"
+                                placeholder="Kulübünüz hakkında detaylı bilgi..." required
+                                style="width: 100%; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff;"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; padding: 16px; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <span>Kulübü Oluştur</span>
+                            <div id="loading" class="spinner" style="display: none;"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            document.getElementById('createClubForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const btn = e.target.querySelector('button');
+                const loading = document.getElementById('loading');
+
+                const universityIdVal = document.getElementById('universityId').value;
+                if (!universityIdVal) {
+                    alert("Hata: Üniversite bilginiz bulunamadı. Lütfen profilinizi kontrol edin.");
+                    return;
+                }
+
+                btn.disabled = true;
+                loading.style.display = 'block';
+
+                const payload = {
+                    universityId: parseInt(universityIdVal),
+                    name: document.getElementById('name').value,
+                    description: document.getElementById('description').value
+                };
+
+                try {
+                    const res = await fetch('/api/clubs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert('Kulüp başarıyla oluşturuldu!');
+                        window.location.href = '/dashboard';
+                    } else {
+                        alert('Hata: ' + data.message);
+                    }
+                } catch (err) {
+                    console.error("Submission Error:", err);
+                    alert('Bir hata oluştu: ' + err.message);
+                } finally {
+                    btn.disabled = false;
+                    loading.style.display = 'none';
+                }
+            });
+        </script>
+    </main>
+
+    <style>
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</body>
+
+</html>

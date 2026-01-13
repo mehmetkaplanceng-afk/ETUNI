@@ -158,10 +158,12 @@ public class EventService {
   private EventResponse toDto(Event e) {
     Long uniId = e.getUniversity() == null ? null : e.getUniversity().getId();
     Long clubId = e.getClub() == null ? null : e.getClub().getId();
+    String clubName = e.getClub() == null ? null : e.getClub().getName();
     return new EventResponse(
         e.getId(),
         uniId,
         clubId,
+        clubName,
         e.getTitle(),
         e.getDescription(),
         e.getEventType(),
