@@ -45,29 +45,101 @@ public class EventQueryBotService {
     if (user.getUniversity() == null)
       return "Önce üniversite seçmelisin.";
 
-    String q = question == null ? "" : question.toLowerCase();
+    String q = question == null ? "" : question.toLowerCase().trim();
     Long uniId = user.getUniversity().getId();
 
-    // Intent detection
+    // 1. Recommendation Intent
     if (containsAny(q, "öner", "öneri", "tavsiye", "recommend")) {
       return handleRecommendation(userId);
     }
 
+    // 2. History Intent
     if (containsAny(q, "katıldığım", "geçmiş", "daha önce", "history")) {
       return handleAttendanceHistory(userId);
     }
 
-    if (containsAny(q, "en çok katılım", "popüler", "en popüler", "top")) {
+    // 3. Popularity Intent
+    if (containsAny(q, "en çok", "popüler", "revaçta", "top")) {
       return handleTopEvents();
     }
 
+    // 4. Similarity Intent
     if (containsAny(q, "benzer", "similar")) {
       return handleSimilarEvents(userId);
     }
 
-    // Default: haftalık etkinlik arama
-    return handleWeeklyEventSearch(uniId, q);
+    // 5. Date Specific Intents
+    if (containsAny(q, "bugün", "today")) {
+      return handleDateSearch(uniId, LocalDate.now(), "Bugün");
+    }
+    if (containsAny(q, "yarın", "tomorrow")) {
+      return handleDateSearch(uniId, LocalDate.now().plusDays(1), "Yarın");
+    }
+    if (containsAny(q, "haftasonu", "weekend")) {
+      return handleWeekendSearch(uniId);
+    }
+
+    // 6. Fallback: Smart Full Text Search
+    // If query is short or generic, default to weekly
+    if (q.length() < 3) {
+      return handleWeeklyEventSearch(uniId, "");
+    }
+
+    return handleFullTextSearch(uniId, q);
   }
+
+  private String handleDateSearch(Long uniId, LocalDate date, String label) {
+    List<Event> events = eventRepo.findByUniversityIdAndEventDateBetweenAndStatus(uniId, date, date, "ACTIVE");
+    if (events.isEmpty())
+      return label + " planlanmış bir etkinlik bulunmuyor.";
+    return formatEventList(label + " gerçekleşecek etkinlikler:", events);
+  }
+
+  private String handleWeekendSearch(Long uniId) {
+    LocalDate now = LocalDate.now();
+    LocalDate saturday = now.with(java.time.DayOfWeek.SATURDAY);
+    LocalDate sunday = now.with(java.time.DayOfWeek.SUNDAY);
+    List<Event> events = eventRepo.findByUniversityIdAndEventDateBetweenAndStatus(uniId, saturday, sunday, "ACTIVE");
+    if (events.isEmpty())
+      return "Haftasonu için planlanmış etkinlik yok.";
+    return formatEventList("Haftasonu etkinlikleri:", events);
+  }
+
+  private String handleFullTextSearch(Long uniId, String query) {
+    List<Event> events = eventRepo.searchEvents(uniId, query);
+    if (events.isEmpty()) {
+      return "Üzgünüm, '" + query
+          + "' ile ilgili bir sonuç bulamadım. Ancak sana yaklaşan etkinlikleri listeleyebilirim:\n"
+          + handleWeeklyEventSearch(uniId, "");
+    }
+    return formatEventList("Bulduğum sonuçlar:", "ACTIVE".equals(events.get(0).getStatus()) ? events
+        : events.stream().filter(e -> "ACTIVE".equals(e.getStatus())).toList());
+  }
+
+  private String formatEventList(String header, List<Event> events) {
+    if (events.isEmpty())
+      return "Etkinlik bulunamadı.";
+    StringBuilder sb = new StringBuilder(header + "\n");
+    int count = 0;
+    for (Event e : events) {
+      if (count >= 5)
+        break;
+      sb.append("• ").append(e.getTitle())
+          .append(" (").append(e.getEventDate()).append(")")
+          .append(e.getPrice() != null && e.getPrice().doubleValue() > 0 ? " - " + e.getPrice() + "₺" : " - Ücretsiz")
+          .append("\n");
+      count++;
+    }
+    return sb.toString().trim();
+  }
+
+  // Reuse existing methods but update answer signature above...
+  // (Keeping existing helper methods private below, assumption is
+  // replace_file_content handles block replacement correctly)
+  // Wait, I need to make sure I don't delete handleRecommendation etc or
+  // duplicate them.
+  // The replace block targets answer method and handleWeeklyEventSearch. I will
+  // keep others as they are.
 
   private boolean containsAny(String text, String... keywords) {
     for (String kw : keywords) {
