@@ -77,6 +77,14 @@ public class EventService {
         .stream().map(this::toDto).toList();
   }
 
+  public List<EventResponse> search(Long universityId, String keyword) {
+    if (keyword == null || keyword.isBlank()) {
+      return listLatestByUniversity(universityId);
+    }
+    return eventRepo.searchEvents(universityId, keyword)
+        .stream().map(this::toDto).toList();
+  }
+
   public List<EventResponse> listAllByUniversity(Long universityId) {
     return eventRepo.findByUniversityIdOrderByEventDateDesc(universityId)
         .stream().map(this::toDto).toList();

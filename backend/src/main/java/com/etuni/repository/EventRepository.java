@@ -25,5 +25,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
   @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.id = :id")
   Optional<Event> findById(@Param("id") Long id);
 
+  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId AND e.status = 'ACTIVE' AND (LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+  List<Event> searchEvents(@Param("uniId") Long uniId, @Param("keyword") String keyword);
+
   List<Event> findByClubId(Long clubId);
 }
