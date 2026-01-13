@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Alert,
     ScrollView,
@@ -45,6 +45,30 @@ export default function CreateEventScreen() {
     // Modal states
     const [showTypePicker, setShowTypePicker] = useState(false);
     const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+
+    // Club state
+    const [clubs, setClubs] = useState<{ id: number, name: string }[]>([]);
+    const [selectedClubId, setSelectedClubId] = useState<number | null>(null);
+    const [selectedClubName, setSelectedClubName] = useState("Kulüp Seçiniz (Opsiyonel)");
+    const [showClubPicker, setShowClubPicker] = useState(false);
+
+    useEffect(() => {
+        // Fetch clubs
+        (async () => {
+            try {
+                const uniId = await AsyncStorage.getItem("universityId") || "1";
+                const res = await authFetch(`/api/clubs/university/${uniId}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json.success && json.data) {
+                        setClubs(json.data);
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to fetch clubs", e);
+            }
+        })();
+    }, []);
 
     const eventTypes = ["KONFERANS", "SEMINER", "ATOLYE", "SOSYAL", "SPOR", "KONSER", "DIGER"];
     const categories = ["Teknoloji", "Sanat", "Spor", "Kariyer", "Eglence", "Akademik", "Sosyal Sorumluluk"];
@@ -161,7 +185,13 @@ export default function CreateEventScreen() {
         // Add location fields if provided
         if (location) payload.location = location;
         if (latitude) payload.latitude = parseFloat(latitude);
+
         if (longitude) payload.longitude = parseFloat(longitude);
+
+        // Add club if selected
+        if (selectedClubId) {
+            payload.clubId = selectedClubId;
+        }
 
         // Add price field
         payload.price = isPaid && price ? parseFloat(price) : 0;
@@ -270,6 +300,17 @@ export default function CreateEventScreen() {
                                 placeholderTextColor="#94a3b8"
                             />
                         </View>
+                    </View>
+
+
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Kulüp (Opsiyonel)</Text>
+                        <TouchableOpacity style={styles.pickerBtn} onPress={() => setShowClubPicker(true)}>
+                            <Text style={[styles.pickerBtnText, !selectedClubId && { color: "#94a3b8" }]}>
+                                {selectedClubName}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
 
                     <View style={styles.inputGroup}>
@@ -455,7 +496,46 @@ export default function CreateEventScreen() {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+
+            {/* Club Picker Modal */}
+            <Modal visible={showClubPicker} transparent animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.pickerModal, { height: '60%' }]}>
+                        <Text style={styles.pickerTitle}>Kulüp Seç</Text>
+                        <ScrollView>
+                            <TouchableOpacity
+                                style={styles.pickerItem}
+                                onPress={() => {
+                                    setSelectedClubId(null);
+                                    setSelectedClubName("Kulüp Seçiniz (Opsiyonel)");
+                                    setShowClubPicker(false);
+                                }}
+                            >
+                                <Text style={[styles.pickerItemText, { color: '#94a3b8', fontStyle: 'italic' }]}>Seçimi Kaldır</Text>
+                            </TouchableOpacity>
+                            {clubs.map(c => (
+                                <TouchableOpacity
+                                    key={c.id}
+                                    style={styles.pickerItem}
+                                    onPress={() => {
+                                        setSelectedClubId(c.id);
+                                        setSelectedClubName(c.name);
+                                        setShowClubPicker(false);
+                                    }}
+                                >
+                                    <Text style={styles.pickerItemText}>{c.name}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </ScrollView>
+                        <TouchableOpacity style={styles.pickerClose} onPress={() => setShowClubPicker(false)}>
+                            <Text style={styles.pickerCloseText}>Kapat</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
+
+        </SafeAreaView >
     );
 }
 

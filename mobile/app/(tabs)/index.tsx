@@ -8,12 +8,13 @@ import {
   TouchableOpacity,
   View,
   Alert,
-  RefreshControl
+  RefreshControl,
+  Linking
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
-import { authFetch } from "../../api/authFetch";
+import { authFetch, API_URL } from "../../api/authFetch";
 import { debug } from "../../utils/logger";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -92,6 +93,29 @@ export default function EventsScreen() {
   };
 
   const joinEvent = async (eventId: number) => {
+    // Find event to check if it's paid
+    const event = events.find(e => e.id === eventId);
+
+    // If event has price > 0, redirect to payment (web view for now)
+    if (event && event.price && event.price > 0) {
+      Alert.alert(
+        'Ücretli Etkinlik',
+        `Bu etkinliğin ücreti ₺${event.price.toFixed(2)}. Ödeme sayfasına yönlendirileceksiniz.`,
+        [
+          { text: 'İptal', style: 'cancel' },
+          {
+            text: 'Devam Et',
+            onPress: () => {
+              // Open payment page in browser
+              Linking.openURL(`${API_URL}/payment/${eventId}`);
+            }
+          }
+        ]
+      );
+      return;
+    }
+
+    // Free event - join directly
     try {
       setLoading(true);
       const res = await authFetch(`/api/attendance/join/${eventId}`, { method: "POST" });
