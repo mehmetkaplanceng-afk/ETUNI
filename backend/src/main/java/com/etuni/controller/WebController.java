@@ -196,6 +196,25 @@ public class WebController {
         return "events-new";
     }
 
+    @GetMapping("/clubs/new")
+    public String createClub(Model model) {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/login";
+        }
+        Long userId = Long.parseLong(auth.getPrincipal().toString());
+        var profile = userProfileService.getProfile(userId);
+
+        // Only Organizer or Staff can create clubs (Admin too)
+        if (!"ORGANIZER".equals(profile.role()) && !"UNIVERSITY_STAFF".equals(profile.role())
+                && !"ADMIN".equals(profile.role())) {
+            return "redirect:/dashboard";
+        }
+
+        model.addAttribute("user", profile);
+        return "clubs-new";
+    }
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("universities", universityService.list());
