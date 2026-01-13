@@ -18,167 +18,179 @@
                             <select id="adminUniSelect" style="padding:8px;">
                                 <option th:each="u : ${universities}" th:value="${u.id}" th:text="${u.name}"></option>
                             </select>
-                            <button class="btn" style="margin-left:8px;" onclick="assignAllEventsToSelected()">Bu üniversiteye Önceki Etkinlikleri Ata</button>
-                            <input id="adminSearch" placeholder="Ara (isim veya e-posta)" style="flex:1; padding:8px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
+                            <button class="btn" style="margin-left:8px;" onclick="assignAllEventsToSelected()">Bu
+                                üniversiteye Önceki Etkinlikleri Ata</button>
+                            <input id="adminSearch" placeholder="Ara (isim veya e-posta)"
+                                style="flex:1; padding:8px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
                             <button class="btn btn-primary" onclick="searchUsers()">Ara</button>
                             <button class="btn" style="margin-left:8px;" onclick="openManualAdd()">Manuel Ekle</button>
                         </div>
                         <div id="adminResults" style="margin-top:1rem; max-height:300px; overflow:auto;"></div>
-                        <div id="adminRegister" style="margin-top:1rem; display:none;">
-                            <h4>Yeni Kayıt Oluştur</h4>
-                            <input id="regFullName" placeholder="İsim Soyisim" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                            <input id="regEmail" placeholder="e-posta" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                            <input id="regPassword" placeholder="Şifre" type="password" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                            <div style="display:flex; gap:8px; margin-top:8px;"><button class="btn btn-primary" onclick="registerAndPromote()">Kayıt Yap ve Atama</button><button class="btn" onclick="hideRegister()">İptal</button></div>
+
+                    </div>
+                    <!-- Manual Add Modal -->
+                    <div id="manualAddModal"
+                        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
+                        <div style="width:900px; max-width:95%; background:var(--bg); padding:18px; border-radius:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h3>Öğrenci / Organizatör Listesi</h3>
+                                <button class="btn" onclick="closeManualAdd()">Kapat</button>
+                            </div>
+                            <div style="margin-top:8px; display:flex; gap:8px;">
+                                <input id="modalSearch" placeholder="Ara isim veya e-posta"
+                                    style="flex:1; padding:8px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
+                                <button class="btn btn-primary" onclick="modalSearch()">Ara</button>
+                            </div>
+                            <div id="modalList"
+                                style="margin-top:12px; max-height:400px; overflow:auto; border-top:1px solid var(--glass-border);">
+                            </div>
+                            <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                                <button class="btn btn-primary" onclick="openCreateAssign()">Yeni Oluştur ve
+                                    Atama</button>
+                            </div>
                         </div>
-                        </div>
-                        <!-- Manual Add Modal -->
-                        <div id="manualAddModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
-                            <div style="width:900px; max-width:95%; background:var(--bg); padding:18px; border-radius:8px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <h3>Öğrenci / Organizatör Listesi</h3>
-                                    <button class="btn" onclick="closeManualAdd()">Kapat</button>
+                    </div>
+                    <!-- Create & Assign Modal -->
+                    <div id="createAssignModal"
+                        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
+                        <div style="width:420px; max-width:95%; background:var(--bg); padding:18px; border-radius:8px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h3>Yeni Üniversite Sorumlusu Oluştur</h3><button class="btn"
+                                    onclick="closeCreateAssign()">Kapat</button>
+                            </div>
+                            <div style="margin-top:8px;">
+                                <input id="caFullName" placeholder="İsim Soyisim"
+                                    style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
+                                <input id="caEmail" placeholder="e-posta"
+                                    style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
+                                <input id="caPassword" placeholder="Şifre" type="password"
+                                    style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
+                                <div style="margin-top:6px;">
+                                    <label style="font-size:0.9rem;color:var(--text-muted)">Üniversite</label>
+                                    <select id="caUniversitySelect"
+                                        style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;">
+                                        <option th:each="u : ${universities}" th:value="${u.id}" th:text="${u.name}">
+                                        </option>
+                                    </select>
                                 </div>
-                                <div style="margin-top:8px; display:flex; gap:8px;">
-                                    <input id="modalSearch" placeholder="Ara isim veya e-posta" style="flex:1; padding:8px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                                    <button class="btn btn-primary" onclick="modalSearch()">Ara</button>
-                                </div>
-                                <div id="modalList" style="margin-top:12px; max-height:400px; overflow:auto; border-top:1px solid var(--glass-border);"></div>
-                                <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
-                                    <button class="btn btn-primary" onclick="openCreateAssign()">Yeni Oluştur ve Atama</button>
+                                <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;"><button
+                                        class="btn btn-primary" onclick="createAndAssign()">Oluştur ve Ata</button>
                                 </div>
                             </div>
                         </div>
-                        <!-- Create & Assign Modal -->
-                        <div id="createAssignModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center;">
-                            <div style="width:420px; max-width:95%; background:var(--bg); padding:18px; border-radius:8px;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;"><h3>Yeni Üniversite Sorumlusu Oluştur</h3><button class="btn" onclick="closeCreateAssign()">Kapat</button></div>
-                                <div style="margin-top:8px;">
-                                    <input id="caFullName" placeholder="İsim Soyisim" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                                    <input id="caEmail" placeholder="e-posta" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                                    <input id="caPassword" placeholder="Şifre" type="password" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;" />
-                                    <div style="margin-top:6px;">
-                                        <label style="font-size:0.9rem;color:var(--text-muted)">Üniversite</label>
-                                        <select id="caUniversitySelect" style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white;">
-                                            <option th:each="u : ${universities}" th:value="${u.id}" th:text="${u.name}"></option>
-                                        </select>
-                                    </div>
-                                    <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end;"><button class="btn btn-primary" onclick="createAndAssign()">Oluştur ve Ata</button></div>
-                                </div>
-                            </div>
-                        </div>
-                        <script>
-                            // Open modal which lists all students/organizers
-                            function openManualAdd(){
-                                document.getElementById('manualAddModal').style.display = 'flex';
-                                // load initial list (no query)
-                                loadModalList('');
+                    </div>
+                    <script>
+                        // Open modal which lists all students/organizers
+                        function openManualAdd() {
+                            document.getElementById('manualAddModal').style.display = 'flex';
+                            // load initial list (no query)
+                            loadModalList('');
+                        }
+                        function closeManualAdd() { document.getElementById('manualAddModal').style.display = 'none'; }
+                        function openCreateAssign() { document.getElementById('createAssignModal').style.display = 'flex'; }
+                        function closeCreateAssign() { document.getElementById('createAssignModal').style.display = 'none'; }
+
+                        async function searchUsers() {
+                            const q = document.getElementById('adminSearch').value;
+                            await loadAdminResults(q);
+                        }
+
+                        async function loadAdminResults(q) {
+                            const res = await fetch('/api/admin/search-users' + (q ? ('?q=' + encodeURIComponent(q)) : ''), { credentials: 'same-origin' });
+                            if (!res.ok) { alert('Arama hatası'); return; }
+                            const data = await res.json();
+                            const list = data.data || [];
+                            const container = document.getElementById('adminResults');
+                            container.innerHTML = '';
+                            if (list.length === 0) {
+                                container.innerHTML = '<div style="color:var(--text-muted)">Eşleşen kullanıcı yok.</div>';
+                                return;
                             }
-                            function closeManualAdd(){ document.getElementById('manualAddModal').style.display = 'none'; }
-                            function openCreateAssign(){ document.getElementById('createAssignModal').style.display = 'flex'; }
-                            function closeCreateAssign(){ document.getElementById('createAssignModal').style.display = 'none'; }
-
-                            async function searchUsers() {
-                                const q = document.getElementById('adminSearch').value;
-                                await loadAdminResults(q);
+                            for (const u of list) {
+                                const div = document.createElement('div');
+                                div.style.padding = '8px';
+                                div.style.borderBottom = '1px solid var(--glass-border)';
+                                div.innerHTML = `<strong>${u.fullName}</strong> <span style="color:var(--text-muted)">${u.email}</span> <button style="float:right;" class="btn btn-primary" onclick="promoteUser('${u.email}')">Atama Yap</button>`;
+                                container.appendChild(div);
                             }
+                            // show register option
+                            const reg = document.getElementById('adminRegister');
+                            reg.style.display = 'block';
+                            document.getElementById('regEmail').value = q || '';
+                        }
 
-                            async function loadAdminResults(q){
-                                const res = await fetch('/api/admin/search-users' + (q ? ('?q=' + encodeURIComponent(q)) : ''), { credentials: 'same-origin' });
-                                if (!res.ok) { alert('Arama hatası'); return; }
-                                const data = await res.json();
-                                const list = data.data || [];
-                                const container = document.getElementById('adminResults');
-                                container.innerHTML = '';
-                                if (list.length === 0) {
-                                    container.innerHTML = '<div style="color:var(--text-muted)">Eşleşen kullanıcı yok.</div>';
-                                    return;
-                                }
-                                for (const u of list) {
-                                    const div = document.createElement('div');
-                                    div.style.padding = '8px';
-                                    div.style.borderBottom = '1px solid var(--glass-border)';
-                                    div.innerHTML = `<strong>${u.fullName}</strong> <span style="color:var(--text-muted)">${u.email}</span> <button style="float:right;" class="btn btn-primary" onclick="promoteUser('${u.email}')">Atama Yap</button>`;
-                                    container.appendChild(div);
-                                }
-                                // show register option
-                                const reg = document.getElementById('adminRegister');
-                                reg.style.display = 'block';
-                                document.getElementById('regEmail').value = q || '';
+                        async function promoteUser(email) {
+                            const uniId = document.getElementById('adminUniSelect').value;
+                            const res = await fetch(`/api/admin/add-staff?email=${encodeURIComponent(email)}&universityId=${encodeURIComponent(uniId)}`, { method: 'POST', credentials: 'same-origin' });
+                            let json = {};
+                            try { json = await res.json(); } catch (e) { }
+                            if (res.ok) { alert('Atama gerçekleştirildi.'); await loadAdminResults(document.getElementById('adminSearch').value); await loadModalList(document.getElementById('modalSearch').value || ''); } else { alert('Hata: ' + (json.message || '')); }
+                        }
+
+                        function hideRegister() { document.getElementById('adminRegister').style.display = 'none'; }
+
+                        // load modal list (used by modal and initial open)
+                        async function loadModalList(q) {
+                            const res = await fetch('/api/admin/search-users' + (q ? ('?q=' + encodeURIComponent(q)) : ''), { credentials: 'same-origin' });
+                            if (!res.ok) { document.getElementById('modalList').innerHTML = '<div style="color:var(--text-muted)">Yüklenemedi.</div>'; return; }
+                            const data = await res.json();
+                            const list = data.data || [];
+                            const container = document.getElementById('modalList');
+                            container.innerHTML = '';
+                            if (list.length === 0) { container.innerHTML = '<div style="color:var(--text-muted)">Kayıtlı kullanıcı bulunamadı.</div>'; return; }
+                            for (const u of list) {
+                                const row = document.createElement('div');
+                                row.style.display = 'flex';
+                                row.style.alignItems = 'center';
+                                row.style.padding = '8px';
+                                row.style.borderBottom = '1px solid var(--glass-border)';
+                                const left = document.createElement('div');
+                                left.style.flex = '1';
+                                left.innerHTML = `<strong>${u.fullName}</strong> <div style="color:var(--text-muted)">${u.email} • ${u.role}</div>`;
+                                const btns = document.createElement('div');
+                                const assignBtn = document.createElement('button');
+                                assignBtn.className = 'btn btn-primary';
+                                assignBtn.textContent = 'Üniversite Sorumlusu Yap';
+                                assignBtn.onclick = () => promoteUser(u.email);
+                                btns.appendChild(assignBtn);
+                                row.appendChild(left);
+                                row.appendChild(btns);
+                                container.appendChild(row);
                             }
+                        }
 
-                            async function promoteUser(email) {
-                                const uniId = document.getElementById('adminUniSelect').value;
-                                const res = await fetch(`/api/admin/add-staff?email=${encodeURIComponent(email)}&universityId=${encodeURIComponent(uniId)}`, { method: 'POST', credentials: 'same-origin' });
-                                let json = {};
-                                try { json = await res.json(); } catch(e){}
-                                if (res.ok) { alert('Atama gerçekleştirildi.'); await loadAdminResults(document.getElementById('adminSearch').value); await loadModalList(document.getElementById('modalSearch').value || ''); } else { alert('Hata: ' + (json.message || '')); }
-                            }
+                        async function modalSearch() { const q = document.getElementById('modalSearch').value; await loadModalList(q); }
 
-                            function hideRegister() { document.getElementById('adminRegister').style.display = 'none'; }
+                        // Create & Assign: calls admin endpoint which expects form params
+                        async function createAndAssign() {
+                            const fullName = document.getElementById('caFullName').value;
+                            const email = document.getElementById('caEmail').value;
+                            const password = document.getElementById('caPassword').value;
+                            const universityId = document.getElementById('caUniversitySelect') ? document.getElementById('caUniversitySelect').value : document.getElementById('adminUniSelect').value;
+                            if (!fullName || !email || !password) { alert('Tüm alanları doldurun'); return; }
+                            const form = new URLSearchParams();
+                            form.append('fullName', fullName);
+                            form.append('email', email);
+                            form.append('password', password);
+                            form.append('universityId', universityId);
+                            const res = await fetch('/api/admin/create-and-assign', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form.toString(), credentials: 'same-origin' });
+                            let j = {};
+                            try { j = await res.json(); } catch (e) { }
+                            if (res.ok) { alert('Kullanıcı oluşturuldu ve atandı.'); closeCreateAssign(); closeManualAdd(); await loadAdminResults(document.getElementById('adminSearch').value); } else { alert('Hata: ' + (j.message || '')); }
+                        }
 
-                            // load modal list (used by modal and initial open)
-                            async function loadModalList(q){
-                                const res = await fetch('/api/admin/search-users' + (q ? ('?q=' + encodeURIComponent(q)) : ''), { credentials: 'same-origin' });
-                                if (!res.ok) { document.getElementById('modalList').innerHTML = '<div style="color:var(--text-muted)">Yüklenemedi.</div>'; return; }
-                                const data = await res.json();
-                                const list = data.data || [];
-                                const container = document.getElementById('modalList');
-                                container.innerHTML = '';
-                                if (list.length === 0) { container.innerHTML = '<div style="color:var(--text-muted)">Kayıtlı kullanıcı bulunamadı.</div>'; return; }
-                                for (const u of list) {
-                                    const row = document.createElement('div');
-                                    row.style.display = 'flex';
-                                    row.style.alignItems = 'center';
-                                    row.style.padding = '8px';
-                                    row.style.borderBottom = '1px solid var(--glass-border)';
-                                    const left = document.createElement('div');
-                                    left.style.flex = '1';
-                                    left.innerHTML = `<strong>${u.fullName}</strong> <div style="color:var(--text-muted)">${u.email} • ${u.role}</div>`;
-                                    const btns = document.createElement('div');
-                                    const assignBtn = document.createElement('button');
-                                    assignBtn.className = 'btn btn-primary';
-                                    assignBtn.textContent = 'Üniversite Sorumlusu Yap';
-                                    assignBtn.onclick = () => promoteUser(u.email);
-                                    btns.appendChild(assignBtn);
-                                    row.appendChild(left);
-                                    row.appendChild(btns);
-                                    container.appendChild(row);
-                                }
-                            }
-
-                            async function modalSearch(){ const q = document.getElementById('modalSearch').value; await loadModalList(q); }
-
-                            // Create & Assign: calls admin endpoint which expects form params
-                            async function createAndAssign(){
-                                const fullName = document.getElementById('caFullName').value;
-                                const email = document.getElementById('caEmail').value;
-                                const password = document.getElementById('caPassword').value;
-                                const universityId = document.getElementById('caUniversitySelect') ? document.getElementById('caUniversitySelect').value : document.getElementById('adminUniSelect').value;
-                                if (!fullName || !email || !password) { alert('Tüm alanları doldurun'); return; }
-                                const form = new URLSearchParams();
-                                form.append('fullName', fullName);
-                                form.append('email', email);
-                                form.append('password', password);
-                                form.append('universityId', universityId);
-                                const res = await fetch('/api/admin/create-and-assign', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: form.toString(), credentials: 'same-origin' });
-                                let j = {};
-                                try { j = await res.json(); } catch(e){}
-                                if (res.ok) { alert('Kullanıcı oluşturuldu ve atandı.'); closeCreateAssign(); closeManualAdd(); await loadAdminResults(document.getElementById('adminSearch').value); } else { alert('Hata: ' + (j.message || '')); }
-                            }
-
-                            async function assignAllEventsToSelected(){
-                                const uniId = document.getElementById('adminUniSelect').value;
-                                if (!uniId) { alert('Lütfen bir üniversite seçin'); return; }
-                                if (!confirm('Tüm etkinlikleri seçili üniversiteye atamak istediğinizden emin misiniz?')) return;
-                                const form = new URLSearchParams();
-                                form.append('universityId', uniId);
-                                const res = await fetch('/api/admin/assign-events', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: form.toString(), credentials: 'same-origin' });
-                                let j = {};
-                                try { j = await res.json(); } catch(e){}
-                                if (res.ok) { alert('İşlem tamam: ' + (j.data || '')); } else { alert('Hata: ' + (j.message || '')); }
-                            }
-                        </script>
+                        async function assignAllEventsToSelected() {
+                            const uniId = document.getElementById('adminUniSelect').value;
+                            if (!uniId) { alert('Lütfen bir üniversite seçin'); return; }
+                            if (!confirm('Tüm etkinlikleri seçili üniversiteye atamak istediğinizden emin misiniz?')) return;
+                            const form = new URLSearchParams();
+                            form.append('universityId', uniId);
+                            const res = await fetch('/api/admin/assign-events', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form.toString(), credentials: 'same-origin' });
+                            let j = {};
+                            try { j = await res.json(); } catch (e) { }
+                            if (res.ok) { alert('İşlem tamam: ' + (j.data || '')); } else { alert('Hata: ' + (j.message || '')); }
+                        }
+                    </script>
                 </div>
 
                 <div class="feature-grid" style="margin-top: 0; grid-template-columns: 1fr 1fr;">
