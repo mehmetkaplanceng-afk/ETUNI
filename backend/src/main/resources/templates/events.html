@@ -22,7 +22,7 @@
 
                 <div class="event-grid">
 
-                    <!-- Recommendations Section -->
+                    <!-- Recommendations Section 
                     <div th:if="${not #lists.isEmpty(recommendedEvents)}"
                         style="grid-column: 1 / -1; margin-bottom: 2rem;">
                         <h2
@@ -55,7 +55,7 @@
                         </div>
                         <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 3rem 0;">
                     </div>
-
+-->
                     <div th:each="ae : ${events}" class="event-card">
                         <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <span class="event-badge" th:text="${ae.eventType}">Konferans</span>
