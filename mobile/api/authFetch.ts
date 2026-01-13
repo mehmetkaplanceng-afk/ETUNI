@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { debug } from "../utils/logger";
 
 // export const API_URL = "https://tasha-coolish-daisy.ngrok-free.dev";
-export const API_URL = "http://172.20.10.4:8080"; // Correct Backend Port
+export const API_URL = "http://13.53.170.220:8080"; // Correct Backend Port
 
 const BASE_HEADERS = {
   "Content-Type": "application/json",

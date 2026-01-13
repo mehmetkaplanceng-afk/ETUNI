@@ -155,31 +155,38 @@ export default function EventsScreen() {
     </TouchableOpacity>
   );
 
-  const renderRecommended = ({ item }: { item: RecommendedEvent }) => (
-    <TouchableOpacity
-      style={[styles.card, styles.recommendedCard]}
-      onPress={() => goToDetail(item.event.id)}
-    >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{item.event.eventType}</Text>
-        </View>
-        <Text style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: 12 }}>
-          %{Math.round(item.totalScore * 100)} Eşleşme
-        </Text>
-      </View>
-      <Text style={styles.cardTitle}>{item.event.title}</Text>
-      <Text style={styles.cardSub}>{item.event.eventDate}</Text>
-      <Text numberOfLines={2} style={styles.desc}>{item.explanation}</Text>
+  const renderRecommended = ({ item }: { item: RecommendedEvent }) => {
+    // Guard against undefined/null item or item.event
+    if (!item || !item.event) {
+      return null;
+    }
 
+    return (
       <TouchableOpacity
-        style={[styles.btn, { backgroundColor: '#e0e7ff' }]}
+        style={[styles.card, styles.recommendedCard]}
         onPress={() => goToDetail(item.event.id)}
       >
-        <Text style={[styles.btnText, { color: '#4338ca' }]}>İncele</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{item.event.eventType}</Text>
+          </View>
+          <Text style={{ color: '#4f46e5', fontWeight: 'bold', fontSize: 12 }}>
+            %{Math.round(item.totalScore * 100)} Eşleşme
+          </Text>
+        </View>
+        <Text style={styles.cardTitle}>{item.event.title}</Text>
+        <Text style={styles.cardSub}>{item.event.eventDate}</Text>
+        <Text numberOfLines={2} style={styles.desc}>{item.explanation}</Text>
+
+        <TouchableOpacity
+          style={[styles.btn, { backgroundColor: '#e0e7ff' }]}
+          onPress={() => goToDetail(item.event.id)}
+        >
+          <Text style={[styles.btnText, { color: '#4338ca' }]}>İncele</Text>
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>

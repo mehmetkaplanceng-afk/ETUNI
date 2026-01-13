@@ -52,7 +52,7 @@ Bilgisayarınızdaki `sifir` klasörünü sunucuya göndermek için iki yolunuz 
 
 **Seçenek A: Git (Önerilen)**
 - Projeyi GitHub/GitLab'a yükleyin.
-- Sunucuda `git clone https://github.com/kullanici/proje.git` komutuyla çekin.
+- Sunucuda `git clone https://github.com/mehmetkaplanceng-afk/ETUNI` komutuyla çekin.
 
 **Seçenek B: SCP (Direkt Gönderim)**
 Yerel terminalinizden (sunucuya bağlı olmadığınız) şu komutu çalıştırın:
@@ -79,11 +79,30 @@ docker compose up -d --build
 
 ---
 
-## 7. Aşama (İleri Seviye): Alan Adı (Domain) ve HTTPS
-Eğer `https://api.etuni.com` gibi profesyonel bir adres istiyorsanız:
-1. **Nginx** kurun (`apt install nginx`).
-2. **Certbot** ile ücretsiz SSL (HTTPS) alın.
-3. Nginx'i 8080 portuna yönlendirin (Reverse Proxy).
+## 8. Aşama: Mobil Uygulama ve Ngrok Yapılandırması
+Mobil uygulamanın sunucuya bağlanması için iki yolunuz var. Sunucuda HTTPS (SSL) ile uğraşmak istemiyorsanız en kolayı **Ngrok** kullanmaktır.
 
-> [!TIP]
-> **Docker Eklentisi Hakkında:** Eğer VS Code kullanıyorsanız, sunucuya **"Remote - SSH"** eklentisi ile bağlanıp, oradan Docker eklentisini sunucu içindeki konteynerleri yönetmek için kullanabilirsiniz. Bu, terminale dokunmadan görsel olarak yönetmenizi sağlar.
+### Seçenek 1: Ngrok ile (Hızlı & HTTPS)
+Sunucu tarafında Ngrok çalıştırarak API'nizi dış dünyaya açabilirsiniz:
+
+1. **Ngrok Kurulumu (Sunucuda):**
+   ```bash
+   curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list && sudo apt update && sudo apt install ngrok
+   ```
+2. **Auth Token Ekleme:** [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken) adresinden tokenınızı alın ve sunucuda şu komutu çalıştırın:
+   ```bash
+   ngrok config add-authtoken <YOUR_TOKEN>
+   ```
+3. **Ngrok Başlatma:**
+   ```bash
+   ngrok http 8080
+   ```
+4. **Mobil Uygulama Güncelleme:** Ekranda gördüğünüz `Forwarding` adresini (örn: `https://abcd-123.ngrok-free.app`) kopyalayın ve `mobile/api/authFetch.ts` içindeki `API_URL` kısmına yapıştırın.
+
+### Seçenek 2: Direkt IP ile (Stabil)
+Ngrok ile uğraşmak istemiyorsanız, direkt sunucu IP'nizi kullanabilirsiniz:
+- `mobile/api/authFetch.ts` -> `export const API_URL = "http://SUNUCU_IP:8080";`
+- **Önemli:** Sunucu firewall (güvenlik duvarı) ayarlarından 8080 portuna erişim izni vermeniz gerekir.
+
+> [!CAUTION]
+> Ngrok terminali kapandığında bağlantı kesilir. Arka planda çalışması için `screen` veya `tmux` kullanabilir ya da `ngrok service` olarak kurabilirsiniz.
