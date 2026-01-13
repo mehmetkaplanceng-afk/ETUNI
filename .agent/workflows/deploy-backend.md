@@ -62,8 +62,8 @@ git commit -m "feat: Add new feature X"
 # veya
 git commit -m "fix: Fix bug in Y controller"
 
-# GitHub'a push edin (main branch'e)
-git push origin main
+# GitHub'a push edin (master branch'e)
+git push origin master
 ```
 
 > **Commit Mesaj Önerileri:**
@@ -95,13 +95,13 @@ Sunucuda aşağıdaki komutları çalıştırın:
 cd sifir
 
 # Git pull ile değişiklikleri çekin
-git pull origin main
+git pull origin master
 ```
 
 > **Önemli:** Eğer sunucuda local değişiklikler varsa conflict olabilir. O zaman:
 > ```bash
 > git stash  # Yerel değişiklikleri geçici sakla
-> git pull origin main
+> git pull origin master
 > git stash pop  # İsterseniz geri alın
 > ```
 
@@ -189,13 +189,13 @@ curl http://localhost:8080/api/events
 cd c:\Users\FUROLOW\Desktop\sifir
 git add .
 git commit -m "feat: Your change description"
-git push origin main
+git push origin master
 ```
 
 **Sunucu (SSH sonrası):**
 ```bash
 cd sifir
-git pull origin main
+git pull origin master
 docker-compose up -d --build
 docker-compose logs -f backend
 ```
