@@ -15,18 +15,24 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 350px; gap: 3rem;">
                     <div>
-                        <div th:if="${#lists.isEmpty(pendingRequests)}" class="feature-card" style="text-align: center;">
+                        <div th:if="${#lists.isEmpty(pendingRequests)}" class="feature-card"
+                            style="text-align: center;">
                             <p style="color: var(--text-muted);">Bekleyen istek bulunmuyor.</p>
                         </div>
                         <div th:each="req : ${pendingRequests}" class="event-card"
                             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <div>
-                                <h4 style="font-size: 1.1rem; font-weight: 600;" th:text="${req.user.fullName}">Öğrenci Adı</h4>
-                                <p style="color: var(--text-muted); font-size: 0.9rem;" th:text="${req.user.email}">E-posta</p>
+                                <h4 style="font-size: 1.1rem; font-weight: 600;" th:text="${req.user.fullName}">Öğrenci
+                                    Adı</h4>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;" th:text="${req.user.email}">
+                                    E-posta</p>
                             </div>
                             <div style="display: flex; gap: 1rem;">
-                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', true)'" class="btn btn-primary" style="padding: 0.5rem 1rem;">Onayla</button>
-                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', false)'" class="btn" style="background: var(--glass-heavy); border: 1px solid var(--glass-border); padding: 0.5rem 1rem; color: white;">Reddet</button>
+                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', true)'"
+                                    class="btn btn-primary" style="padding: 0.5rem 1rem;">Onayla</button>
+                                <button type="button" th:onclick="'respondRequest(' + ${req.id} + ', false)'"
+                                    class="btn"
+                                    style="background: var(--glass-heavy); border: 1px solid var(--glass-border); padding: 0.5rem 1rem; color: white;">Reddet</button>
                             </div>
                         </div>
                     </div>
@@ -39,9 +45,14 @@
                                     <span>Toplam Organizatör</span>
                                     <span style="color: var(--primary); font-weight: 700;">12</span>
                                 </div>
-                                <div style="display: flex; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                     <span>Aktif Etkinlikler</span>
                                     <span style="color: var(--secondary); font-weight: 700;">45</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Toplam Ciro</span>
+                                    <span style="color: #10b981; font-weight: 700;" th:text="${totalRevenue} + ' TL'">0
+                                        TL</span>
                                 </div>
                             </div>
                         </div>

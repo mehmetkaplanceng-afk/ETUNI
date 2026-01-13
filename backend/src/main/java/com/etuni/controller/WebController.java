@@ -23,19 +23,24 @@ public class WebController {
     private final UserProfileService userProfileService;
     private final PromotionService promotionService;
     private final com.etuni.service.NotificationService notificationService;
+
     private final RecommendationService recommendationService;
+    private final com.etuni.service.AttendanceService attendanceService;
 
     public WebController(EventService eventService, UniversityService universityService,
             UserProfileService userProfileService,
             PromotionService promotionService,
+
             RecommendationService recommendationService,
-            com.etuni.service.NotificationService notificationService) {
+            com.etuni.service.NotificationService notificationService,
+            com.etuni.service.AttendanceService attendanceService) {
         this.eventService = eventService;
         this.universityService = universityService;
         this.userProfileService = userProfileService;
         this.promotionService = promotionService;
         this.recommendationService = recommendationService;
         this.notificationService = notificationService;
+        this.attendanceService = attendanceService;
     }
 
     @GetMapping("/")
@@ -131,6 +136,12 @@ public class WebController {
                 model.addAttribute("universityName", profile.selectedUniversityName());
                 model.addAttribute("pendingRequests",
                         promotionService.getPendingRequests(profile.selectedUniversityId()));
+
+                // Calculate and add total revenue
+                java.math.BigDecimal totalRevenue = attendanceService
+                        .calculateTotalRevenueForUniversity(profile.selectedUniversityId());
+                model.addAttribute("totalRevenue", totalRevenue);
+
                 return "dashboard-staff";
             }
             if ("ORGANIZER".equals(role)) {

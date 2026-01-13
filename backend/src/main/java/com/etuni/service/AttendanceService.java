@@ -29,14 +29,18 @@ public class AttendanceService {
     this.userRepo = userRepo;
     this.qrUtil = qrUtil;
   }
+
   @org.springframework.transaction.annotation.Transactional
   public byte[] generateAttendanceQrImage(Long attendanceId) {
-    Attendance a = attendanceRepo.findById(attendanceId).orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
+    Attendance a = attendanceRepo.findById(attendanceId)
+        .orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
     String payload = qrUtil.generateForAttendance(a.getId(), a.getTicketCode());
     try {
       com.google.zxing.qrcode.QRCodeWriter writer = new com.google.zxing.qrcode.QRCodeWriter();
-      com.google.zxing.common.BitMatrix bitMatrix = writer.encode(payload, com.google.zxing.BarcodeFormat.QR_CODE, 300, 300);
-      java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(300, 300, java.awt.image.BufferedImage.TYPE_INT_RGB);
+      com.google.zxing.common.BitMatrix bitMatrix = writer.encode(payload, com.google.zxing.BarcodeFormat.QR_CODE, 300,
+          300);
+      java.awt.image.BufferedImage img = new java.awt.image.BufferedImage(300, 300,
+          java.awt.image.BufferedImage.TYPE_INT_RGB);
       for (int x = 0; x < 300; x++) {
         for (int y = 0; y < 300; y++) {
           img.setRGB(x, y, bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
@@ -53,18 +57,23 @@ public class AttendanceService {
   @org.springframework.transaction.annotation.Transactional
   public QRValidationResponse validateTicketCode(String code, Long organizerId) {
     var opt = attendanceRepo.findByTicketCode(code);
-    if (opt.isEmpty()) throw new RuntimeException("TICKET_NOT_FOUND");
+    if (opt.isEmpty())
+      throw new RuntimeException("TICKET_NOT_FOUND");
     Attendance a = opt.get();
     if (a.isVerified()) {
       var u = a.getUser();
-      return new QRValidationResponse(true, "ALREADY_CHECKED_IN", a.getEvent().getId(), a.getEvent().getTitle(), a.getScannedAt(), u == null ? null : u.getId(), u == null ? null : u.getFullName(), u == null ? null : u.getEmail());
+      return new QRValidationResponse(true, "ALREADY_CHECKED_IN", a.getEvent().getId(), a.getEvent().getTitle(),
+          a.getScannedAt(), u == null ? null : u.getId(), u == null ? null : u.getFullName(),
+          u == null ? null : u.getEmail());
     }
     a.setVerified(true);
     a.setScannedAt(LocalDateTime.now());
     a.setStatus("APPROVED");
     attendanceRepo.save(a);
     var u = a.getUser();
-    return new QRValidationResponse(true, "CHECK_IN_OK", a.getEvent().getId(), a.getEvent().getTitle(), a.getScannedAt(), u == null ? null : u.getId(), u == null ? null : u.getFullName(), u == null ? null : u.getEmail());
+    return new QRValidationResponse(true, "CHECK_IN_OK", a.getEvent().getId(), a.getEvent().getTitle(),
+        a.getScannedAt(), u == null ? null : u.getId(), u == null ? null : u.getFullName(),
+        u == null ? null : u.getEmail());
   }
 
   @org.springframework.transaction.annotation.Transactional
@@ -93,6 +102,7 @@ public class AttendanceService {
     a.setTicketCode(code);
     attendanceRepo.save(a);
   }
+
   @org.springframework.transaction.annotation.Transactional
   public QRValidationResponse scan(ScanRequest req, Long organizerId) {
     var res = qrUtil.validate(req.qrPayload());
@@ -102,30 +112,34 @@ public class AttendanceService {
 
     if (res.attendanceId() != null) {
       // attendance-level QR
-      Attendance a = attendanceRepo.findById(res.attendanceId()).orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
-      logger.info("SCAN_CHECK: Biletin Etkinliği={}, Organizatörün Bulunduğu Etkinlik={}", 
-                     a.getEvent().getId(), req.currentEventId());
+      Attendance a = attendanceRepo.findById(res.attendanceId())
+          .orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
+      logger.info("SCAN_CHECK: Biletin Etkinliği={}, Organizatörün Bulunduğu Etkinlik={}",
+          a.getEvent().getId(), req.currentEventId());
       if (req.currentEventId() != null && !a.getEvent().getId().equals(req.currentEventId())) {
-             var u = a.getUser();
-             return new QRValidationResponse(
-                 false, 
-                 "WRONG_EVENT", // Hata kodu: YANLIŞ ETKİNLİK
-                 a.getEvent().getId(), 
-                 a.getEvent().getTitle(), // Biletin ait olduğu asıl etkinlik
-                 null, 
-                 u == null ? null : u.getId(), 
-                 u == null ? null : u.getFullName(), 
-                 u == null ? null : u.getEmail()
-             );
-        }
+        var u = a.getUser();
+        return new QRValidationResponse(
+            false,
+            "WRONG_EVENT", // Hata kodu: YANLIŞ ETKİNLİK
+            a.getEvent().getId(),
+            a.getEvent().getTitle(), // Biletin ait olduğu asıl etkinlik
+            null,
+            u == null ? null : u.getId(),
+            u == null ? null : u.getFullName(),
+            u == null ? null : u.getEmail());
+      }
       // verify ticket code
       if (a.getTicketCode() == null || !a.getTicketCode().equals(res.ticketCode())) {
         var uu = a.getUser();
-        return new QRValidationResponse(false, "TICKET_CODE_MISMATCH", a.getEvent().getId(), a.getEvent().getTitle(), null, uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(), uu == null ? null : uu.getEmail());
+        return new QRValidationResponse(false, "TICKET_CODE_MISMATCH", a.getEvent().getId(), a.getEvent().getTitle(),
+            null, uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(),
+            uu == null ? null : uu.getEmail());
       }
       if (a.isVerified()) {
         var uu = a.getUser();
-        return new QRValidationResponse(true, "ALREADY_CHECKED_IN", a.getEvent().getId(), a.getEvent().getTitle(), a.getScannedAt(), uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(), uu == null ? null : uu.getEmail());
+        return new QRValidationResponse(true, "ALREADY_CHECKED_IN", a.getEvent().getId(), a.getEvent().getTitle(),
+            a.getScannedAt(), uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(),
+            uu == null ? null : uu.getEmail());
       }
       logger.info("Organizer {} checking in attendance {} for event {}", organizerId, a.getId(), a.getEvent().getId());
       a.setVerified(true);
@@ -133,7 +147,9 @@ public class AttendanceService {
       a.setStatus("APPROVED");
       attendanceRepo.save(a);
       var uu = a.getUser();
-      return new QRValidationResponse(true, "CHECK_IN_OK", a.getEvent().getId(), a.getEvent().getTitle(), a.getScannedAt(), uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(), uu == null ? null : uu.getEmail());
+      return new QRValidationResponse(true, "CHECK_IN_OK", a.getEvent().getId(), a.getEvent().getTitle(),
+          a.getScannedAt(), uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(),
+          uu == null ? null : uu.getEmail());
     }
 
     // fallback: event-level QR (existing behavior)
@@ -148,20 +164,26 @@ public class AttendanceService {
       java.util.Optional<Attendance> existingProp = attendanceRepo.findByEventIdAndUserId(evId, user.getId());
       if (existingProp.isPresent()) {
         Attendance existing = existingProp.get();
-          if (existing.isVerified()) {
-            var uuu = existing.getUser();
-            return new QRValidationResponse(true, "ALREADY_CHECKED_IN", evId, event.getTitle(), existing.getScannedAt(), uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(), uuu == null ? null : uuu.getEmail());
-          } else {
+        if (existing.isVerified()) {
+          var uuu = existing.getUser();
+          return new QRValidationResponse(true, "ALREADY_CHECKED_IN", evId, event.getTitle(), existing.getScannedAt(),
+              uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(),
+              uuu == null ? null : uuu.getEmail());
+        } else {
           if (!"APPROVED".equals(existing.getStatus())) {
-              var uuu = existing.getUser();
-              return new QRValidationResponse(false, "NOT_APPROVED_FOR_THIS_EVENT", evId, event.getTitle(), null, uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(), uuu == null ? null : uuu.getEmail());
+            var uuu = existing.getUser();
+            return new QRValidationResponse(false, "NOT_APPROVED_FOR_THIS_EVENT", evId, event.getTitle(), null,
+                uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(),
+                uuu == null ? null : uuu.getEmail());
           }
           logger.info("Organizer {} approving existing attendance {}", organizerId, existing.getId());
           existing.setVerified(true);
           existing.setScannedAt(LocalDateTime.now());
           attendanceRepo.save(existing);
-            var uuu = existing.getUser();
-            return new QRValidationResponse(true, "CHECK_IN_OK", evId, event.getTitle(), existing.getScannedAt(), uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(), uuu == null ? null : uuu.getEmail());
+          var uuu = existing.getUser();
+          return new QRValidationResponse(true, "CHECK_IN_OK", evId, event.getTitle(), existing.getScannedAt(),
+              uuu == null ? null : uuu.getId(), uuu == null ? null : uuu.getFullName(),
+              uuu == null ? null : uuu.getEmail());
         }
       }
     }
@@ -182,7 +204,8 @@ public class AttendanceService {
     Attendance saved = attendanceRepo.save(a);
     logger.info("Organizer {} created direct attendance {} for event {}", organizerId, saved.getId(), evId);
     var uu = saved.getUser();
-    return new QRValidationResponse(true, "CHECK_IN_OK", evId, event.getTitle(), saved.getScannedAt(), uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(), uu == null ? null : uu.getEmail());
+    return new QRValidationResponse(true, "CHECK_IN_OK", evId, event.getTitle(), saved.getScannedAt(),
+        uu == null ? null : uu.getId(), uu == null ? null : uu.getFullName(), uu == null ? null : uu.getEmail());
   }
 
   @org.springframework.transaction.annotation.Transactional
@@ -211,5 +234,14 @@ public class AttendanceService {
             a.getScannedAt(), // Using scannedAt as application time for now
             a.getStatus()))
         .toList();
+  }
+
+  @org.springframework.transaction.annotation.Transactional(readOnly = true)
+  public java.math.BigDecimal calculateTotalRevenueForUniversity(Long uniId) {
+    return attendanceRepo.findVerifiedByUniversity(uniId)
+        .stream()
+        .filter(a -> !a.getEvent().isFree())
+        .map(a -> a.getEvent().getPrice())
+        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
   }
 }
