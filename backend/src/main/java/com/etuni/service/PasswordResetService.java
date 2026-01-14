@@ -29,7 +29,7 @@ public class PasswordResetService {
 
     // In production, this should be a configured domain URL
     private String getBaseUrl() {
-        return "http://localhost:" + serverPort;
+        return "http://13.53.170.220:" + serverPort;
     }
 
     public PasswordResetService(PasswordResetTokenRepository tokenRepository,
