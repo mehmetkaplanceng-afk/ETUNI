@@ -2,6 +2,7 @@ package com.etuni.controller;
 
 import com.etuni.dto.AuthDtos.*;
 import com.etuni.service.AuthService;
+import com.etuni.service.PasswordResetService; // <--- Import added
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 

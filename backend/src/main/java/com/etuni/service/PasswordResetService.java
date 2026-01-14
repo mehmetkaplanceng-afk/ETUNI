@@ -85,6 +85,7 @@ public class PasswordResetService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom("mehmetkaplanceng@gmail.com");
             helper.setTo(user.getEmail());
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
