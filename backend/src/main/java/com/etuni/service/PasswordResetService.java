@@ -57,7 +57,20 @@ public class PasswordResetService {
         // We can just create a new one.
 
         String token = UUID.randomUUID().toString();
-        PasswordResetToken myToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(30));
+
+        // Handle existing token to avoid unique constraint violation
+        var existingTokenOpt = tokenRepository.findByUser(user);
+        PasswordResetToken myToken;
+
+        if (existingTokenOpt.isPresent()) {
+            myToken = existingTokenOpt.get();
+            myToken.setToken(token);
+            myToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
+            myToken.setUsed(false);
+        } else {
+            myToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(30));
+        }
+
         tokenRepository.save(myToken);
 
         sendResetTokenEmail(user, token);
