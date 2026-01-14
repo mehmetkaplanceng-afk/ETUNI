@@ -330,4 +330,20 @@ public class WebController {
         model.addAttribute("eventTitle", "Etkinlik");
         return "payment-success";
     }
+
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage(Model model) {
+        model.addAttribute("title", "Şifremi Unuttum | ETUNI");
+        return "forgot-password";
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage(@RequestParam(name = "token", required = false) String token, Model model) {
+        if (token == null || token.isEmpty()) {
+            return "redirect:/forgot-password";
+        }
+        model.addAttribute("token", token);
+        model.addAttribute("title", "Şifre Sıfırlama | ETUNI");
+        return "reset-password";
+    }
 }

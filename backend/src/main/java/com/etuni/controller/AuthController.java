@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
   private final AuthService authService;
+  private final com.etuni.service.PasswordResetService passwordResetService;
 
-  public AuthController(AuthService authService) {
+  public AuthController(AuthService authService, com.etuni.service.PasswordResetService passwordResetService) {
     this.authService = authService;
+    this.passwordResetService = passwordResetService;
   }
 
   @PostMapping("/register")
@@ -60,5 +62,32 @@ public class AuthController {
     response.addCookie(uiCookie);
 
     return ApiResponse.ok("LOGOUT_OK", "Logged out successfully");
+  }
+
+  // --- Password Reset ---
+
+  record ForgotPasswordRequest(String email) {
+  }
+
+  record ResetPasswordRequest(String token, String newPassword) {
+  }
+
+  @PostMapping("/forgot-password")
+  public ApiResponse<String> forgotPassword(@RequestBody ForgotPasswordRequest req) {
+    passwordResetService.createPasswordResetTokenForUser(req.email());
+    // Always return success for security
+    return ApiResponse.ok("FORGOT_PASSWORD_SENT", "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+  }
+
+  @PostMapping("/reset-password")
+  public ApiResponse<String> resetPassword(@RequestBody ResetPasswordRequest req) {
+    try {
+      passwordResetService.resetPassword(req.token(), req.newPassword());
+      return ApiResponse.ok("RESET_PASSWORD_SUCCESS", "Şifreniz başarıyla güncellendi.");
+    } catch (RuntimeException e) {
+      // In a real app we might want to differentiate, but for now generic error
+      // or specific message if safe
+      return new ApiResponse<>(false, "RESET_ERR", e.getMessage(), null);
+    }
   }
 }

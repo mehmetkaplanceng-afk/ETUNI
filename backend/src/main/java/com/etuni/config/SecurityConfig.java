@@ -48,8 +48,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/health", "/api/auth/**", "/", "/index.html", "/css/**", "/js/**", "/images/**",
                 "/favicon.ico", "/error", "/events", "/events/**", "/login", "/register", "/api/chat/**",
-                "/api/universities", "/api/attendance/*/qr", // <--- ADD THIS LINE
-                "/api/universities/**")
+                "/api/universities", "/api/attendance/*/qr",
+                "/api/universities/**",
+                "/forgot-password", "/reset-password") // <--- ALLOW THESE
             .permitAll()
             .requestMatchers("/dashboard", "/dashboard/**", "/profile", "/profile/**")
             .authenticated()
