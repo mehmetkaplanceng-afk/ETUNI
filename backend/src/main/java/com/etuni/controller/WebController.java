@@ -191,6 +191,38 @@ public class WebController {
         return "admin-users";
     }
 
+    @GetMapping("/dashboard/events/{id}")
+    public String dashboardEventDetail(@PathVariable("id") Long id, Model model) {
+        try {
+            var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+                return "redirect:/login";
+            }
+            Long userId = Long.parseLong(auth.getPrincipal().toString());
+            var profile = userProfileService.getProfile(userId);
+
+            // Access control: Organizer, Staff, or Admin
+            if (!"ORGANIZER".equals(profile.role()) && !"UNIVERSITY_STAFF".equals(profile.role())
+                    && !"ADMIN".equals(profile.role())) {
+                return "redirect:/dashboard";
+            }
+
+            // In a real app, we should also check if the event belongs to this organizer's
+            // university/club
+            // For now, simpler role check matches existing logic
+
+            model.addAttribute("user", profile);
+            model.addAttribute("event", eventService.get(id));
+            model.addAttribute("attendees", eventService.getAttendees(id));
+            model.addAttribute("title", "Etkinlik Detayı | Panel");
+
+            return "dashboard-event-detail";
+        } catch (Exception e) {
+            logger.error("Error loading dashboard event detail", e);
+            return "redirect:/dashboard";
+        }
+    }
+
     @GetMapping("/events/{id}")
     public String eventDetail(@PathVariable("id") Long id, Model model) {
         model.addAttribute("event", eventService.get(id));

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html th:replace="~{layout :: layout(~{::main})}" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <main>
+        <section style="padding: 100px 0;">
+            <div class="container">
+                <a href="/dashboard" class="btn btn-sm"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); margin-bottom: 2rem;">&larr;
+                    Panele Dön</a>
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <span class="badge" style="background: var(--primary); color: #fff; margin-bottom: 10px;"
+                                th:text="${event.eventType}">TÜR</span>
+                            <h1 th:text="${event.title}" style="font-size: 2.5rem; margin: 10px 0;">Etkinlik Başlığı
+                            </h1>
+                            <div style="display: flex; gap: 20px; color: var(--text-muted); margin-bottom: 20px;">
+                                <div>📅 <span th:text="${event.eventDate} + ' ' + ${event.startTime}">Tarih</span></div>
+                                <div>📍 <span th:text="${event.location}">Konum</span></div>
+                                <div>💰 <span
+                                        th:text="${event.price > 0 ? event.price + ' TL' : 'Ücretsiz'}">Fiyat</span>
+                                </div>
+                            </div>
+                            <p th:text="${event.description}" style="color: rgba(255,255,255,0.8); line-height: 1.6;">
+                                Açıklama...</p>
+                        </div>
+                        <div class="stat-card" style="text-align: center; min-width: 150px;">
+                            <div style="font-size: 2.5rem; font-weight: 800; color: var(--primary);"
+                                th:text="${attendees.size()}">0</div>
+                            <div style="font-size: 0.9rem; opacity: 0.7;">Katılımcı</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <h3
+                        style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                        Katılımcı Listesi</h3>
+
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; color: #fff;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--glass-border); text-align: left;">
+                                    <th style="padding: 15px;">Ad Soyad</th>
+                                    <th style="padding: 15px;">E-posta</th>
+                                    <th style="padding: 15px;">Kayıt Tarihi</th>
+                                    <th style="padding: 15px;">Bilet Kodu</th>
+                                    <th style="padding: 15px;">Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="attendee : ${attendees}" th:if="${attendees.size() > 0}"
+                                    style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding: 15px; font-weight: 600;" th:text="${attendee.userFullName}">Ad
+                                        Soyad</td>
+                                    <td style="padding: 15px; opacity: 0.8;" th:text="${attendee.userEmail}">
+                                        email@example.com</td>
+                                    <td style="padding: 15px; opacity: 0.7;"
+                                        th:text="${#temporals.format(attendee.scannedAt, 'dd MMM yyyy HH:mm')}">Tarih
+                                    </td>
+                                    <td style="padding: 15px; font-family: monospace; letter-spacing: 1px;"
+                                        th:text="${attendee.ticketCode}">KOD123</td>
+                                    <td style="padding: 15px;">
+                                        <span class="badge" style="background: #4ade80; color: #fff;">Katıldı</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${attendees.empty}">
+                                    <td colspan="5"
+                                        style="padding: 30px; text-align: center; color: var(--text-muted);">
+                                        Henüz bu etkinliğe katılan kimse yok.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
