@@ -88,7 +88,7 @@ public class AuthController {
     } catch (RuntimeException e) {
       // In a real app we might want to differentiate, but for now generic error
       // or specific message if safe
-      return new ApiResponse<>(false, "RESET_ERR", e.getMessage(), null);
+      return new ApiResponse<>(false, e.getMessage(), null);
     }
   }
 }
