@@ -45,15 +45,7 @@ export default function OrganizerEvents() {
     setRefreshing(false);
   };
 
-  const openScanner = (eventId: number) => {
-    console.log("Scanner açılıyor, ID:", eventId);
 
-    // YANLIŞ OLAN (Seni detay sayfasına geri atar):
-    // router.push(`/organizer/event/${eventId}`); 
-
-    // DOĞRU OLAN (Seni tarama sayfasına ID ile gönderir):
-    router.push(`/organizer/scan?eventId=${eventId}`);
-  };
   const renderItem = ({ item }: { item: Event }) => (
     <View style={styles.card}>
       <View style={{ flex: 1 }}>
@@ -73,8 +65,8 @@ export default function OrganizerEvents() {
           )}
         </View>
       </View>
-      <TouchableOpacity style={styles.btn} onPress={() => openScanner(item.id)}>
-        <Text style={{ color: '#fff', fontWeight: '700' }}>QR Tara</Text>
+      <TouchableOpacity style={styles.btn} onPress={() => router.push(`/organizer/event/${item.id}`)}>
+        <Text style={{ color: '#fff', fontWeight: '700' }}>Detay</Text>
       </TouchableOpacity>
     </View>
   );
