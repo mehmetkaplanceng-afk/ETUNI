@@ -40,7 +40,7 @@ public class RecommendationService {
       return List.of();
 
     Long uniId = user.getUniversity().getId();
-    var events = eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(uniId, "ACTIVE");
+    var events = eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateAsc(uniId, "ACTIVE");
 
     List<String> tags = user.getInterests();
 

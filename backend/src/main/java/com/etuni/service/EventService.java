@@ -73,7 +73,7 @@ public class EventService {
   }
 
   public List<EventResponse> listLatestByUniversity(Long universityId) {
-    return eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(universityId, "ACTIVE")
+    return eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateAsc(universityId, "ACTIVE")
         .stream().map(this::toDto).toList();
   }
 

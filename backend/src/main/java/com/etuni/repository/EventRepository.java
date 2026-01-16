@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-        @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club LEFT JOIN FETCH e.university WHERE e.university.id = :universityId AND e.status = :status ORDER BY e.eventDate DESC")
-        List<Event> findTop20ByUniversityIdAndStatusOrderByEventDateDesc(@Param("universityId") Long universityId,
+        @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club LEFT JOIN FETCH e.university WHERE e.university.id = :universityId AND e.status = :status ORDER BY e.eventDate ASC")
+        List<Event> findTop20ByUniversityIdAndStatusOrderByEventDateAsc(@Param("universityId") Long universityId,
                         @Param("status") String status);
 
         @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club LEFT JOIN FETCH e.university WHERE e.university.id = :universityId ORDER BY e.eventDate DESC")

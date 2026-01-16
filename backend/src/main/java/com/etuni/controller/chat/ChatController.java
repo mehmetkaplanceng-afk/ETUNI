@@ -93,8 +93,8 @@ public class ChatController {
             if (userId != null) {
                 var user = userRepo.findById(userId).orElse(null);
                 if (user != null && user.getUniversity() != null) {
-                    // Fetch university-specific events first
-                    activeEvents = eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(
+                    // Fetch university-specific events first (soonest first)
+                    activeEvents = eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateAsc(
                             user.getUniversity().getId(), "ACTIVE");
                 } else {
                     activeEvents = eventRepo.findAllActiveWithClubs();

@@ -88,7 +88,7 @@ class RecommendationServiceTest {
         socialEvent.setEventDate(LocalDate.now().plusDays(10));
 
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
-        when(eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(1L, "ACTIVE"))
+        when(eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateAsc(1L, "ACTIVE"))
                 .thenReturn(List.of(socialEvent, technicalEvent)); // Ters sırada
         when(attendanceRepo.findByUserIdOrderByScannedAtDesc(1L)).thenReturn(List.of());
         when(attendanceRepo.findAll()).thenReturn(List.of());
@@ -120,7 +120,7 @@ class RecommendationServiceTest {
         event.setEventDate(LocalDate.now().plusDays(3));
 
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
-        when(eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(1L, "ACTIVE"))
+        when(eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateAsc(1L, "ACTIVE"))
                 .thenReturn(List.of(event));
         when(attendanceRepo.findByUserIdOrderByScannedAtDesc(1L)).thenReturn(List.of());
         when(attendanceRepo.findAll()).thenReturn(List.of());

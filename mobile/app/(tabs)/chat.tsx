@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { authFetch } from "../../api/authFetch";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Message = {
     id: string;
@@ -22,17 +23,73 @@ type Message = {
 };
 
 export default function ChatScreen() {
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: "welcome",
-            text: "Merhaba! Ben ETUNI Asistan 🤖\n\nEtkinlikler hakkında sorular sorabilir, platform hakkında bilgi alabilirsiniz.",
-            sender: "bot",
-            timestamp: new Date(),
-        },
-    ]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const flatListRef = useRef<FlatList>(null);
+
+    const STORAGE_KEY = "@etuni_chat_messages";
+
+    // Load messages from storage on mount
+    useEffect(() => {
+        const loadMessages = async () => {
+            try {
+                const storedMessages = await AsyncStorage.getItem(STORAGE_KEY);
+                if (storedMessages) {
+                    const parsed = JSON.parse(storedMessages);
+                    // Convert string timestamps back to Date objects
+                    const formatted = parsed.map((m: any) => ({
+                        ...m,
+                        timestamp: new Date(m.timestamp)
+                    }));
+                    setMessages(formatted);
+                } else {
+                    // Default welcome message if no history
+                    setMessages([
+                        {
+                            id: "welcome",
+                            text: "Merhaba! Ben ETUNI Asistan 🤖\n\nEtkinlikler hakkında sorular sorabilir, platform hakkında bilgi alabilirsiniz.",
+                            sender: "bot",
+                            timestamp: new Date(),
+                        },
+                    ]);
+                }
+            } catch (e) {
+                console.error("Failed to load chat history", e);
+            }
+        };
+        loadMessages();
+    }, []);
+
+    // Save messages to storage when they change
+    useEffect(() => {
+        const saveMessages = async () => {
+            if (messages.length > 0) {
+                try {
+                    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                } catch (e) {
+                    console.error("Failed to save chat history", e);
+                }
+            }
+        };
+        saveMessages();
+    }, [messages]);
+
+    const clearChat = async () => {
+        try {
+            await AsyncStorage.removeItem(STORAGE_KEY);
+            setMessages([
+                {
+                    id: "welcome-" + Date.now(),
+                    text: "Sohbet geçmişi temizlendi. Size nasıl yardımcı olabilirim?",
+                    sender: "bot",
+                    timestamp: new Date(),
+                },
+            ]);
+        } catch (e) {
+            console.error("Failed to clear chat", e);
+        }
+    };
 
     const sendMessage = async () => {
         if (!inputText.trim() || isLoading) return;
@@ -145,8 +202,8 @@ export default function ChatScreen() {
                             <Text style={styles.headerStatus}>Şu an çevrimiçi</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.headerAction}>
-                        <Ionicons name="ellipsis-horizontal" size={20} color="#64748b" />
+                    <TouchableOpacity style={styles.headerAction} onPress={clearChat}>
+                        <Ionicons name="trash-outline" size={20} color="#f43f5e" />
                     </TouchableOpacity>
                 </View>
             </View>
