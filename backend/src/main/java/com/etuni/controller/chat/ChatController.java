@@ -5,22 +5,30 @@ import com.etuni.model.Event;
 import com.etuni.repository.EventRepository;
 import com.etuni.repository.UniversityRepository;
 import com.etuni.service.EventQueryBotService;
+import com.etuni.service.GeminiService;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
+
     private final EventRepository eventRepo;
     private final UniversityRepository uniRepo;
     private final EventQueryBotService botService;
+    private final GeminiService geminiService;
 
-    public ChatController(EventRepository eventRepo, UniversityRepository uniRepo, EventQueryBotService botService) {
+    public ChatController(EventRepository eventRepo, UniversityRepository uniRepo,
+            EventQueryBotService botService, GeminiService geminiService) {
         this.eventRepo = eventRepo;
         this.uniRepo = uniRepo;
         this.botService = botService;
+        this.geminiService = geminiService;
     }
 
     record ChatRequest(String query) {
@@ -38,7 +46,23 @@ public class ChatController {
 
         String response;
 
-        // Try to get current user for personalized bot response
+        // Try Gemini AI first if configured
+        if (geminiService.isConfigured()) {
+            try {
+                // Build event context for the AI
+                String eventContext = buildEventContext();
+                response = geminiService.chat(q, eventContext);
+
+                if (response != null && !response.isBlank()) {
+                    log.info("Gemini AI response generated successfully");
+                    return ApiResponse.ok("OK", new ChatResponse(response));
+                }
+            } catch (Exception e) {
+                log.warn("Gemini AI failed, falling back to rule-based bot: {}", e.getMessage());
+            }
+        }
+
+        // Fallback to existing rule-based bot
         var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
             try {
@@ -52,6 +76,37 @@ public class ChatController {
         }
 
         return ApiResponse.ok("OK", new ChatResponse(response));
+    }
+
+    /**
+     * Builds context about current events to give to the AI.
+     */
+    private String buildEventContext() {
+        try {
+            List<Event> activeEvents = eventRepo.findAll().stream()
+                    .filter(e -> "ACTIVE".equals(e.getStatus()))
+                    .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
+                    .limit(5)
+                    .toList();
+
+            if (activeEvents.isEmpty()) {
+                return "Şu an sistemde aktif etkinlik bulunmuyor.";
+            }
+
+            StringBuilder sb = new StringBuilder("Aktif Etkinlikler:\n");
+            for (Event e : activeEvents) {
+                sb.append("- ").append(e.getTitle())
+                        .append(" (Tarih: ").append(e.getEventDate())
+                        .append(", Tür: ").append(e.getEventType() != null ? e.getEventType() : "Genel")
+                        .append(e.getPrice() != null && e.getPrice().doubleValue() > 0
+                                ? ", Fiyat: " + e.getPrice() + "₺"
+                                : ", Ücretsiz")
+                        .append(")\n");
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private String getFallbackResponse(String q) {
