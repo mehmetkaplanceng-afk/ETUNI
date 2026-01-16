@@ -48,8 +48,10 @@ public class PasswordResetService {
 
         UserEntity user = userOpt.get();
 
-        // Delete any existing token for this user
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+        // Delete any existing token for this user (must flush to ensure delete happens
+        // before insert)
+        tokenRepository.deleteByUser(user);
+        tokenRepository.flush();
 
         // Generate new token
         String token = UUID.randomUUID().toString();
