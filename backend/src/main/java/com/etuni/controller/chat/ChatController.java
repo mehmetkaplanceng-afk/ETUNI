@@ -85,23 +85,38 @@ public class ChatController {
         try {
             List<Event> activeEvents = eventRepo.findAll().stream()
                     .filter(e -> "ACTIVE".equals(e.getStatus()))
-                    .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
-                    .limit(5)
+                    .sorted((e1, e2) -> e1.getEventDate().compareTo(e2.getEventDate()))
+                    .limit(10)
                     .toList();
 
             if (activeEvents.isEmpty()) {
                 return "Şu an sistemde aktif etkinlik bulunmuyor.";
             }
 
-            StringBuilder sb = new StringBuilder("Aktif Etkinlikler:\n");
+            StringBuilder sb = new StringBuilder("MEVCUT AKTİF ETKİNLİKLER (" + activeEvents.size() + " adet):\n\n");
+            int index = 1;
             for (Event e : activeEvents) {
-                sb.append("- ").append(e.getTitle())
-                        .append(" (Tarih: ").append(e.getEventDate())
-                        .append(", Tür: ").append(e.getEventType() != null ? e.getEventType() : "Genel")
-                        .append(e.getPrice() != null && e.getPrice().doubleValue() > 0
-                                ? ", Fiyat: " + e.getPrice() + "₺"
-                                : ", Ücretsiz")
-                        .append(")\n");
+                sb.append(index++).append(". ").append(e.getTitle()).append("\n");
+                sb.append("   📅 Tarih: ").append(e.getEventDate());
+                if (e.getStartTime() != null) {
+                    sb.append(" Saat: ").append(e.getStartTime());
+                }
+                sb.append("\n");
+                sb.append("   📍 Konum: ").append(e.getLocation() != null ? e.getLocation() : "Belirtilmemiş")
+                        .append("\n");
+                sb.append("   🏷️ Tür: ").append(e.getEventType() != null ? e.getEventType() : "Genel").append("\n");
+                sb.append("   💰 Fiyat: ").append(
+                        e.getPrice() != null && e.getPrice().doubleValue() > 0 ? e.getPrice() + "₺" : "Ücretsiz")
+                        .append("\n");
+                if (e.getClub() != null) {
+                    sb.append("   🎭 Organizatör: ").append(e.getClub().getName()).append("\n");
+                }
+                if (e.getDescription() != null && !e.getDescription().isBlank()) {
+                    String desc = e.getDescription().length() > 100 ? e.getDescription().substring(0, 100) + "..."
+                            : e.getDescription();
+                    sb.append("   📝 Açıklama: ").append(desc).append("\n");
+                }
+                sb.append("\n");
             }
             return sb.toString();
         } catch (Exception e) {

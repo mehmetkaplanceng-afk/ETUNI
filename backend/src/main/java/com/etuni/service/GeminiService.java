@@ -50,6 +50,12 @@ public class GeminiService {
             5. Bilmediğin konularda dürüst ol
             6. Emoji kullanabilirsin ama abartma
 
+            ETKİNLİK LİSTELEME:
+            - Sana verilen etkinlik bilgilerini kullanarak kullanıcıya detaylı liste sunabilirsin
+            - Kullanıcı "etkinlikleri listele", "ne etkinlikler var", "yaklaşan etkinlikler" gibi sorular sorduğunda verilen etkinlik listesini güzel bir şekilde formatla
+            - Her etkinlik için: isim, tarih, saat, konum, tür ve fiyat bilgisini ver
+            - Ücretsiz etkinlikler için "Ücretsiz" yaz
+
             Kullanıcıya her zaman yardımcı olmaya çalış!
             """;
 
@@ -84,7 +90,7 @@ public class GeminiService {
                                             Map.of("text", fullPrompt)))),
                     "generationConfig", Map.of(
                             "temperature", 0.7,
-                            "maxOutputTokens", 500,
+                            "maxOutputTokens", 1000,
                             "topP", 0.9));
 
             HttpHeaders headers = new HttpHeaders();
