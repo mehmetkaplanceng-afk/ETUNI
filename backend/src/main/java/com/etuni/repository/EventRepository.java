@@ -9,41 +9,41 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId AND e.status = :status ORDER BY e.eventDate DESC")
-  List<Event> findTop20ByUniversityIdAndStatusOrderByEventDateDesc(@Param("universityId") Long universityId,
-      @Param("status") String status);
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId AND e.status = :status ORDER BY e.eventDate DESC")
+    List<Event> findTop20ByUniversityIdAndStatusOrderByEventDateDesc(@Param("universityId") Long universityId,
+            @Param("status") String status);
 
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId ORDER BY e.eventDate DESC")
-  List<Event> findByUniversityIdOrderByEventDateDesc(@Param("universityId") Long universityId);
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId ORDER BY e.eventDate DESC")
+    List<Event> findByUniversityIdOrderByEventDateDesc(@Param("universityId") Long universityId);
 
-  List<Event> findByUniversityIdAndEventDateBetweenAndStatus(Long universityId, LocalDate start, LocalDate end,
-      String status);
+    List<Event> findByUniversityIdAndEventDateBetweenAndStatus(Long universityId, LocalDate start, LocalDate end,
+            String status);
 
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId")
-  List<Event> findByUniversityId(@Param("universityId") Long universityId);
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :universityId")
+    List<Event> findByUniversityId(@Param("universityId") Long universityId);
 
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.id = :id")
-  Optional<Event> findById(@Param("id") Long id);
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.id = :id")
+    Optional<Event> findById(@Param("id") Long id);
 
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId AND e.status = 'ACTIVE' AND (LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-  List<Event> searchEvents(@Param("uniId") Long uniId, @Param("keyword") String keyword);
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId AND e.status = 'ACTIVE' AND (LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<Event> searchEvents(@Param("uniId") Long uniId, @Param("keyword") String keyword);
 
-  List<Event> findByClubId(Long clubId);
+    List<Event> findByClubId(Long clubId);
 
-  // For Scheduler
-  @Query("SELECT e FROM Event e WHERE e.status = :status AND (e.eventDate < :today OR (e.eventDate = :today AND e.startTime < :now))")
-  List<Event> findExpiredEvents(@Param("today") LocalDate today, @Param("now") java.time.LocalTime now,
-      @Param("status") String status);
+    // For Scheduler
+    @Query("SELECT e FROM Event e WHERE e.status = :status AND (e.eventDate < :today OR (e.eventDate = :today AND e.startTime < :now))")
+    List<Event> findExpiredEvents(@Param("today") LocalDate today, @Param("now") java.time.LocalTime now,
+            @Param("status") String status);
 
-  // For Filtering (Search + Club + Status)
-  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId " +
-      "AND (:status IS NULL OR e.status = :status) " +
-      "AND (:clubId IS NULL OR e.club.id = :clubId) " +
-      "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
-      +
-      "ORDER BY e.eventDate DESC")
-  List<Event> searchEventsWithFilters(@Param("uniId") Long uniId,
-      @Param("keyword") String keyword,
-      @Param("clubId") Long clubId,
-      @Param("status") String status);
+    // For Filtering (Search + Club + Status)
+    @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId " +
+            "AND (:status IS NULL OR e.status = :status) " +
+            "AND (:clubId IS NULL OR e.club.id = :clubId) " +
+            "AND (:keyword IS NULL OR LOWER(CAST(e.title AS string)) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(CAST(e.description AS string)) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+            +
+            "ORDER BY e.eventDate DESC")
+    List<Event> searchEventsWithFilters(@Param("uniId") Long uniId,
+            @Param("keyword") String keyword,
+            @Param("clubId") Long clubId,
+            @Param("status") String status);
 }

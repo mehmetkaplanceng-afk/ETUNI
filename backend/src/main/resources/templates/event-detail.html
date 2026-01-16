@@ -61,10 +61,23 @@
 
                     <div
                         style="padding-top: 2rem; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #94a3b8;">Durum: <strong th:text="${event.status}"
-                                style="color: #4ade80;">ACTIVE</strong></span>
                         <div>
-                            <button class="btn btn-primary" id="joinBtn">Etkinliğe Katıl</button>
+                            <span style="color: #94a3b8;">Durum: </span>
+                            <strong th:if="${event.status == 'ACTIVE'}" style="color: #4ade80;">AKTİF</strong>
+                            <strong th:if="${event.status == 'PASSIVE'}" style="color: #ef4444;">GEÇMİŞ / PASİF</strong>
+                            <strong th:if="${event.status == 'CANCELLED'}" style="color: #fca5a5;">İPTAL EDİLDİ</strong>
+                        </div>
+
+                        <div>
+                            <!-- Join Button: Only active if status is ACTIVE -->
+                            <button th:if="${event.status == 'ACTIVE'}" class="btn btn-primary" id="joinBtn">Etkinliğe
+                                Katıl</button>
+
+                            <button th:if="${event.status != 'ACTIVE'}" class="btn"
+                                style="background: #334155; color: #94a3b8; cursor: not-allowed;" disabled>
+                                Kayıt Kapalı
+                            </button>
+
                             <button
                                 th:if="${user != null and (user.role == 'ADMIN' or (user.role == 'UNIVERSITY_STAFF' and user.selectedUniversityId == event.universityId))}"
                                 id="deleteBtn" class="btn"
@@ -86,6 +99,7 @@
             const eventLat = [[${event.latitude}]];
             const eventLng = [[${event.longitude}]];
             const eventTitle = [[${event.title}]];
+            const eventStatus = [[${event.status}]];
             +]*/
 
             document.addEventListener('DOMContentLoaded', () => {
@@ -103,51 +117,55 @@
                 }
             });
 
-            document.getElementById('joinBtn').addEventListener('click', async () => {
-                const eventId = /*[[${event.id}]]*/ 0;
-                const eventPrice = /*[[${event.price}]]*/ 0;
+            // Only attach listener if joinBtn exists
+            const joinBtn = document.getElementById('joinBtn');
+            if (joinBtn) {
+                joinBtn.addEventListener('click', async () => {
+                    const eventId = /*[[${event.id}]]*/ 0;
+                    const eventPrice = /*[[${event.price}]]*/ 0;
 
-                // Check if event is paid
-                if (eventPrice && eventPrice > 0) {
-                    // Redirect to payment page
-                    window.location.href = `/payment/${eventId}`;
-                    return;
-                }
+                    // Check if event is paid
+                    if (eventPrice && eventPrice > 0) {
+                        // Redirect to payment page
+                        window.location.href = `/payment/${eventId}`;
+                        return;
+                    }
 
-                // Free event - join directly
-                const btn = document.getElementById('joinBtn');
-                btn.disabled = true;
-                btn.innerText = 'İşleniyor...';
+                    // Free event - join directly
+                    const btn = document.getElementById('joinBtn');
+                    btn.disabled = true;
+                    btn.innerText = 'İşleniyor...';
 
-                try {
-                    const response = await fetch('/api/attendance/join/' + eventId, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    try {
+                        const response = await fetch('/api/attendance/join/' + eventId, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
 
-                    if (response.ok) {
-                        alert('Etkinliğe başarıyla kayıt oldunuz! Biletinize profilinizden ulaşabilirsiniz.');
-                        window.location.href = '/dashboard';
-                    } else {
-                        const err = await response.text();
-                        if (response.status === 403 || response.status === 401) {
-                            alert('Oturumunuzun süresi dolmuş veya giriş yapmamışsınız. Lütfen tekrar giriş yapın.');
-                            window.location.href = '/login';
+                        if (response.ok) {
+                            alert('Etkinliğe başarıyla kayıt oldunuz! Biletinize profilinizden ulaşabilirsiniz.');
+                            window.location.href = '/dashboard';
                         } else {
-                            alert('Katılım başarısız: ' + err);
+                            const err = await response.text();
+                            if (response.status === 403 || response.status === 401) {
+                                alert('Oturumunuzun süresi dolmuş veya giriş yapmamışsınız. Lütfen tekrar giriş yapın.');
+                                window.location.href = '/login';
+                            } else {
+                                alert('Katılım başarısız: ' + err);
+                            }
+                            btn.disabled = false;
+                            btn.innerText = 'Etkinliğe Katıl';
                         }
+                    } catch (e) {
+                        console.error(e);
+                        alert('Bir hata oluştu.');
                         btn.disabled = false;
                         btn.innerText = 'Etkinliğe Katıl';
                     }
-                } catch (e) {
-                    console.error(e);
-                    alert('Bir hata oluştu.');
-                    btn.disabled = false;
-                    btn.innerText = 'Etkinliğe Katıl';
-                }
-            });
+                });
+            }
 
             const delBtn = document.getElementById('deleteBtn');
             if (delBtn) {
