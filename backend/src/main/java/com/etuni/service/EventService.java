@@ -82,10 +82,13 @@ public class EventService {
       status = "ACTIVE"; // Default to ACTIVE if not specified
     }
     // If user explicitly asks for "PASSIVE" (e.g. Past Events), we use that.
-    // If status is empty string, we might want ALL, but let's stick to explicit
-    // filters.
 
-    return eventRepo.searchEventsWithFilters(universityId, keyword, clubId, status)
+    String pattern = null;
+    if (keyword != null && !keyword.isBlank()) {
+      pattern = "%" + keyword.toLowerCase() + "%";
+    }
+
+    return eventRepo.searchEventsWithFilters(universityId, pattern, clubId, status)
         .stream().map(this::toDto).toList();
   }
 
