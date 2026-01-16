@@ -73,6 +73,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Asistan",
+          tabBarIcon: ({ color }) => <Ionicons name="sparkles" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{
+          title: "Harita",
+          tabBarIcon: ({ color }) => <Ionicons name="map" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="organizer"
         options={{
           title: "Organizatör",

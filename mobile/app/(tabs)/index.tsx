@@ -55,16 +55,23 @@ export default function EventsScreen() {
   // Data State
   const [events, setEvents] = useState<EventApi[]>([]);
   const [recommended, setRecommended] = useState<RecommendedEvent[]>([]);
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   // Search State
   const [searchText, setSearchText] = useState("");
 
   const fetchEvents = async () => {
     const uniId = await AsyncStorage.getItem("universityId") || "1";
+    const status = showPastEvents ? "PASSIVE" : "ACTIVE";
 
     // 1. Fetch main events
-    debug("Fetching events for university:", uniId);
-    const res = await authFetch(`/api/events/university/${uniId}`, { method: "GET" });
+    debug(`Fetching ${status} events for university:`, uniId);
+    let path = `/api/events/university/${uniId}?status=${status}`;
+    if (searchText) {
+      path += `&search=${encodeURIComponent(searchText)}`;
+    }
+
+    const res = await authFetch(path, { method: "GET" });
     if (res.ok) {
       const json = JSON.parse(await res.text());
       setEvents(json.data || []);
@@ -72,7 +79,7 @@ export default function EventsScreen() {
       debug("Failed to fetch events:", res.status);
     }
 
-    // 2. Fetch recommendations
+    // 2. Fetch recommendations (always based on active/latest)
     const recRes = await authFetch("/api/events/recommended", { method: "GET" });
     if (recRes.ok) {
       const json = JSON.parse(await recRes.text());
@@ -83,15 +90,8 @@ export default function EventsScreen() {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true);
-        await fetchEvents();
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    fetchEvents();
+  }, [showPastEvents]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -243,8 +243,22 @@ export default function EventsScreen() {
           placeholder="Etkinlik ara..."
           style={styles.searchInput}
           value={searchText}
-          onChangeText={setSearchText}
+          onChangeText={(txt) => {
+            setSearchText(txt);
+            // Search will trigger fetch via the debounced effect or on next refresh
+          }}
+          onSubmitEditing={fetchEvents}
           placeholderTextColor="#94a3b8"
+        />
+      </View>
+
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterText}>Geçmiş Etkinlikleri Göster</Text>
+        <Switch
+          value={showPastEvents}
+          onValueChange={setShowPastEvents}
+          trackColor={{ false: "#e2e8f0", true: "#c7d2fe" }}
+          thumbColor={showPastEvents ? "#4f46e5" : "#94a3b8"}
         />
       </View>
 
@@ -301,6 +315,24 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0'
   },
   searchInput: { flex: 1, fontSize: 16, color: '#334155' },
+  filterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    marginHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  filterText: {
+    fontSize: 14,
+    color: '#475569',
+    fontWeight: '600',
+  },
 
   card: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginBottom: 16, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
   recommendedCard: { width: 300, marginRight: 16, borderWidth: 1, borderColor: '#e0e7ff' },
