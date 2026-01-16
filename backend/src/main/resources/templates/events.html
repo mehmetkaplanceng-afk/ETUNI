@@ -20,78 +20,120 @@
                     </form>
                 </div>
 
-                <div class="event-grid">
+                <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 2rem; align-items: start;">
 
-                    <!-- Recommendations Section 
-                    <div th:if="${not #lists.isEmpty(recommendedEvents)}"
-                        style="grid-column: 1 / -1; margin-bottom: 2rem;">
-                        <h2
-                            style="font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                            ✨ Sizin İçin Önerilenler
-                        </h2>
-                        <div class="event-grid">
-                            <div th:each="re : ${recommendedEvents}" class="event-card"
-                                style="border: 1px solid var(--primary); background: rgba(var(--primary-rgb), 0.05);">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                                    <span class="event-badge" th:text="${re.eventType}"
-                                        style="background: var(--primary);">Konferans</span>
-                                    <span style="font-weight: bold; color: var(--primary); font-size: 0.9rem;">
-                                        %<span th:text="${#numbers.formatInteger(re.totalScore * 100, 0)}">95</span>
-                                        Eşleşme
-                                    </span>
-                                </div>
-                                <h3 th:text="${re.title}">Başlık</h3>
-                                <p th:text="${re.explanation}"
-                                    style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem; font-style: italic;">
-                                    Açıklama...
-                                </p>
-                                <div class="event-meta">
-                                    <span th:text="${re.eventDate}">Tarih</span>
-                                </div>
-                                <a th:href="@{/events/{id}(id=${re.eventId})}" class="btn"
-                                    style="width: 100%; margin-top: 1rem; background: var(--primary);">İncele</a>
+                    <!-- Sidebar -->
+                    <aside
+                        style="background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; position: sticky; top: 100px;">
+                        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary);">Filtreler</h3>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h4
+                                style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 0.8rem;">
+                                Durum</h4>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <a href="/events"
+                                    th:classappend="${selectedStatus == null or selectedStatus == 'ACTIVE'} ? 'active-filter' : ''"
+                                    style="padding: 8px 12px; border-radius: 8px; color: white; text-decoration: none; transition: all 0.2s;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    📅 Güncel Etkinlikler
+                                </a>
+                                <a href="/events?status=PASSIVE"
+                                    th:classappend="${selectedStatus == 'PASSIVE'} ? 'active-filter' : ''"
+                                    style="padding: 8px 12px; border-radius: 8px; color: white; text-decoration: none; transition: all 0.2s;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    🕰️ Geçmiş Etkinlikler
+                                </a>
                             </div>
                         </div>
-                        <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 3rem 0;">
-                    </div>
--->
-                    <div th:each="ae : ${events}" class="event-card">
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-                            <span class="event-badge" th:text="${ae.eventType}">Konferans</span>
-                            <span th:if="${ae.clubName}" class="event-badge"
-                                style="background: rgba(99, 102, 241, 0.2); color: #6366f1;">
-                                🏛️ <span th:text="${ae.clubName}">Kulüp</span>
-                            </span>
-                        </div>
-                        <h3 th:text="${ae.title}">Etkinlik Başlığı</h3>
-                        <p th:text="${ae.description}"
-                            style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            Etkinlik açıklaması burada yer alacak ve iki satırla sınırlı kalacaktır.
-                        </p>
-                        <div class="event-meta">
-                            <span th:text="${ae.eventDate}">12.03.2026</span>
-                            <span th:text="${ae.startTime}">14:00</span>
-                            <span th:if="${ae.price != null and ae.price > 0}"
-                                style="background: linear-gradient(135deg, #a855f7, #ec4899); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
-                                ₺<span th:text="${#numbers.formatDecimal(ae.price, 1, 2)}">50.00</span>
-                            </span>
-                            <span th:if="${ae.price == null or ae.price == 0}"
-                                style="background: linear-gradient(135deg, #10b981, #059669); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
-                                ÜCRETSİZ
-                            </span>
-                        </div>
-                        <a th:href="@{/events/{id}(id=${ae.id})}" class="btn"
-                            style="width: 100%; margin-top: 1.5rem; text-align: center; border: 1px solid var(--glass-border); display: block;">Detayları
-                            Gör</a>
-                    </div>
 
-                    <!-- Empty state if no events -->
-                    <div th:if="${#lists.isEmpty(events)}"
-                        style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
-                        <p style="color: #94a3b8;">Henüz hiç etkinlik bulunmuyor.</p>
+                        <div>
+                            <h4
+                                style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 0.8rem;">
+                                Kulüpler</h4>
+                            <div
+                                style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 400px; overflow-y: auto;">
+                                <a href="/events" th:classappend="${selectedClubId == null} ? 'active-filter' : ''"
+                                    style="padding: 8px 12px; border-radius: 8px; color: white; text-decoration: none; transition: all 0.2s;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    Tüm Kulüpler
+                                </a>
+                                <a th:each="club : ${clubs}" th:href="@{/events(clubId=${club.id})}"
+                                    th:classappend="${selectedClubId == club.id} ? 'active-filter' : ''"
+                                    style="padding: 8px 12px; border-radius: 8px; color: white; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;"
+                                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                                    onmouseout="this.style.background='transparent'">
+                                    <span th:text="${club.name}">Kulüp Adı</span>
+                                </a>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Event Grid -->
+                    <div class="event-grid" style="grid-column: auto;">
+                        <th:block th:if="${selectedStatus == 'PASSIVE'}">
+                            <div
+                                style="grid-column: 1/-1; background: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.3); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; color: #ffcccc;">
+                                ℹ️ Şu anda <strong>geçmiş (pasif)</strong> etkinlikleri görüntülüyorsunuz.
+                            </div>
+                        </th:block>
+
+                        <div th:each="ae : ${events}" class="event-card" style="position: relative;">
+                            <!-- Passive Badge -->
+                            <div th:if="${ae.status == 'PASSIVE'}"
+                                style="position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; z-index: 10;">
+                                PASİF
+                            </div>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                                <span class="event-badge" th:text="${ae.eventType}">Konferans</span>
+                                <span th:if="${ae.clubName}" class="event-badge"
+                                    style="background: rgba(99, 102, 241, 0.2); color: #6366f1;">
+                                    🏛️ <span th:text="${ae.clubName}">Kulüp</span>
+                                </span>
+                            </div>
+                            <h3 th:text="${ae.title}">Etkinlik Başlığı</h3>
+                            <p th:text="${ae.description}"
+                                style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                Etkinlik açıklaması burada yer alacak ve iki satırla sınırlı kalacaktır.
+                            </p>
+                            <div class="event-meta">
+                                <span th:text="${ae.eventDate}">12.03.2026</span>
+                                <span th:text="${ae.startTime}">14:00</span>
+                                <span th:if="${ae.price != null and ae.price > 0}"
+                                    style="background: linear-gradient(135deg, #a855f7, #ec4899); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
+                                    ₺<span th:text="${#numbers.formatDecimal(ae.price, 1, 2)}">50.00</span>
+                                </span>
+                                <span th:if="${ae.price == null or ae.price == 0}"
+                                    style="background: linear-gradient(135deg, #10b981, #059669); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">
+                                    ÜCRETSİZ
+                                </span>
+                            </div>
+                            <a th:href="@{/events/{id}(id=${ae.id})}" class="btn"
+                                style="width: 100%; margin-top: 1.5rem; text-align: center; border: 1px solid var(--glass-border); display: block;">Detayları
+                                Gör</a>
+                        </div>
+
+                        <!-- Empty state if no events -->
+                        <div th:if="${#lists.isEmpty(events)}"
+                            style="grid-column: 1 / -1; text-align: center; padding: 4rem;">
+                            <p style="color: #94a3b8;">Bu kriterlere uygun etkinlik bulunmuyor.</p>
+                            <a href="/events"
+                                style="color: var(--primary); margin-top: 1rem; display: inline-block;">Filtreleri
+                                Temizle</a>
+                        </div>
                     </div>
                 </div>
+
+                <style>
+                    .active-filter {
+                        background: var(--primary) !important;
+                        font-weight: bold;
+                    }
+                </style>
             </div>
         </section>
     </main>

@@ -77,11 +77,15 @@ public class EventService {
         .stream().map(this::toDto).toList();
   }
 
-  public List<EventResponse> search(Long universityId, String keyword) {
-    if (keyword == null || keyword.isBlank()) {
-      return listLatestByUniversity(universityId);
+  public List<EventResponse> search(Long universityId, String keyword, Long clubId, String status) {
+    if (status == null) {
+      status = "ACTIVE"; // Default to ACTIVE if not specified
     }
-    return eventRepo.searchEvents(universityId, keyword)
+    // If user explicitly asks for "PASSIVE" (e.g. Past Events), we use that.
+    // If status is empty string, we might want ALL, but let's stick to explicit
+    // filters.
+
+    return eventRepo.searchEventsWithFilters(universityId, keyword, clubId, status)
         .stream().map(this::toDto).toList();
   }
 

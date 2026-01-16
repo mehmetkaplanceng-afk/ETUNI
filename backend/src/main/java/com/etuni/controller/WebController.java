@@ -21,16 +21,12 @@ public class WebController {
     private final EventService eventService;
     private final UniversityService universityService;
     private final UserProfileService userProfileService;
-    private final PromotionService promotionService;
-    private final com.etuni.service.NotificationService notificationService;
-
-    private final RecommendationService recommendationService;
-    private final com.etuni.service.AttendanceService attendanceService;
+    private final com.etuni.service.ClubService clubService;
 
     public WebController(EventService eventService, UniversityService universityService,
             UserProfileService userProfileService,
             PromotionService promotionService,
-
+            com.etuni.service.ClubService clubService,
             RecommendationService recommendationService,
             com.etuni.service.NotificationService notificationService,
             com.etuni.service.AttendanceService attendanceService) {
@@ -38,6 +34,7 @@ public class WebController {
         this.universityService = universityService;
         this.userProfileService = userProfileService;
         this.promotionService = promotionService;
+        this.clubService = clubService;
         this.recommendationService = recommendationService;
         this.notificationService = notificationService;
         this.attendanceService = attendanceService;
@@ -50,7 +47,10 @@ public class WebController {
     }
 
     @GetMapping("/events")
-    public String events(@RequestParam(name = "search", required = false) String search, Model model) {
+    public String events(@RequestParam(name = "search", required = false) String search,
+            @RequestParam(name = "clubId", required = false) Long clubId,
+            @RequestParam(name = "status", required = false) String status,
+            Model model) {
         Long universityId = 1L; // Fallback
 
         // Try to get logged in user's university
@@ -86,12 +86,18 @@ public class WebController {
                     .orElse(finalUniversiyId);
         }
 
-        if (search != null && !search.isBlank()) {
-            model.addAttribute("events", eventService.search(universityId, search));
+        // Add clubs for sidebar logic
+        model.addAttribute("clubs", clubService.listByUniversity(universityId));
+
+        if ((search != null && !search.isBlank()) || clubId != null || status != null) {
+            model.addAttribute("events", eventService.search(universityId, search, clubId, status));
         } else {
             model.addAttribute("events", eventService.listLatestByUniversity(universityId));
         }
+
         model.addAttribute("searchQuery", search);
+        model.addAttribute("selectedClubId", clubId);
+        model.addAttribute("selectedStatus", status);
         model.addAttribute("title", "Etkinlikler | ETUNI");
         return "events";
     }

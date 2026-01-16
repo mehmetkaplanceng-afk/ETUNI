@@ -29,4 +29,21 @@ public interface EventRepository extends JpaRepository<Event, Long> {
   List<Event> searchEvents(@Param("uniId") Long uniId, @Param("keyword") String keyword);
 
   List<Event> findByClubId(Long clubId);
+
+  // For Scheduler
+  @Query("SELECT e FROM Event e WHERE e.status = :status AND (e.eventDate < :today OR (e.eventDate = :today AND e.startTime < :now))")
+  List<Event> findExpiredEvents(@Param("today") LocalDate today, @Param("now") java.time.LocalTime now,
+      @Param("status") String status);
+
+  // For Filtering (Search + Club + Status)
+  @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club WHERE e.university.id = :uniId " +
+      "AND (:status IS NULL OR e.status = :status) " +
+      "AND (:clubId IS NULL OR e.club.id = :clubId) " +
+      "AND (:keyword IS NULL OR LOWER(e.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) "
+      +
+      "ORDER BY e.eventDate DESC")
+  List<Event> searchEventsWithFilters(@Param("uniId") Long uniId,
+      @Param("keyword") String keyword,
+      @Param("clubId") Long clubId,
+      @Param("status") String status);
 }

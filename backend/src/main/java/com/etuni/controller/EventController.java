@@ -67,8 +67,15 @@ public class EventController {
   }
 
   @GetMapping("/university/{universityId}")
-  public ApiResponse<List<EventResponse>> list(@PathVariable("universityId") Long universityId) {
-    return ApiResponse.ok("OK", eventService.listLatestByUniversity(universityId));
+  public ApiResponse<List<EventResponse>> list(@PathVariable("universityId") Long universityId,
+      @RequestParam(required = false) String search,
+      @RequestParam(required = false) Long clubId,
+      @RequestParam(required = false) String status) {
+    // If no params, default to latest active
+    if (search == null && clubId == null && status == null) {
+      return ApiResponse.ok("OK", eventService.listLatestByUniversity(universityId));
+    }
+    return ApiResponse.ok("OK", eventService.search(universityId, search, clubId, status));
   }
 
   @GetMapping("/{id}/attendees")
