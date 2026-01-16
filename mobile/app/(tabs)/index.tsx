@@ -100,8 +100,13 @@ export default function EventsScreen() {
   };
 
   const joinEvent = async (eventId: number) => {
-    // Find event to check if it's paid
     const event = events.find(e => e.id === eventId);
+
+    // Prevent joining past events
+    if (event && event.status === 'PASSIVE') {
+      Alert.alert("Hata", "Bu etkinlik sona erdiği için katılamazsınız.");
+      return;
+    }
 
     // If event has price > 0, redirect to payment (web view for now)
     if (event && event.price && event.price > 0) {
@@ -189,10 +194,13 @@ export default function EventsScreen() {
       <Text numberOfLines={2} style={styles.desc}>{item.description}</Text>
 
       <TouchableOpacity
-        style={styles.btn}
-        onPress={() => joinEvent(item.id)}
+        style={[styles.btn, item.status === 'PASSIVE' && styles.btnDisabled]}
+        onPress={() => item.status === 'ACTIVE' && joinEvent(item.id)}
+        disabled={item.status === 'PASSIVE'}
       >
-        <Text style={styles.btnText}>Katıl</Text>
+        <Text style={styles.btnText}>
+          {item.status === 'PASSIVE' ? "Sona Erdi" : "Katıl"}
+        </Text>
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -221,10 +229,12 @@ export default function EventsScreen() {
         <Text numberOfLines={2} style={styles.desc}>{item.explanation}</Text>
 
         <TouchableOpacity
-          style={[styles.btn, { backgroundColor: '#e0e7ff' }]}
+          style={[styles.btn, { backgroundColor: '#e0e7ff' }, item.event.status === 'PASSIVE' && { backgroundColor: '#f1f5f9' }]}
           onPress={() => goToDetail(item.event.id)}
         >
-          <Text style={[styles.btnText, { color: '#4338ca' }]}>İncele</Text>
+          <Text style={[styles.btnText, { color: '#4338ca' }, item.event.status === 'PASSIVE' && { color: '#94a3b8' }]}>
+            {item.event.status === 'PASSIVE' ? "Sona Erdi" : "İncele"}
+          </Text>
         </TouchableOpacity>
       </TouchableOpacity>
     );
@@ -346,6 +356,7 @@ const styles = StyleSheet.create({
   badgeText: { color: "#4338ca", fontWeight: "700", fontSize: 12 },
 
   btn: { backgroundColor: "#4f46e5", paddingVertical: 12, borderRadius: 12, alignItems: "center" },
+  btnDisabled: { backgroundColor: "#cbd5e1" },
   btnText: { color: "#fff", fontWeight: "700" },
 
   priceBadgePaid: {

@@ -47,4 +47,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                         @Param("pattern") String pattern,
                         @Param("clubId") Long clubId,
                         @Param("status") String status);
+
+        @Query("SELECT e FROM Event e LEFT JOIN FETCH e.club LEFT JOIN FETCH e.university WHERE e.status = 'ACTIVE' ORDER BY e.eventDate ASC")
+        List<Event> findAllActiveWithClubs();
 }

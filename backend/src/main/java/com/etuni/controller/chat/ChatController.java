@@ -4,12 +4,14 @@ import com.etuni.dto.AuthDtos.ApiResponse;
 import com.etuni.model.Event;
 import com.etuni.repository.EventRepository;
 import com.etuni.repository.UniversityRepository;
+import com.etuni.repository.UserRepository;
 import com.etuni.service.EventQueryBotService;
 import com.etuni.service.GeminiService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +22,15 @@ public class ChatController {
 
     private final EventRepository eventRepo;
     private final UniversityRepository uniRepo;
+    private final UserRepository userRepo;
     private final EventQueryBotService botService;
     private final GeminiService geminiService;
 
     public ChatController(EventRepository eventRepo, UniversityRepository uniRepo,
-            EventQueryBotService botService, GeminiService geminiService) {
+            UserRepository userRepo, EventQueryBotService botService, GeminiService geminiService) {
         this.eventRepo = eventRepo;
         this.uniRepo = uniRepo;
+        this.userRepo = userRepo;
         this.botService = botService;
         this.geminiService = geminiService;
     }
@@ -37,6 +41,7 @@ public class ChatController {
     record ChatResponse(String response) {
     }
 
+    @Transactional(readOnly = true)
     @PostMapping("/ask")
     public ApiResponse<ChatResponse> ask(@RequestBody ChatRequest req) {
         String q = req.query();
@@ -49,8 +54,9 @@ public class ChatController {
         // Try Gemini AI first if configured
         if (geminiService.isConfigured()) {
             try {
-                // Build event context for the AI
-                String eventContext = buildEventContext();
+                // Build event context for the AI (university-specific if user is logged in)
+                Long userId = getAuthenticatedUserId();
+                String eventContext = buildEventContext(userId);
                 response = geminiService.chat(q, eventContext);
 
                 if (response != null && !response.isBlank()) {
@@ -63,10 +69,9 @@ public class ChatController {
         }
 
         // Fallback to existing rule-based bot
-        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        Long userId = getAuthenticatedUserId();
+        if (userId != null) {
             try {
-                Long userId = Long.parseLong(auth.getPrincipal().toString());
                 response = botService.answer(userId, q);
             } catch (Exception e) {
                 response = getFallbackResponse(q);
@@ -81,15 +86,30 @@ public class ChatController {
     /**
      * Builds context about current events to give to the AI.
      */
-    private String buildEventContext() {
+    @Transactional(readOnly = true)
+    private String buildEventContext(Long userId) {
         try {
-            List<Event> activeEvents = eventRepo.findAll().stream()
-                    .filter(e -> "ACTIVE".equals(e.getStatus()))
-                    .sorted((e1, e2) -> e1.getEventDate().compareTo(e2.getEventDate()))
-                    .limit(10)
-                    .toList();
+            List<Event> activeEvents;
+            if (userId != null) {
+                var user = userRepo.findById(userId).orElse(null);
+                if (user != null && user.getUniversity() != null) {
+                    // Fetch university-specific events first
+                    activeEvents = eventRepo.findTop20ByUniversityIdAndStatusOrderByEventDateDesc(
+                            user.getUniversity().getId(), "ACTIVE");
+                } else {
+                    activeEvents = eventRepo.findAllActiveWithClubs();
+                }
+            } else {
+                activeEvents = eventRepo.findAllActiveWithClubs();
+            }
+
+            // Limit to 15 events for context to avoid token limits but give enough info
+            if (activeEvents.size() > 15) {
+                activeEvents = activeEvents.subList(0, 15);
+            }
 
             if (activeEvents.isEmpty()) {
+                log.warn("No active events found for chat context (userId: {})", userId);
                 return "Şu an sistemde aktif etkinlik bulunmuyor.";
             }
 
@@ -120,8 +140,21 @@ public class ChatController {
             }
             return sb.toString();
         } catch (Exception e) {
+            log.error("Error building event context: {}", e.getMessage());
             return "";
         }
+    }
+
+    private Long getAuthenticatedUserId() {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            try {
+                return Long.parseLong(auth.getPrincipal().toString());
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private String getFallbackResponse(String q) {

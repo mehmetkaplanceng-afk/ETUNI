@@ -26,6 +26,7 @@ type EventDetail = {
     latitude?: number;
     longitude?: number;
     price?: number;
+    status: 'ACTIVE' | 'PASSIVE';
 };
 
 export default function EventDetailScreen() {
@@ -61,6 +62,11 @@ export default function EventDetailScreen() {
     };
 
     const joinEvent = async () => {
+        if (!event || event.status === 'PASSIVE') {
+            alert("Bu etkinlik sona erdiği için katılamazsınız.");
+            return;
+        }
+
         try {
             // Check if event is paid
             if (event && event.price && event.price > 0) {
@@ -163,8 +169,14 @@ export default function EventDetailScreen() {
                     </View>
                 )}
 
-                <TouchableOpacity style={styles.btn} onPress={joinEvent}>
-                    <Text style={styles.btnText}>Etkinliğe Katıl</Text>
+                <TouchableOpacity
+                    style={[styles.btn, event.status === 'PASSIVE' && styles.btnDisabled]}
+                    onPress={joinEvent}
+                    disabled={event.status === 'PASSIVE'}
+                >
+                    <Text style={styles.btnText}>
+                        {event.status === 'PASSIVE' ? "Etkinlik Sona Erdi" : "Etkinliğe Katıl"}
+                    </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20, alignItems: 'center' }}>
@@ -193,6 +205,7 @@ const styles = StyleSheet.create({
         borderColor: '#e2e8f0'
     },
     btn: { backgroundColor: "#4f46e5", paddingVertical: 16, borderRadius: 16, alignItems: "center", marginTop: 20, shadowColor: "#4f46e5", shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
+    btnDisabled: { backgroundColor: "#cbd5e1", shadowOpacity: 0 },
     btnText: { color: "#fff", fontWeight: "800", fontSize: 18 },
     priceBadgePaid: {
         backgroundColor: '#a855f7',
