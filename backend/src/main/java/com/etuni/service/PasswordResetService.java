@@ -4,65 +4,68 @@ import com.etuni.model.PasswordResetToken;
 import com.etuni.model.UserEntity;
 import com.etuni.repository.PasswordResetTokenRepository;
 import com.etuni.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class PasswordResetService {
 
+    private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
+
     private final PasswordResetTokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${app.python-service.url:http://localhost:8000}")
-    private String pythonServiceUrl;
+    private final EmailService emailService;
 
     public PasswordResetService(PasswordResetTokenRepository tokenRepository,
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            EmailService emailService) {
         this.tokenRepository = tokenRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     /**
-     * Delegates Forgot Password logic to Python Service
+     * Creates a password reset token and sends the reset email.
+     * Returns true if email was sent, false if user not found.
      */
-    public void createPasswordResetTokenForUser(String email) {
-        // We can optionally check if user exists here to avoid unnecessary network
-        // call,
-        // but for security (timing attacks), it might be better to just forward
-        // everything.
-        // However, the Python service checks DB anyway.
+    @Transactional
+    public boolean createPasswordResetTokenForUser(String email) {
+        var userOpt = userRepository.findByEmail(email);
 
-        try {
-            String url = pythonServiceUrl + "/auth/forgot-password";
-
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("email", email);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
-
-            restTemplate.postForObject(url, entity, String.class);
-        } catch (Exception e) {
-            // Log error but don't leak info
-            e.printStackTrace();
+        if (userOpt.isEmpty()) {
+            log.warn("Password reset requested for non-existent email: {}", email);
+            return false; // User not found
         }
+
+        UserEntity user = userOpt.get();
+
+        // Delete any existing token for this user
+        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+
+        // Generate new token
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
+        resetToken.setUsed(false);
+
+        tokenRepository.save(resetToken);
+
+        // Send email
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
+        log.info("Password reset email sent to: {}", email);
+
+        return true;
     }
 
     @Transactional

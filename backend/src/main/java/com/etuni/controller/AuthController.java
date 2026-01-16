@@ -75,9 +75,12 @@ public class AuthController {
 
   @PostMapping("/forgot-password")
   public ApiResponse<String> forgotPassword(@RequestBody ForgotPasswordRequest req) {
-    passwordResetService.createPasswordResetTokenForUser(req.email());
-    // Always return success for security
-    return ApiResponse.ok("FORGOT_PASSWORD_SENT", "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+    boolean sent = passwordResetService.createPasswordResetTokenForUser(req.email());
+    if (sent) {
+      return ApiResponse.ok("FORGOT_PASSWORD_SENT", "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.");
+    } else {
+      return new ApiResponse<>(false, "Bu e-posta adresiyle kayıtlı kullanıcı bulunamadı.", null);
+    }
   }
 
   @PostMapping("/reset-password")
