@@ -9,7 +9,8 @@ import {
   View,
   Alert,
   RefreshControl,
-  Linking
+  Switch,
+  ScrollView
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,12 +33,18 @@ type EventApi = {
   longitude?: number;
   category?: string;
   price?: number;
+  status: 'ACTIVE' | 'PASSIVE';
 };
 
 type RecommendedEvent = {
   event: EventApi;
   totalScore: number;
   explanation: string;
+};
+
+type Club = {
+  id: number;
+  name: string;
 };
 
 export default function EventsScreen() {

@@ -22,6 +22,10 @@ public class WebController {
     private final UniversityService universityService;
     private final UserProfileService userProfileService;
     private final com.etuni.service.ClubService clubService;
+    private final PromotionService promotionService;
+    private final com.etuni.service.NotificationService notificationService;
+    private final RecommendationService recommendationService;
+    private final com.etuni.service.AttendanceService attendanceService;
 
     public WebController(EventService eventService, UniversityService universityService,
             UserProfileService userProfileService,
