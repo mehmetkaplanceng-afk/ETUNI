@@ -82,3 +82,8 @@ secrets/
 *.swo
 *~
 .cache/
+
+# ===== Python =====
+venv/
+__pycache__/
+*.pyc
