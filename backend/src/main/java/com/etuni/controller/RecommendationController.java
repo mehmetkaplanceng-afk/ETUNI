@@ -24,7 +24,7 @@ public class RecommendationController {
   }
 
   @GetMapping("/{userId}")
-  public ApiResponse<List<ScoredEvent>> recommendForUser(@PathVariable Long userId) {
+  public ApiResponse<List<ScoredEvent>> recommendForUser(@PathVariable("userId") Long userId) {
     return ApiResponse.ok("OK", recommendationService.recommend(userId));
   }
 }

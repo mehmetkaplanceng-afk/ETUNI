@@ -26,7 +26,8 @@ public class UniversityController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','UNIVERSITY_STAFF')")
-    public ApiResponse<UniversityResponse> update(@PathVariable Long id, @Valid @RequestBody UniversityRequest req) {
+    public ApiResponse<UniversityResponse> update(@PathVariable("id") Long id,
+            @Valid @RequestBody UniversityRequest req) {
         return ApiResponse.ok("UNIVERSITY_UPDATED", universityService.update(id, req));
     }
 
@@ -36,7 +37,7 @@ public class UniversityController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<UniversityResponse> get(@PathVariable Long id) {
+    public ApiResponse<UniversityResponse> get(@PathVariable("id") Long id) {
         return ApiResponse.ok("OK", universityService.get(id));
     }
 }

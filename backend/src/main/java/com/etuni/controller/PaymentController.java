@@ -48,7 +48,7 @@ public class PaymentController {
     }
 
     @GetMapping("/status/{transactionId}")
-    public ApiResponse<PaymentVerifyResponse> getPaymentStatus(@PathVariable String transactionId) {
+    public ApiResponse<PaymentVerifyResponse> getPaymentStatus(@PathVariable("transactionId") String transactionId) {
         var result = paymentService.verifyPayment(transactionId);
 
         return ApiResponse.ok("OK", new PaymentVerifyResponse(
