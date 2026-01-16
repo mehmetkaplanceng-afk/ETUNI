@@ -5,15 +5,17 @@ import com.etuni.model.UserEntity;
 import com.etuni.repository.PasswordResetTokenRepository;
 import com.etuni.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -21,91 +23,45 @@ public class PasswordResetService {
 
     private final PasswordResetTokenRepository tokenRepository;
     private final UserRepository userRepository;
-    private final JavaMailSender mailSender;
     private final PasswordEncoder passwordEncoder;
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${server.port}")
-    private String serverPort;
-
-    // In production, this should be a configured domain URL
-    private String getBaseUrl() {
-        return "http://13.53.170.220:" + serverPort;
-    }
+    @Value("${app.python-service.url:http://localhost:8000}")
+    private String pythonServiceUrl;
 
     public PasswordResetService(PasswordResetTokenRepository tokenRepository,
             UserRepository userRepository,
-            JavaMailSender mailSender,
             PasswordEncoder passwordEncoder) {
         this.tokenRepository = tokenRepository;
         this.userRepository = userRepository;
-        this.mailSender = mailSender;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
+    /**
+     * Delegates Forgot Password logic to Python Service
+     */
     public void createPasswordResetTokenForUser(String email) {
-        // Silently fail if user not found to prevent enumeration
-        var userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return;
-        }
-
-        UserEntity user = userOpt.get();
-
-        // Invalidate existing tokens for this user? Optional, but good practice to
-        // clean up
-        // We can just create a new one.
-
-        String token = UUID.randomUUID().toString();
-
-        // Handle existing token to avoid unique constraint violation
-        var existingTokenOpt = tokenRepository.findByUser(user);
-        PasswordResetToken myToken;
-
-        if (existingTokenOpt.isPresent()) {
-            myToken = existingTokenOpt.get();
-            myToken.setToken(token);
-            myToken.setExpiryDate(LocalDateTime.now().plusMinutes(30));
-            myToken.setUsed(false);
-        } else {
-            myToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(30));
-        }
-
-        tokenRepository.save(myToken);
-
-        sendResetTokenEmail(user, token);
-    }
-
-    private void sendResetTokenEmail(UserEntity user, String token) {
-        String resetUrl = getBaseUrl() + "/reset-password?token=" + token;
-        String subject = "Şifre Sıfırlama İsteği - ETUNI";
-
-        String htmlContent = String.format(
-                "<html>" +
-                        "<body>" +
-                        "<h3>Merhaba %s,</h3>" +
-                        "<p>Hesabınız için şifre sıfırlama talebinde bulundunuz.</p>" +
-                        "<p>Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>" +
-                        "<p><a href=\"%s\">Şifremi Sıfırla</a></p>" +
-                        "<p>Bu bağlantı 30 dakika süreyle geçerlidir.</p>" +
-                        "<p>Eğer bu talebi siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>" +
-                        "<br/>" +
-                        "<p>ETUNI Ekibi</p>" +
-                        "</body>" +
-                        "</html>",
-                user.getFullName(), resetUrl);
+        // We can optionally check if user exists here to avoid unnecessary network
+        // call,
+        // but for security (timing attacks), it might be better to just forward
+        // everything.
+        // However, the Python service checks DB anyway.
 
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom("mehmetkaplanceng@gmail.com");
-            helper.setTo(user.getEmail());
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
+            String url = pythonServiceUrl + "/auth/forgot-password";
+
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("email", email);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+
+            restTemplate.postForObject(url, entity, String.class);
+        } catch (Exception e) {
+            // Log error but don't leak info
             e.printStackTrace();
-            // Log error but don't throw to user
         }
     }
 

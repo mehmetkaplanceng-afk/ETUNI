@@ -3,80 +3,67 @@ package com.etuni.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Email service for sending notifications, reminders, and password resets.
- * All email operations are async to prevent blocking.
+ * Now delegates to the Python Microservice.
  */
 @Service
 public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username:noreply@etuni.com}")
-    private String fromEmail;
+    @Value("${app.python-service.url:http://localhost:8000}")
+    private String pythonServiceUrl;
 
     @Value("${app.name:ETUNI}")
     private String appName;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    /**
+     * Send email via Python Service
+     */
+    @Async
+    private void sendEmailViaPython(String to, String subject, String body, boolean isHtml) {
+        try {
+            String url = pythonServiceUrl + "/email/send";
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("to", to);
+            requestBody.put("subject", subject);
+            requestBody.put("body", body);
+            requestBody.put("is_html", isHtml);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+            restTemplate.postForObject(url, entity, String.class);
+            log.info("Email sent via Python service to: {}", to);
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage());
+        }
     }
 
-    /**
-     * Send a simple text email
-     */
     @Async
     public void sendSimpleEmail(String to, String subject, String body) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-
-            mailSender.send(message);
-            log.info("Simple email sent to: {}", to);
-        } catch (MailException e) {
-            log.error("Failed to send simple email to {}: {}", to, e.getMessage());
-        }
+        sendEmailViaPython(to, subject, body, false);
     }
 
-    /**
-     * Send an HTML email
-     */
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setFrom(fromEmail);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
-            log.info("HTML email sent to: {}", to);
-        } catch (MessagingException | MailException e) {
-            log.error("Failed to send HTML email to {}: {}", to, e.getMessage());
-        }
+        sendEmailViaPython(to, subject, htmlContent, true);
     }
 
-    /**
-     * Send welcome email to new users
-     */
     @Async
     public void sendWelcomeEmail(String to, String userName) {
         String subject = appName + "'e Hoş Geldiniz!";
@@ -96,9 +83,6 @@ public class EmailService {
         sendSimpleEmail(to, subject, body);
     }
 
-    /**
-     * Send event reminder email
-     */
     @Async
     public void sendEventReminder(String to, String userName, String eventTitle,
             String eventDate, String eventTime) {
@@ -119,13 +103,17 @@ public class EmailService {
         sendSimpleEmail(to, subject, body);
     }
 
-    /**
-     * Send password reset email
-     */
     @Async
     public void sendPasswordResetEmail(String to, String resetToken) {
+        // Obsolete? Python handles this now inside /auth/forgot-password?
+        // Wait, if we use the Python endpoint strictly for forgot-password logic
+        // (token+email),
+        // this method might not be needed OR logic in PasswordResetService changes.
+        // But for safety/compatibility let's keep it working as a generic send for now
+        // if ever called manually.
+
         String subject = appName + " - Şifre Sıfırlama";
-        String resetLink = "https://etuni.com/reset-password?token=" + resetToken;
+        String resetLink = "http://13.53.170.220:8080/reset-password?token=" + resetToken;
         String body = String.format("""
                 Merhaba,
 
@@ -134,7 +122,7 @@ public class EmailService {
                 Şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:
                 %s
 
-                Bu bağlantı 1 saat geçerlidir.
+                Bu bağlantı 30 dakika geçerlidir.
 
                 Eğer bu talebi siz yapmadıysanız, bu e-postayı görmezden gelin.
 
@@ -144,9 +132,6 @@ public class EmailService {
         sendSimpleEmail(to, subject, body);
     }
 
-    /**
-     * Send organizer promotion approval notification
-     */
     @Async
     public void sendPromotionApprovalEmail(String to, String userName) {
         String subject = appName + " - Organizatör Başvurunuz Onaylandı!";
@@ -165,9 +150,6 @@ public class EmailService {
         sendSimpleEmail(to, subject, body);
     }
 
-    /**
-     * Send organizer promotion rejection notification
-     */
     @Async
     public void sendPromotionRejectionEmail(String to, String userName, String reason) {
         String subject = appName + " - Organizatör Başvuru Sonucu";

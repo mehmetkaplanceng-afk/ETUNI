@@ -1,0 +1,13 @@
+@echo off
+cd /d %~dp0
+echo Activating virtual environment...
+if not exist venv (
+    echo Virtual environment not found. Creating...
+    python -m venv venv
+)
+call venv\Scripts\activate
+echo Installing dependencies...
+pip install -r requirements.txt
+echo Starting Python Service...
+python main.py
+pause
