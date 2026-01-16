@@ -87,3 +87,6 @@ secrets/
 venv/
 __pycache__/
 *.pyc
+
+# Python Service
+python_service/

@@ -3,65 +3,69 @@ package com.etuni.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import java.util.HashMap;
-import java.util.Map;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 /**
  * Email service for sending notifications, reminders, and password resets.
- * Now delegates to the Python Microservice.
+ * Uses JavaMailSender for direct SMTP communication.
  */
 @Service
 public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-    private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${app.python-service.url:http://localhost:8000}")
-    private String pythonServiceUrl;
+    private final JavaMailSender javaMailSender;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     @Value("${app.name:ETUNI}")
     private String appName;
 
-    /**
-     * Send email via Python Service
-     */
-    @Async
-    private void sendEmailViaPython(String to, String subject, String body, boolean isHtml) {
-        try {
-            String url = pythonServiceUrl + "/email/send";
-
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("to", to);
-            requestBody.put("subject", subject);
-            requestBody.put("body", body);
-            requestBody.put("is_html", isHtml);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-
-            restTemplate.postForObject(url, entity, String.class);
-            log.info("Email sent via Python service to: {}", to);
-        } catch (Exception e) {
-            log.error("Failed to send email to {}: {}", to, e.getMessage());
-        }
+    public EmailService(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
     }
 
     @Async
     public void sendSimpleEmail(String to, String subject, String body) {
-        sendEmailViaPython(to, subject, body, false);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(body);
+            javaMailSender.send(message);
+            log.info("Email sent to: {}", to);
+        } catch (Exception e) {
+            log.error("Failed to send simple email to {}: {}", to, e.getMessage());
+        }
     }
 
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
-        sendEmailViaPython(to, subject, htmlContent, true);
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
+
+            javaMailSender.send(message);
+            log.info("HTML Email sent to: {}", to);
+        } catch (MessagingException e) {
+            log.error("Failed to send HTML email to {}: {}", to, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error sending HTML email to {}: {}", to, e.getMessage());
+        }
     }
 
     @Async
@@ -105,13 +109,6 @@ public class EmailService {
 
     @Async
     public void sendPasswordResetEmail(String to, String resetToken) {
-        // Obsolete? Python handles this now inside /auth/forgot-password?
-        // Wait, if we use the Python endpoint strictly for forgot-password logic
-        // (token+email),
-        // this method might not be needed OR logic in PasswordResetService changes.
-        // But for safety/compatibility let's keep it working as a generic send for now
-        // if ever called manually.
-
         String subject = appName + " - Şifre Sıfırlama";
         String resetLink = "http://13.53.170.220:8080/reset-password?token=" + resetToken;
         String body = String.format("""
