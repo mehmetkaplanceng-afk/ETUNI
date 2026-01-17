@@ -27,7 +27,7 @@ public class PushNotificationService {
      */
     public void sendPushNotification(String pushToken, String title, String body) {
         if (pushToken == null || pushToken.trim().isEmpty()) {
-            return; // No token, skip
+            return;
         }
 
         try {
@@ -39,22 +39,24 @@ public class PushNotificationService {
             notification.put("priority", "high");
             notification.put("channelId", "default");
 
+            // Add a small data payload for better delivery handling
+            Map<String, String> data = new HashMap<>();
+            data.put("type", "broadcast");
+            notification.put("data", data);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Accept", "application/json");
+            headers.set("Accept-Encoding", "gzip, deflate");
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(notification, headers);
 
-            System.out.println("LOG_PUSH: Sending notification to " + pushToken);
-            System.out.println("LOG_PUSH: Payload: " + notification);
-
+            System.out.println("LOG_PUSH: Sending to " + pushToken);
             var response = restTemplate.postForEntity(EXPO_PUSH_URL, request, String.class);
 
-            System.out.println("LOG_PUSH: Expo status: " + response.getStatusCode());
-            System.out.println("LOG_PUSH: Expo response: " + response.getBody());
+            System.out.println("LOG_PUSH: Result - " + response.getBody());
         } catch (Exception e) {
-            System.err.println("LOG_PUSH_ERROR: Failed to send push: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("LOG_PUSH_ERROR: " + e.getMessage());
         }
     }
 }
