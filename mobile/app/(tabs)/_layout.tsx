@@ -1,15 +1,31 @@
 import { Tabs, useRouter, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { Platform, View, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getToken } from "../../api/authFetch";
 import { debug } from "../../utils/logger";
+import { registerForPushNotifications, setupNotificationListeners } from "../../utils/notificationService";
 
 export default function TabLayout() {
   const router = useRouter();
   // Varsayılan olarak yükleniyor olsun, böylece ekran hemen açılmaz
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
+
+  // Setup notification listeners
+  useEffect(() => {
+    const cleanup = setupNotificationListeners(
+      (notification) => {
+        debug("Foreground notification:", notification.request.content.title);
+      },
+      (response) => {
+        debug("Notification tapped:", response.notification.request.content.title);
+        // You can navigate based on notification data here
+      }
+    );
+
+    return cleanup;
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -28,6 +44,11 @@ export default function TabLayout() {
         const role = await AsyncStorage.getItem("userRole");
         setUserRole(role);
         setIsLoading(false);
+
+        // Register for push notifications after successful auth
+        registerForPushNotifications().catch(err => {
+          debug("Failed to register for push notifications:", err);
+        });
       }
     } catch (e) {
       debug("TabLayout: Auth check error, redirecting to login");
@@ -100,6 +121,14 @@ export default function TabLayout() {
           title: "Kulüp Ekle",
           tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={24} color={color} />,
           href: (userRole === "ORGANIZER" || userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/create-club" : null,
+        }}
+      />
+      <Tabs.Screen
+        name="staff-requests"
+        options={{
+          title: "Başvurular",
+          tabBarIcon: ({ color }) => <Ionicons name="clipboard" size={24} color={color} />,
+          href: (userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/staff-requests" : null,
         }}
       />
       <Tabs.Screen

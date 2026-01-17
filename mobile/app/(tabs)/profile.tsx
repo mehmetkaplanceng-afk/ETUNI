@@ -167,6 +167,25 @@ export default function ProfileScreen() {
         setRefreshing(false);
     };
 
+    const requestPromotion = async () => {
+        try {
+            const res = await authFetch("/api/promotion/request", {
+                method: "POST"
+            });
+
+            if (res.ok) {
+                Alert.alert("Başarılı", "İsteğiniz üniversite sorumlusuna iletildi.");
+                await loadProfile();
+            } else {
+                const errorText = await res.text();
+                Alert.alert("Hata", errorText || "İstek gönderilemedi");
+            }
+        } catch (error) {
+            console.error("Promotion request error:", error);
+            Alert.alert("Hata", "Bağlantı hatası");
+        }
+    };
+
     if (!profile) return <ActivityIndicator style={{ marginTop: 50 }} />;
 
     const selectedUniversityName = universities.find(u => u.id === editUniversityId)?.name || profile.selectedUniversityName || "Seçilmedi";
@@ -184,6 +203,12 @@ export default function ProfileScreen() {
                     <View style={[styles.statusBadge, profile.status === "ACTIVE" ? styles.statusActive : styles.statusInactive]}>
                         <Text style={styles.statusText}>{profile.status}</Text>
                     </View>
+
+                    {profile.role === "STUDENT" && (
+                        <TouchableOpacity onPress={requestPromotion} style={styles.promotionBtn}>
+                            <Text style={styles.promotionText}>🎓 Organizatör Olmak İste</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <View style={styles.section}>
@@ -384,6 +409,8 @@ const styles = StyleSheet.create({
     statusActive: { backgroundColor: "#dcfce7" },
     statusInactive: { backgroundColor: "#fef3c7" },
     statusText: { fontSize: 12, fontWeight: "700", color: "#166534" },
+    promotionBtn: { marginTop: 16, backgroundColor: "#6366f1", paddingHorizontal: 20, paddingVertical: 12, borderRadius: 8 },
+    promotionText: { color: "#fff", fontWeight: "700", fontSize: 14, textAlign: "center" },
     section: { marginTop: 20, backgroundColor: "#fff", paddingHorizontal: 20, paddingVertical: 12 },
     sectionTitle: { fontSize: 14, fontWeight: "700", color: "#64748b", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.5 },
     row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#f1f5f9" },

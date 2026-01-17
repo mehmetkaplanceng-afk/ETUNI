@@ -35,6 +35,9 @@ public class UserEntity {
 
   private String preferredTimeRange; // e.g. "18-22"
 
+  @Column(length = 500)
+  private String pushToken; // Expo push notification token
+
   public UserEntity() {
   }
 
@@ -108,5 +111,13 @@ public class UserEntity {
 
   public void setPreferredTimeRange(String preferredTimeRange) {
     this.preferredTimeRange = preferredTimeRange;
+  }
+
+  public String getPushToken() {
+    return pushToken;
+  }
+
+  public void setPushToken(String pushToken) {
+    this.pushToken = pushToken;
   }
 }

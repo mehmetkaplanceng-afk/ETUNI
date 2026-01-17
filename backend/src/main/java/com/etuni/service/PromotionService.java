@@ -16,7 +16,8 @@ public class PromotionService {
     private final UserRepository userRepo;
     private final NotificationService notificationService;
 
-    public PromotionService(PromotionRequestRepository requestRepo, UserRepository userRepo, NotificationService notificationService) {
+    public PromotionService(PromotionRequestRepository requestRepo, UserRepository userRepo,
+            NotificationService notificationService) {
         this.requestRepo = requestRepo;
         this.userRepo = userRepo;
         this.notificationService = notificationService;
@@ -72,7 +73,8 @@ public class PromotionService {
         requestRepo.save(req);
         // create notification for the student
         if (user != null) {
-            notificationService.createForUser(user.getId(), "Organizatör Başvurusu Onaylandı", "Tebrikler! Organizatör başvurunuz onaylandı.");
+            notificationService.createForUser(user.getId(), "Organizatör Başvurusu Onaylandı",
+                    "Tebrikler! Organizatör başvurunuz onaylandı.");
         }
     }
 
@@ -104,7 +106,8 @@ public class PromotionService {
         // notify the student
         UserEntity u = req.getUser();
         if (u != null) {
-            notificationService.createForUser(u.getId(), "Organizatör Başvurusu Reddedildi", "Üzgünüz, organizatör başvurunuz reddedildi.\nNot: " + (note == null ? "" : note));
+            notificationService.createForUser(u.getId(), "Organizatör Başvurusu Reddedildi",
+                    "Üzgünüz, organizatör başvurunuz reddedildi.\nNot: " + (note == null ? "" : note));
         }
     }
 
@@ -131,7 +134,37 @@ public class PromotionService {
         userRepo.save(user);
         // notify the student
         if (user != null) {
-            notificationService.createForUser(user.getId(), "Organizatör Olarak Atandınız", "Bir üniversite sorumlusu tarafından organizatör olarak atandınız.");
+            notificationService.createForUser(user.getId(), "Organizatör Olarak Atandınız",
+                    "Bir üniversite sorumlusu tarafından organizatör olarak atandınız.");
         }
+    }
+
+    public java.util.List<com.etuni.dto.PromotionRequestDto.PromotionRequestResponse> getPendingRequestsForStaff(
+            Long staffUserId) {
+        if (staffUserId == null)
+            throw new RuntimeException("STAFF_ID_REQUIRED");
+
+        UserEntity staff = userRepo.findById(staffUserId)
+                .orElseThrow(() -> new RuntimeException("STAFF_NOT_FOUND"));
+
+        if (!"UNIVERSITY_STAFF".equals(staff.getRole()) && !"ADMIN".equals(staff.getRole())) {
+            throw new RuntimeException("UNAUTHORIZED");
+        }
+
+        if (staff.getUniversity() == null) {
+            return java.util.List.of();
+        }
+
+        java.util.List<PromotionRequest> requests = getPendingRequests(staff.getUniversity().getId());
+
+        return requests.stream()
+                .map(req -> new com.etuni.dto.PromotionRequestDto.PromotionRequestResponse(
+                        req.getId(),
+                        req.getUser().getId(),
+                        req.getUser().getFullName(),
+                        req.getUser().getEmail(),
+                        req.getStatus(),
+                        req.getCreatedAt()))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

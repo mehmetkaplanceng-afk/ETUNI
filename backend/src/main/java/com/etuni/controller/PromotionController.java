@@ -46,7 +46,8 @@ public class PromotionController {
     }
 
     @PostMapping("/reject/{id}")
-    public ResponseEntity<?> rejectRequest(@PathVariable("id") Long id, @RequestParam(value = "note", required = false) String note) {
+    public ResponseEntity<?> rejectRequest(@PathVariable("id") Long id,
+            @RequestParam(value = "note", required = false) String note) {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated())
             return ResponseEntity.status(401).build();
@@ -74,6 +75,21 @@ public class PromotionController {
             Long staffId = Long.parseLong(auth.getPrincipal().toString());
             promotionService.promoteByEmail(email, staffId);
             return ResponseEntity.ok("Promoted");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingRequests() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated())
+            return ResponseEntity.status(401).build();
+
+        try {
+            Long staffId = Long.parseLong(auth.getPrincipal().toString());
+            var requests = promotionService.getPendingRequestsForStaff(staffId);
+            return ResponseEntity.ok(requests);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
