@@ -36,6 +36,7 @@ public class AdminController {
 
     @PostMapping("/add-staff")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional
     public ApiResponse<String> addStaff(@RequestParam("email") String email,
             @RequestParam("universityId") Long universityId) {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
@@ -51,6 +52,7 @@ public class AdminController {
 
     @PostMapping("/create-and-assign")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional
     public ApiResponse<String> createAndAssign(@RequestParam("fullName") String fullName,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
@@ -73,6 +75,7 @@ public class AdminController {
 
     @GetMapping("/dashboard-stats")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ApiResponse<DashboardStats> getDashboardStats() {
         long totalUsers = userRepository.count();
         long totalEvents = eventService.count();
@@ -82,6 +85,7 @@ public class AdminController {
 
     @GetMapping("/search-users")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ApiResponse<java.util.List<AdminUserDto>> searchUsers(
             @RequestParam(value = "q", required = false) String q) {
         var list = userRepository.findAll().stream()
@@ -97,6 +101,7 @@ public class AdminController {
 
     @PostMapping("/assign-events")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional
     public ApiResponse<String> assignEvents(@RequestParam("universityId") Long universityId,
             @RequestParam(value = "sourceUniversityId", required = false) Long sourceUniversityId) {
         int updated = eventService.assignEventsToUniversity(universityId, sourceUniversityId);
@@ -108,6 +113,7 @@ public class AdminController {
 
     @org.springframework.web.bind.annotation.PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional
     public ApiResponse<String> updateUser(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
             @org.springframework.web.bind.annotation.RequestBody UpdateUserRequest request) {
         try {

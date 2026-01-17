@@ -16,7 +16,7 @@ export interface AdminUser {
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
-    const res = await authFetch(`${API_URL}/api/admin/dashboard-stats`);
+    const res = await authFetch(`/api/admin/dashboard-stats`);
     if (!res.ok) throw new Error('Failed to fetch stats');
     const json = await res.json();
     return json.data;
@@ -24,14 +24,14 @@ export const getDashboardStats = async (): Promise<DashboardStats> => {
 
 export const searchUsers = async (query: string = ''): Promise<AdminUser[]> => {
     const q = query ? `?q=${encodeURIComponent(query)}` : '';
-    const res = await authFetch(`${API_URL}/api/admin/search-users${q}`);
+    const res = await authFetch(`/api/admin/search-users${q}`);
     if (!res.ok) throw new Error('Failed to search users');
     const json = await res.json();
     return json.data || [];
 };
 
 export const updateUser = async (id: number, data: { fullName: string; email: string; role: string; universityId?: number }) => {
-    const res = await authFetch(`${API_URL}/api/admin/users/${id}`, {
+    const res = await authFetch(`/api/admin/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
