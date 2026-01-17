@@ -2,6 +2,7 @@ package com.etuni.model;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Notification {
@@ -11,6 +12,7 @@ public class Notification {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private UserEntity user;
 
     private String title;

@@ -3,6 +3,7 @@ package com.etuni.model;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +19,7 @@ public class UserEntity {
   private String email;
 
   @Column(nullable = false)
+  @JsonIgnore
   private String passwordHash;
 
   @Column(nullable = false)
@@ -28,6 +30,7 @@ public class UserEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "selected_university_id")
+  @JsonIgnore
   private University university;
 
   @ElementCollection(fetch = FetchType.EAGER)
