@@ -151,6 +151,7 @@ public class WebController {
                 java.math.BigDecimal totalRevenue = attendanceService
                         .calculateTotalRevenueForUniversity(profile.selectedUniversityId());
                 model.addAttribute("totalRevenue", totalRevenue);
+                model.addAttribute("notifications", notificationService.listForUser(userId));
 
                 return "dashboard-staff";
             }

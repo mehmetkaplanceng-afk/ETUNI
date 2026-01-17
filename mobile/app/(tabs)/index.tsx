@@ -244,7 +244,12 @@ export default function EventsScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
       <View style={styles.header}>
         <Text style={styles.title}>Keşfet</Text>
-        {loading && <ActivityIndicator color="#4f46e5" />}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {loading && <ActivityIndicator color="#4f46e5" style={{ marginRight: 12 }} />}
+          <TouchableOpacity onPress={() => router.push('/notifications')} style={{ padding: 4 }}>
+            <Ionicons name="notifications-outline" size={26} color="#1e293b" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>

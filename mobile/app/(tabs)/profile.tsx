@@ -14,6 +14,8 @@ import { authFetch, logoutFromServer } from "../../api/authFetch";
 import { debug } from "../../utils/logger";
 import { CommonActions } from "@react-navigation/native";
 
+import { Ionicons } from "@expo/vector-icons";
+
 type University = {
     id: number;
     name: string;
@@ -195,6 +197,13 @@ export default function ProfileScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View style={styles.header}>
+                    <TouchableOpacity
+                        onPress={() => router.push('/notifications')}
+                        style={{ position: 'absolute', top: 20, right: 20, zIndex: 10, padding: 8 }}
+                    >
+                        <Ionicons name="notifications-outline" size={26} color="#1e293b" />
+                    </TouchableOpacity>
+
                     <View style={styles.avatar}>
                         <Text style={styles.avatarText}>{profile.fullName?.charAt(0) || "?"}</Text>
                     </View>

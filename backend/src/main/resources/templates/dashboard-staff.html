@@ -39,6 +39,26 @@
 
                     <div>
                         <div class="feature-card" style="padding: 2rem; margin-bottom: 2rem;">
+                            <h3>Bildirimler</h3>
+                            <div th:if="${notifications == null or #lists.isEmpty(notifications)}"
+                                style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">Yeni
+                                bildiriminiz yok.</div>
+                            <ul th:if="${notifications != null and not #lists.isEmpty(notifications)}"
+                                style="list-style: none; padding: 0; margin-top: 1rem;">
+                                <li th:each="n : ${notifications}"
+                                    style="padding: 10px 0; border-bottom: 1px solid var(--glass-border);">
+                                    <strong th:text="${n.title}"
+                                        style="display:block; color:white; font-size: 0.95rem;"></strong>
+                                    <div th:text="${n.message}"
+                                        style="font-size:0.85rem; color:var(--text-muted); white-space:pre-wrap; margin-top: 4px;">
+                                    </div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;"
+                                        th:text="${#temporals.format(n.createdAt, 'yyyy-MM-dd HH:mm')}"></div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="feature-card" style="padding: 2rem; margin-bottom: 2rem;">
                             <h3>Hızlı İstatistik</h3>
                             <div style="margin-top: 1.5rem;">
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
