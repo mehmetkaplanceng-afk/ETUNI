@@ -198,6 +198,7 @@ public class WebController {
 
         model.addAttribute("user", profile);
         model.addAttribute("users", userProfileService.findAllUsers());
+        model.addAttribute("universities", universityService.list());
         return "admin-users";
     }
 

@@ -88,7 +88,7 @@ public class AdminController {
         return ApiResponse.ok("OK", "Assigned " + updated + " events to university");
     }
 
-    public static record UpdateUserRequest(String fullName, String email, String role) {
+    public static record UpdateUserRequest(String fullName, String email, String role, Long universityId) {
     }
 
     @org.springframework.web.bind.annotation.PutMapping("/users/{id}")
@@ -115,6 +115,13 @@ public class AdminController {
             // Update role if provided
             if (request.role() != null && !request.role().isBlank()) {
                 user.setRole(request.role());
+            }
+
+            // Update university if provided
+            if (request.universityId() != null) {
+                University uni = universityRepository.findById(request.universityId())
+                        .orElseThrow(() -> new RuntimeException("UNIVERSITY_NOT_FOUND"));
+                user.setUniversity(uni);
             }
 
             userRepository.save(user);
