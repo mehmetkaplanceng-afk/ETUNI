@@ -112,7 +112,7 @@ export default function TabLayout() {
         options={{
           title: "Organizatör",
           tabBarIcon: ({ color }) => <Ionicons name="people" size={24} color={color} />,
-          href: (userRole === "ORGANIZER" || userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/organizer" : null,
+          href: (userRole === "ORGANIZER") ? "/organizer" : null,
         }}
       />
       <Tabs.Screen
@@ -120,7 +120,7 @@ export default function TabLayout() {
         options={{
           title: "Kulüp Ekle",
           tabBarIcon: ({ color }) => <Ionicons name="add-circle" size={24} color={color} />,
-          href: (userRole === "ORGANIZER" || userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/create-club" : null,
+          href: (userRole === "ORGANIZER") ? "/create-club" : null,
         }}
       />
       <Tabs.Screen
@@ -128,7 +128,7 @@ export default function TabLayout() {
         options={{
           title: "Başvurular",
           tabBarIcon: ({ color }) => <Ionicons name="clipboard" size={24} color={color} />,
-          href: (userRole === "UNIVERSITY_STAFF" || userRole === "ADMIN") ? "/staff-requests" : null,
+          href: (userRole === "UNIVERSITY_STAFF") ? "/staff-requests" : null,
         }}
       />
       <Tabs.Screen
