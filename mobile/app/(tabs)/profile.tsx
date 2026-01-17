@@ -209,6 +209,12 @@ export default function ProfileScreen() {
                             <Text style={styles.promotionText}>🎓 Organizatör Olmak İste</Text>
                         </TouchableOpacity>
                     )}
+
+                    {profile.role === "ADMIN" && (
+                        <TouchableOpacity onPress={() => router.push("/admin/dashboard")} style={[styles.promotionBtn, { backgroundColor: '#1e293b', marginTop: 12 }]}>
+                            <Text style={styles.promotionText}>🛡️ Admin Paneli</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <View style={styles.section}>

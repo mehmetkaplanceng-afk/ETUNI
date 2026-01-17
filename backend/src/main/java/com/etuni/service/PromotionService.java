@@ -38,6 +38,22 @@ public class PromotionService {
         req.setUser(user);
         req.setUniversity(user.getUniversity());
         requestRepo.save(req);
+
+        // Notify University Staff
+        if (user.getUniversity() != null) {
+            System.out.println("DEBUG: Finding staff for University ID: " + user.getUniversity().getId());
+            java.util.List<UserEntity> staffList = userRepo.findByRoleAndUniversityId("UNIVERSITY_STAFF",
+                    user.getUniversity().getId());
+            System.out.println("DEBUG: Found " + staffList.size() + " staff members.");
+
+            for (UserEntity staff : staffList) {
+                System.out.println("DEBUG: Sending notification to staff: " + staff.getEmail());
+                notificationService.createForUser(staff.getId(), "Yeni Organizatör Talebi",
+                        user.getFullName() + " isimli öğrenci organizatör olmak istiyor.");
+            }
+        } else {
+            System.out.println("DEBUG: User has no university assigned.");
+        }
     }
 
     public List<PromotionRequest> getPendingRequests(Long universityId) {

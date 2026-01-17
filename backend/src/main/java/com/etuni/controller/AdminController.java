@@ -64,7 +64,20 @@ public class AdminController {
         return ApiResponse.ok("OK", "User created and assigned");
     }
 
-    public static record AdminUserDto(Long id, String fullName, String email, String role) {
+    public static record AdminUserDto(Long id, String fullName, String email, String role, Long universityId,
+            String universityName) {
+    }
+
+    public static record DashboardStats(long totalUsers, long totalEvents, long activeUniversities) {
+    }
+
+    @GetMapping("/dashboard-stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<DashboardStats> getDashboardStats() {
+        long totalUsers = userRepository.count();
+        long totalEvents = eventService.count();
+        long activeUniversities = universityRepository.count();
+        return ApiResponse.ok("OK", new DashboardStats(totalUsers, totalEvents, activeUniversities));
     }
 
     @GetMapping("/search-users")
@@ -75,7 +88,9 @@ public class AdminController {
                 .filter(u -> u.getRole() != null && ("STUDENT".equals(u.getRole()) || "ORGANIZER".equals(u.getRole())))
                 .filter(u -> q == null || q.isBlank() || u.getFullName().toLowerCase().contains(q.toLowerCase())
                         || u.getEmail().toLowerCase().contains(q.toLowerCase()))
-                .map(u -> new AdminUserDto(u.getId(), u.getFullName(), u.getEmail(), u.getRole()))
+                .map(u -> new AdminUserDto(u.getId(), u.getFullName(), u.getEmail(), u.getRole(),
+                        u.getUniversity() != null ? u.getUniversity().getId() : null,
+                        u.getUniversity() != null ? u.getUniversity().getName() : null))
                 .toList();
         return ApiResponse.ok("OK", list);
     }
