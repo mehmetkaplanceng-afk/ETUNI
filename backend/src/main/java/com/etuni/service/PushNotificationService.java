@@ -37,6 +37,7 @@ public class PushNotificationService {
             notification.put("title", title);
             notification.put("body", body);
             notification.put("priority", "high");
+            notification.put("channelId", "default");
 
             // Optional: Add data payload
             Map<String, String> data = new HashMap<>();

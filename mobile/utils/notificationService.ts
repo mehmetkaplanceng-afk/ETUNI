@@ -19,16 +19,13 @@ Notifications.setNotificationHandler({
  */
 export async function registerForPushNotifications(): Promise<string | null> {
     try {
-        // Physical device check
-        if (!Device.isDevice) {
-            console.log('DEBUG_NOTIF: Not a physical device, skipping.');
-            return null;
-        }
-        console.log('DEBUG_NOTIF: Step 1 - Device check passed.');
+        console.log('DEBUG_NOTIF: Starting registration process...');
 
         // Request permissions
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
+
+        console.log('DEBUG_NOTIF: Current permission status:', existingStatus);
 
         if (existingStatus !== 'granted') {
             const { status } = await Notifications.requestPermissionsAsync();
@@ -36,19 +33,24 @@ export async function registerForPushNotifications(): Promise<string | null> {
         }
 
         if (finalStatus !== 'granted') {
-            console.log('DEBUG_NOTIF: Permission denied. Status:', finalStatus);
+            console.log('DEBUG_NOTIF: Permission denied. Final status:', finalStatus);
             return null;
         }
-        console.log('DEBUG_NOTIF: Step 2 - Permissions granted.');
+        console.log('DEBUG_NOTIF: Permissions granted.');
 
-        // Get Expo push token (projectId auto-detected from app.json)
-        console.log('DEBUG_NOTIF: Step 3 - Requesting Expo token...');
-        const tokenData = await Notifications.getExpoPushTokenAsync();
+        // Get Expo push token
+        // IMPORTANT: For production/standalone apps, projectId is mandatory
+        console.log('DEBUG_NOTIF: Requesting Expo token with projectId: 994a48ae-ca75-476f-8fea-4b7342309461');
+        const tokenData = await Notifications.getExpoPushTokenAsync({
+            projectId: '994a48ae-ca75-476f-8fea-4b7342309461'
+        });
+
         const token = tokenData.data;
-        console.log('DEBUG_NOTIF: Step 4 - Got token:', token);
+        console.log('DEBUG_NOTIF: Successfully got token:', token);
 
         // Configure Android notification channel
         if (Platform.OS === 'android') {
+            console.log('DEBUG_NOTIF: Configuring Android notification channel...');
             await Notifications.setNotificationChannelAsync('default', {
                 name: 'default',
                 importance: Notifications.AndroidImportance.MAX,
@@ -63,6 +65,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
         return token;
     } catch (error: any) {
         console.error('DEBUG_NOTIF: ERROR during registration:', error?.message || error);
+        console.error('DEBUG_NOTIF: Full error:', JSON.stringify(error));
         return null;
     }
 }
