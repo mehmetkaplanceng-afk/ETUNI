@@ -37,10 +37,8 @@ export async function registerForPushNotifications(): Promise<string | null> {
             return null;
         }
 
-        // Get Expo push token
-        const tokenData = await Notifications.getExpoPushTokenAsync({
-            projectId: 'your-project-id' // Will be auto-detected from app.json
-        });
+        // Get Expo push token (projectId auto-detected from app.json)
+        const tokenData = await Notifications.getExpoPushTokenAsync();
         const token = tokenData.data;
 
         console.log('Got push token:', token.substring(0, 30) + '...');

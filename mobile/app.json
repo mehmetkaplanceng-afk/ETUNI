@@ -21,7 +21,10 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "package": "com.anonymous.etuni"
     },
@@ -71,7 +74,14 @@
       "iosDisplayInForeground": true,
       "androidMode": "default",
       "androidCollapsedTitle": "ETUNI Bildirim"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "994a48ae-ca75-476f-8fea-4b7342309461"
+      }
+    },
+    "owner": "mehmetkaplanceng"
   },
   "experiments": {
     "typedRoutes": true,
