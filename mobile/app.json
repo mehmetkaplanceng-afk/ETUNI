@@ -61,7 +61,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/notification-icon.png",
+          "icon": "./assets/images/icon.png",
           "color": "#6366f1",
           "sounds": [],
           "mode": "production"
@@ -69,7 +69,7 @@
       ]
     ],
     "notification": {
-      "icon": "./assets/images/notification-icon.png",
+      "icon": "./assets/images/icon.png",
       "color": "#6366f1",
       "iosDisplayInForeground": true,
       "androidMode": "default",
@@ -81,10 +81,10 @@
         "projectId": "994a48ae-ca75-476f-8fea-4b7342309461"
       }
     },
-    "owner": "mehmetkaplanceng"
-  },
-  "experiments": {
-    "typedRoutes": true,
-    "reactCompiler": true
+    "owner": "mehmetkaplanceng",
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
   }
 }

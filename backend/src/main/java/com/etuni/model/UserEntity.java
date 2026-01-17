@@ -114,7 +114,7 @@ public class UserEntity {
   }
 
   public String getPushToken() {
-    return pushToken;
+    return this.pushToken;
   }
 
   public void setPushToken(String pushToken) {
