@@ -33,31 +33,28 @@ public class PushNotificationService {
         try {
             Map<String, Object> notification = new HashMap<>();
             notification.put("to", pushToken);
-            notification.put("sound", "default");
             notification.put("title", title);
             notification.put("body", body);
+            notification.put("sound", "default");
             notification.put("priority", "high");
             notification.put("channelId", "default");
-
-            // Optional: Add data payload
-            Map<String, String> data = new HashMap<>();
-            data.put("type", "organizer_approval");
-            notification.put("data", data);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("Accept", "application/json");
-            headers.set("Accept-Encoding", "gzip, deflate");
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(notification, headers);
 
-            restTemplate.postForEntity(EXPO_PUSH_URL, request, String.class);
+            System.out.println("LOG_PUSH: Sending notification to " + pushToken);
+            System.out.println("LOG_PUSH: Payload: " + notification);
 
-            System.out.println(
-                    "Push notification sent to: " + pushToken.substring(0, Math.min(20, pushToken.length())) + "...");
+            var response = restTemplate.postForEntity(EXPO_PUSH_URL, request, String.class);
+
+            System.out.println("LOG_PUSH: Expo status: " + response.getStatusCode());
+            System.out.println("LOG_PUSH: Expo response: " + response.getBody());
         } catch (Exception e) {
-            // Don't fail if push notification fails, just log
-            System.err.println("Failed to send push notification: " + e.getMessage());
+            System.err.println("LOG_PUSH_ERROR: Failed to send push: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
