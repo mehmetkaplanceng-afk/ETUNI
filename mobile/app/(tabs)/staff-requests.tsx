@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, Alert, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { authFetch } from "../../api/authFetch";
 
 type PromotionRequest = {
@@ -109,14 +109,14 @@ export default function StaffRequestsScreen() {
 
     if (loading) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
                 <ActivityIndicator size="large" color="#6366f1" style={{ marginTop: 50 }} />
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Organizatör Başvuruları</Text>

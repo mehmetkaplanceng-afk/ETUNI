@@ -225,7 +225,7 @@ export default function ChatScreen() {
 
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : undefined}
-                keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
             >
                 <View style={styles.inputWrapper}>
                     <View style={[styles.inputContainer, styles.shadow]}>
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#f1f5f9",
         paddingHorizontal: 16,
         paddingTop: 8,
-        paddingBottom: Platform.OS === "ios" ? 80 : 85, // SIGNIFICANTLY INCREASED to clear tab bar
+        paddingBottom: Platform.OS === "ios" ? 10 : 15,
     },
     inputContainer: {
         flexDirection: "row",

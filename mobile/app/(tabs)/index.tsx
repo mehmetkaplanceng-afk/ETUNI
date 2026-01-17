@@ -241,7 +241,7 @@ export default function EventsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Keşfet</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -278,7 +278,7 @@ export default function EventsScreen() {
       </View>
 
       <FlatList
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
         data={filteredEvents}
         keyExtractor={(e, idx) => String(e?.id ?? idx)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

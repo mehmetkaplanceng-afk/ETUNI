@@ -6,11 +6,14 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
+    Modal,
+    Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { DashboardStats, getDashboardStats } from "../../api/adminApi";
+import { DashboardStats, getDashboardStats, broadcastNotification } from "../../api/adminApi";
 import { debug } from "../../utils/logger";
 
 export default function AdminDashboardScreen() {
@@ -18,6 +21,12 @@ export default function AdminDashboardScreen() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [refreshing, setRefreshing] = useState(false);
+
+    // Broadcast Modal States
+    const [modalVisible, setModalVisible] = useState(false);
+    const [notifTitle, setNotifTitle] = useState("");
+    const [notifMessage, setNotifMessage] = useState("");
+    const [sending, setSending] = useState(false);
 
     const loadStats = async () => {
         try {
@@ -39,6 +48,26 @@ export default function AdminDashboardScreen() {
         setRefreshing(true);
         await loadStats();
         setRefreshing(false);
+    };
+
+    const handleBroadcast = async () => {
+        if (!notifTitle.trim() || !notifMessage.trim()) {
+            Alert.alert("Hata", "Lütfen başlık ve mesaj alanlarını doldurun.");
+            return;
+        }
+
+        try {
+            setSending(true);
+            await broadcastNotification(notifTitle, notifMessage);
+            Alert.alert("Başarılı", "Bildirim tüm kullanıcılara gönderildi.");
+            setModalVisible(false);
+            setNotifTitle("");
+            setNotifMessage("");
+        } catch (e: any) {
+            Alert.alert("Hata", e.message || "Bildirim gönderilemedi.");
+        } finally {
+            setSending(false);
+        }
     };
 
     return (
@@ -104,16 +133,64 @@ export default function AdminDashboardScreen() {
                 </TouchableOpacity>
 
                 {/* Future Features */}
-                <TouchableOpacity style={styles.actionBtn} onPress={() => alert('Yakında eklenecek')}>
-                    <View style={[styles.actionIcon, { backgroundColor: '#64748b' }]}>
-                        <Ionicons name="list" size={24} color="#fff" />
+                <TouchableOpacity style={styles.actionBtn} onPress={() => setModalVisible(true)}>
+                    <View style={[styles.actionIcon, { backgroundColor: '#f43f5e' }]}>
+                        <Ionicons name="notifications" size={24} color="#fff" />
                     </View>
                     <View style={{ flex: 1 }}>
-                        <Text style={styles.actionTitle}>Etkinlik Onayları</Text>
-                        <Text style={styles.actionDesc}>Bekleyen etkinlikleri incele ve onayla</Text>
+                        <Text style={styles.actionTitle}>Toplu Bildirim Gönder</Text>
+                        <Text style={styles.actionDesc}>Tüm kullanıcılara anlık bildirim gönderin</Text>
                     </View>
                     <Ionicons name="chevron-forward" size={20} color="#999" />
                 </TouchableOpacity>
+
+                {/* Broadcast Modal */}
+                <Modal visible={modalVisible} transparent animationType="slide">
+                    <View style={styles.modalBg}>
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>Toplu Bildirim</Text>
+                                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                    <Ionicons name="close" size={24} color="#333" />
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Bildirim Başlığı</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Örn: Yeni Etkinlik Duyurusu"
+                                    value={notifTitle}
+                                    onChangeText={setNotifTitle}
+                                />
+                            </View>
+
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Bildirim Mesajı</Text>
+                                <TextInput
+                                    style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
+                                    placeholder="Mesaj içeriğini buraya yazın..."
+                                    multiline
+                                    numberOfLines={4}
+                                    value={notifMessage}
+                                    onChangeText={setNotifMessage}
+                                />
+                            </View>
+
+                            <TouchableOpacity
+                                style={[styles.submitBtn, sending && { opacity: 0.7 }]}
+                                onPress={handleBroadcast}
+                                disabled={sending}
+                            >
+                                {sending ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.submitBtnText}>Bildirimi Yayınla</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
 
             </ScrollView>
         </View>
@@ -181,4 +258,29 @@ const styles = StyleSheet.create({
     },
     actionTitle: { fontSize: 16, fontWeight: '700', color: '#333' },
     actionDesc: { fontSize: 13, color: '#6b7280', marginTop: 2 },
+
+    // Modal Styles
+    modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+    modalContent: { backgroundColor: '#fff', borderRadius: 20, padding: 20 },
+    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+    modalTitle: { fontSize: 18, fontWeight: '700', color: '#111' },
+    inputGroup: { marginBottom: 15 },
+    label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 6 },
+    input: {
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 15,
+        color: '#111',
+        backgroundColor: '#f9fafb'
+    },
+    submitBtn: {
+        backgroundColor: '#f43f5e',
+        padding: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        marginTop: 10
+    },
+    submitBtnText: { color: '#fff', fontWeight: '700', fontSize: 16 }
 });

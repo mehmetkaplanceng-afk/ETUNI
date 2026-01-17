@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, ImageBackground, TouchableOpacity, RefreshControl } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { authFetch } from '../api/authFetch';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NotificationsScreen() {
     const router = useRouter();
@@ -40,11 +39,11 @@ export default function NotificationsScreen() {
         loadNotifications();
     };
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }: { item: any }) => (
         <View style={styles.card}>
             <View style={styles.cardContent}>
                 <View style={styles.iconContainer}>
-                    <Ionicons name="notifications" size={24} color="#a855f7" />
+                    <Ionicons name="notifications" size={24} color="#4f46e5" />
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={styles.title}>{item.title}</Text>
@@ -58,78 +57,93 @@ export default function NotificationsScreen() {
     );
 
     return (
-        <View style={styles.container}>
-            <Stack.Screen options={{
-                title: 'Bildirimler',
-                headerStyle: { backgroundColor: '#0f172a' },
-                headerTintColor: '#fff',
-                headerBackTitle: 'Geri'
-            }} />
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Bildirimler</Text>
+                <View style={{ width: 44 }} />
+            </View>
 
-            <ImageBackground
-                source={{ uri: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop' }}
-                style={styles.background}
-            >
-                <LinearGradient
-                    colors={['rgba(15, 23, 42, 0.9)', 'rgba(15, 23, 42, 0.95)']}
-                    style={styles.gradient}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#a855f7" style={{ marginTop: 50 }} />
-                    ) : (
-                        <FlatList
-                            data={notifications}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.id.toString()}
-                            contentContainerStyle={styles.listContent}
-                            refreshControl={
-                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
-                            }
-                            ListEmptyComponent={
-                                <View style={styles.emptyContainer}>
-                                    <Ionicons name="notifications-off-outline" size={48} color="rgba(255,255,255,0.5)" />
-                                    <Text style={styles.emptyText}>Henüz bildiriminiz yok.</Text>
-                                </View>
-                            }
-                        />
-                    )}
-                </LinearGradient>
-            </ImageBackground>
-        </View>
+            {loading && !refreshing ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#4f46e5" />
+                </View>
+            ) : (
+                <FlatList
+                    data={notifications}
+                    renderItem={renderItem}
+                    keyExtractor={(item: any) => item.id.toString()}
+                    contentContainerStyle={styles.listContent}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4f46e5" />
+                    }
+                    ListEmptyComponent={
+                        <View style={styles.emptyContainer}>
+                            <Ionicons name="notifications-off-outline" size={64} color="#cbd5e1" />
+                            <Text style={styles.emptyText}>Henüz bildiriminiz yok.</Text>
+                        </View>
+                    }
+                />
+            )}
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f8fafc',
     },
-    background: {
-        flex: 1,
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
     },
-    gradient: {
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
+    loadingContainer: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     listContent: {
         padding: 16,
-        paddingBottom: 100,
+        paddingBottom: 40,
     },
     card: {
-        backgroundColor: 'rgba(30, 41, 59, 0.7)',
+        backgroundColor: '#fff',
         borderRadius: 16,
         marginBottom: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-        overflow: 'hidden',
+        borderColor: '#f1f5f9',
     },
     cardContent: {
         flexDirection: 'row',
         padding: 16,
     },
     iconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: '#f5f3ff',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -138,20 +152,21 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        color: '#fff',
+        color: '#1e293b',
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '700',
         marginBottom: 4,
     },
     message: {
-        color: '#cbd5e1',
+        color: '#475569',
         fontSize: 14,
         lineHeight: 20,
         marginBottom: 8,
     },
     date: {
-        color: '#64748b',
+        color: '#94a3b8',
         fontSize: 12,
+        fontWeight: '500',
     },
     emptyContainer: {
         alignItems: 'center',
@@ -162,5 +177,7 @@ const styles = StyleSheet.create({
         color: '#94a3b8',
         fontSize: 16,
         marginTop: 16,
+        fontWeight: '600',
     },
 });
+

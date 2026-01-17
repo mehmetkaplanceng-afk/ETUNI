@@ -42,3 +42,14 @@ export const updateUser = async (id: number, data: { fullName: string; email: st
     }
     return await res.json();
 };
+
+export const broadcastNotification = async (title: string, message: string) => {
+    const res = await authFetch(`/api/admin/broadcast-notification?title=${encodeURIComponent(title)}&message=${encodeURIComponent(message)}`, {
+        method: 'POST'
+    });
+    if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.message || 'Notification failed');
+    }
+    return await res.json();
+};

@@ -194,7 +194,7 @@ export default function ProfileScreen() {
     const selectedTimeRangeLabel = timeRanges.find(t => t.value === editTimeRange)?.label || "Seçiniz...";
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }} edges={['top']}>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
                 <View style={styles.header}>
                     <TouchableOpacity

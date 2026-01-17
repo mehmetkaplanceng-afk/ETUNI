@@ -117,7 +117,7 @@ export default function TicketsScreen() {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }} edges={['top']}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Biletlerim</Text>
                 {loading && <ActivityIndicator />}
@@ -129,7 +129,7 @@ export default function TicketsScreen() {
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 renderItem={renderTicket}
-                contentContainerStyle={{ padding: 16 }}
+                contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
                 ListEmptyComponent={<Text style={styles.empty}>Henüz biletiniz yok.</Text>}
             />
             <Modal visible={!!previewUri} transparent animationType="fade" onRequestClose={() => setPreviewUri(null)}>

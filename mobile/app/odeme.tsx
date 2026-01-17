@@ -1,16 +1,19 @@
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { authFetch } from "../api/authFetch";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Odeme() {
   const router = useRouter();
@@ -34,19 +37,15 @@ export default function Odeme() {
     try {
       setLoading(true);
 
-     const res = await authFetch("/api/katılım/onayla", { method: "POST" });
+      const res = await authFetch("/api/katılım/onayla", { method: "POST" });
 
       if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        Alert.alert(
-          "Ödeme (Demo)",
-          "çalışıyor."
-        );
+        Alert.alert("Ödeme (Demo)", "Ödeme işlemi simüle ediliyor.");
       } else {
         Alert.alert("Başarılı", "Ödeme alındı (demo).");
       }
 
-      router.replace("/(tabs)/katılım");
+      router.replace("/(tabs)/tickets");
     } catch (e: any) {
       console.error(e);
       Alert.alert("Hata", e?.message || "Ödeme isteği gönderilemedi");
@@ -56,93 +55,128 @@ export default function Odeme() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.root}
-    >
-      <View style={styles.container}>
-        <Text style={styles.title}>💳 Ödeme</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Ad Soyad"
-          value={adSoyad}
-          onChangeText={setAdSoyad}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Kart Numarası (16 hane)"
-          keyboardType="number-pad"
-          value={kartNoFmt}
-          onChangeText={setKartNo}
-        />
-
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="AA/YY"
-            keyboardType="number-pad"
-            value={sonKulFmt}
-            onChangeText={setSonKul}
-          />
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="CVC"
-            keyboardType="number-pad"
-            secureTextEntry
-            value={cvcFmt}
-            onChangeText={setCvc}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.payBtn} onPress={onayla} disabled={loading}>
-          <Text style={styles.payBtnText}>{loading ? "İşleniyor..." : "Ödemeyi Tamamla"}</Text>
+    <SafeAreaView style={styles.root}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#1e293b" />
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} disabled={loading}>
-          <Text style={styles.backBtnText}>Geri</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Ödeme</Text>
+        <View style={{ width: 44 }} />
       </View>
-    </KeyboardAvoidingView>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.flex1}
+      >
+        <View style={styles.container}>
+          <Text style={styles.title}>💳 Kart Bilgileri</Text>
+          <Text style={styles.subtitle}>İşlemi tamamlamak için bilgileri doldurun</Text>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Ad Soyad</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Kart Üzerindeki İsim"
+              placeholderTextColor="#94a3b8"
+              value={adSoyad}
+              onChangeText={setAdSoyad}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Kart Numarası</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="1234 5678 9012 3456"
+              placeholderTextColor="#94a3b8"
+              keyboardType="number-pad"
+              value={kartNoFmt}
+              onChangeText={setKartNo}
+            />
+          </View>
+
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>Son Kullanma</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="AA/YY"
+                placeholderTextColor="#94a3b8"
+                keyboardType="number-pad"
+                value={sonKulFmt}
+                onChangeText={setSonKul}
+              />
+            </View>
+            <View style={[styles.inputGroup, { flex: 1 }]}>
+              <Text style={styles.label}>CVC</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="123"
+                placeholderTextColor="#94a3b8"
+                keyboardType="number-pad"
+                secureTextEntry
+                value={cvcFmt}
+                onChangeText={setCvc}
+              />
+            </View>
+          </View>
+
+          <TouchableOpacity style={styles.payBtn} onPress={onayla} disabled={loading}>
+            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.payBtnText}>Ödemeyi Tamamla</Text>}
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#fff" },
-  container: { flex: 1, paddingTop: 70, paddingHorizontal: 16 },
-  title: { fontSize: 22, fontWeight: "900", textAlign: "center", marginBottom: 18 },
-
+  root: { flex: 1, backgroundColor: "#f8fafc" },
+  flex1: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1e293b',
+  },
+  container: { flex: 1, paddingTop: 30, paddingHorizontal: 20 },
+  title: { fontSize: 24, fontWeight: "900", color: "#1e293b", marginBottom: 8 },
+  subtitle: { fontSize: 15, color: "#64748b", marginBottom: 30 },
+  inputGroup: { marginBottom: 16 },
+  label: { fontSize: 14, fontWeight: "700", marginBottom: 8, color: "#475569" },
   input: {
     backgroundColor: "#fff",
-    padding: 12,
+    padding: 14,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: "#e2e8f0",
     fontSize: 16,
-    marginBottom: 10,
+    color: "#1e293b",
   },
-  row: { flexDirection: "row", gap: 10 },
-
+  row: { flexDirection: "row", gap: 12 },
   payBtn: {
-    backgroundColor: "#16a34a",
-    paddingVertical: 12,
+    backgroundColor: "#4B32C3",
+    paddingVertical: 16,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 8,
-  },
-  payBtnText: { color: "#fff", fontWeight: "900", fontSize: 16 },
-
-  backBtn: {
     marginTop: 10,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#4B32C3",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
+    shadowColor: "#4B32C3",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5
   },
-  backBtnText: { color: "#4B32C3", fontWeight: "900", fontSize: 16 },
-
-  note: { textAlign: "center", color: "#666", marginTop: 14 },
+  payBtnText: { color: "#fff", fontWeight: "800", fontSize: 17 },
 });

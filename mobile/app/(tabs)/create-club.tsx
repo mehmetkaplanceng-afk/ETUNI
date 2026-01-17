@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,14 +9,42 @@ import {
     Alert,
     ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from 'expo-router';
-import authFetch from '../../api/authFetch';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authFetch } from '../../api/authFetch';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CreateClub() {
     const router = useRouter();
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
+    const [universityId, setUniversityId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const getUniId = async () => {
+            let id = await AsyncStorage.getItem('universityId');
+            if (!id) {
+                // Fallback: try to get from profile if not in storage
+                try {
+                    const res = await authFetch("/api/profile", { method: "GET" });
+                    if (res.ok) {
+                        const json = await res.json();
+                        const profileData = json.data || json;
+                        if (profileData.selectedUniversityId) {
+                            id = String(profileData.selectedUniversityId);
+                            await AsyncStorage.setItem('universityId', id);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch profile for university ID:", e);
+                }
+            }
+            setUniversityId(id);
+        };
+        getUniId();
+    }, []);
 
     const handleSubmit = async () => {
         if (!name.trim() || !description.trim()) {
@@ -24,21 +52,16 @@ export default function CreateClub() {
             return;
         }
 
+        if (!universityId) {
+            Alert.alert('Hata', 'Üniversite bilginiz bulunamadı. Lütfen profilinizden üniversite seçtiğinizden emin olun.');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            // Get university ID from AsyncStorage
-            const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-            const universityIdStr = await AsyncStorage.getItem('selectedUniversityId');
-
-            if (!universityIdStr) {
-                Alert.alert('Hata', 'Üniversite bilginiz bulunamadı');
-                setLoading(false);
-                return;
-            }
-
             const payload = {
-                universityId: parseInt(universityIdStr),
+                universityId: parseInt(universityId),
                 name: name.trim(),
                 description: description.trim(),
             };
@@ -48,7 +71,22 @@ export default function CreateClub() {
                 body: JSON.stringify(payload),
             });
 
-            if (response.success) {
+            // Handle both response shapes (Response object or parsed success object if authFetch was modified)
+            let success = false;
+            let message = '';
+
+            if (response.ok) {
+                success = true;
+            } else {
+                try {
+                    const errorJson = await response.json();
+                    message = errorJson.message || 'Kulüp oluşturulamadı';
+                } catch (e) {
+                    message = 'Kulüp oluşturulamadı';
+                }
+            }
+
+            if (success) {
                 Alert.alert('Başarılı', 'Kulüp başarıyla oluşturuldu!', [
                     {
                         text: 'Tamam',
@@ -60,7 +98,7 @@ export default function CreateClub() {
                     },
                 ]);
             } else {
-                Alert.alert('Hata', response.message || 'Kulüp oluşturulamadı');
+                Alert.alert('Hata', message);
             }
         } catch (error: any) {
             console.error('Create club error:', error);
@@ -71,16 +109,24 @@ export default function CreateClub() {
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Yeni Kulüp Oluştur</Text>
-                    <Text style={styles.subtitle}>Üniversiteniz için yeni bir kulüp ekleyin</Text>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Yeni Kulüp</Text>
+                <View style={{ width: 40 }} />
+            </View>
+
+            <ScrollView contentContainerStyle={styles.content}>
+                <View style={styles.infoBox}>
+                    <Text style={styles.title}>Kulüp Bilgileri</Text>
+                    <Text style={styles.subtitle}>Üniversiteniz için yeni bir topluluk başlatın.</Text>
                 </View>
 
                 <View style={styles.form}>
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Kulüp Adı</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.inputLabel}>Kulüp Adı</Text>
                         <TextInput
                             style={styles.input}
                             placeholder="Örn: Teknoloji Kulübü"
@@ -91,11 +137,11 @@ export default function CreateClub() {
                         />
                     </View>
 
-                    <View style={styles.formGroup}>
-                        <Text style={styles.label}>Açıklama</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.inputLabel}>Açıklama</Text>
                         <TextInput
                             style={[styles.input, styles.textarea]}
-                            placeholder="Kulübünüz hakkında detaylı bilgi..."
+                            placeholder="Kulübünüzün hedefleri ve projeleri hakkında bilgi verin..."
                             placeholderTextColor="#94a3b8"
                             value={description}
                             onChangeText={setDescription}
@@ -114,79 +160,108 @@ export default function CreateClub() {
                         {loading ? (
                             <ActivityIndicator color="#fff" />
                         ) : (
-                            <Text style={styles.submitButtonText}>Kulübü Oluştur</Text>
+                            <Text style={styles.submitButtonText}>✨ Kulübü Oluştur</Text>
                         )}
                     </TouchableOpacity>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0f172a',
+        backgroundColor: '#f8fafc',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
     },
     content: {
         padding: 20,
-        paddingTop: 60,
     },
-    header: {
-        marginBottom: 30,
+    infoBox: {
+        marginBottom: 24,
     },
     title: {
-        fontSize: 32,
+        fontSize: 24,
         fontWeight: '800',
-        color: '#fff',
-        marginBottom: 8,
+        color: '#1e293b',
+        marginBottom: 4,
     },
     subtitle: {
-        fontSize: 16,
-        color: '#94a3b8',
+        fontSize: 15,
+        color: '#64748b',
     },
     form: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 24,
-        padding: 24,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 15,
+        elevation: 3,
     },
-    formGroup: {
+    inputContainer: {
         marginBottom: 20,
     },
-    label: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#fff',
+    inputLabel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#64748b',
         marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     input: {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        backgroundColor: '#f8fafc',
         borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderColor: '#e2e8f0',
         borderRadius: 12,
-        padding: 12,
+        padding: 14,
         fontSize: 16,
-        color: '#fff',
+        color: '#1e293b',
     },
     textarea: {
         minHeight: 120,
-        paddingTop: 12,
+        paddingTop: 14,
     },
     submitButton: {
         backgroundColor: '#4f46e5',
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 14,
         alignItems: 'center',
         marginTop: 10,
+        shadowColor: "#4f46e5",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
     },
     submitButtonDisabled: {
         opacity: 0.6,
+        shadowOpacity: 0,
     },
     submitButtonText: {
         color: '#fff',
-        fontSize: 18,
-        fontWeight: '700',
+        fontSize: 16,
+        fontWeight: '800',
     },
 });
+

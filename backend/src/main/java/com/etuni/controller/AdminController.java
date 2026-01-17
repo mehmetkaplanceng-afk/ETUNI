@@ -153,4 +153,16 @@ public class AdminController {
             throw new RuntimeException("UPDATE_FAILED");
         }
     }
+
+    @PostMapping("/broadcast-notification")
+    @PreAuthorize("hasRole('ADMIN')")
+    @org.springframework.transaction.annotation.Transactional
+    public ApiResponse<String> broadcastNotification(@RequestParam("title") String title,
+            @RequestParam("message") String message) {
+        if (title == null || title.isBlank() || message == null || message.isBlank()) {
+            throw new RuntimeException("TITLE_OR_MESSAGE_EMPTY");
+        }
+        int count = notificationService.sendBroadcastNotification(title, message);
+        return ApiResponse.ok("OK", "Broadcast notification sent to " + count + " users");
+    }
 }

@@ -11,6 +11,7 @@ import {
 import { WebView } from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authFetch } from "../../api/authFetch";
+import { Ionicons } from "@expo/vector-icons";
 
 type EventDetail = {
     id: number;
@@ -95,7 +96,15 @@ export default function EventDetailScreen() {
     if (!event) return <SafeAreaView><Text style={{ padding: 20 }}>Etkinlik bulunamadı.</Text></SafeAreaView>;
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Etkinlik Detayı</Text>
+                <View style={{ width: 44 }} />
+            </View>
+
             <ScrollView contentContainerStyle={{ padding: 20 }}>
                 <Text style={styles.type}>{event.eventType}</Text>
                 <Text style={styles.title}>{event.title}</Text>
@@ -178,16 +187,30 @@ export default function EventDetailScreen() {
                         {event.status === 'PASSIVE' ? "Etkinlik Sona Erdi" : "Etkinliğe Katıl"}
                     </Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 20, alignItems: 'center' }}>
-                    <Text style={{ color: '#666' }}>Geri Dön</Text>
-                </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
     type: { color: "#4f46e5", fontWeight: "700", marginBottom: 8, letterSpacing: 1 },
     title: { fontSize: 28, fontWeight: "900", color: "#1e293b", marginBottom: 16 },
     meta: { flexDirection: "row", gap: 20, marginBottom: 20 },

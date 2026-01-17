@@ -75,16 +75,18 @@ export default function PaymentScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Ödeme</Text>
+                <View style={{ width: 44 }} />
+            </View>
+
             <ScrollView contentContainerStyle={styles.scrollView}>
-                <View style={[styles.header, { position: 'relative' }]}>
-                    <TouchableOpacity
-                        style={{ position: 'absolute', left: 0, top: 2, padding: 4, zIndex: 10 }}
-                        onPress={() => router.back()}
-                    >
-                        <Ionicons name="arrow-back" size={28} color="#1e293b" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>💳 Ödeme</Text>
-                    <Text style={styles.subtitle}>Güvenli ödeme ekranı</Text>
+                <View style={styles.headerInfo}>
+                    <Text style={styles.title}>💳 Güvenli Ödeme</Text>
+                    <Text style={styles.subtitle}>İşleminizi tamamlamak için kart bilgilerinizi girin</Text>
                 </View>
 
                 {/* Event Info */}
@@ -174,8 +176,26 @@ export default function PaymentScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#f8fafc' },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
     scrollView: { padding: 16, paddingBottom: 100 },
-    header: { marginBottom: 24, alignItems: 'center' },
+    headerInfo: { marginBottom: 24, alignItems: 'center', marginTop: 10 },
     title: { fontSize: 28, fontWeight: '800', color: '#1e293b', marginBottom: 4 },
     subtitle: { fontSize: 14, color: '#64748b' },
     eventCard: {

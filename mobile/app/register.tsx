@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { API_URL } from "../api/authFetch";
+import { Ionicons } from "@expo/vector-icons";
 
 type University = {
     id: number;
@@ -58,7 +59,7 @@ export default function RegisterScreen() {
 
     const register = async () => {
         if (!fullName.trim() || !email.trim() || !password.trim() || !selectedUniId) {
-            Alert.alert("Eksik bilgi", "Lütfen tüm lanları doldurun ve üniversite seçin.");
+            Alert.alert("Eksik bilgi", "Lütfen tüm alanları doldurun ve üniversite seçin.");
             return;
         }
 
@@ -95,171 +96,261 @@ export default function RegisterScreen() {
     };
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.root}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.title}>Kayıt Ol</Text>
-                <Text style={styles.subtitle}>ETUNI Ailesine Katıl</Text>
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Ad Soyad"
-                    value={fullName}
-                    onChangeText={setFullName}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="E-posta"
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Şifre"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
-                />
-
-                <Text style={styles.label}>Üniversite:</Text>
-                <TouchableOpacity
-                    style={styles.selectBox}
-                    onPress={() => setShowUniModal(true)}
-                >
-                    <Text style={[styles.selectBoxText, !selectedUniId && { color: "#9ca3af" }]}>
-                        {selectedUniId
-                            ? universities.find(u => u.id === selectedUniId)?.name
-                            : "Üniversite seçmek için dokunun"}
-                    </Text>
-                    <Text style={{ color: "#4B32C3", fontSize: 12, fontWeight: "800" }}>SEÇ</Text>
+        <SafeAreaView style={styles.root}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
                 </TouchableOpacity>
+                <Text style={styles.headerTitle}>Kayıt Ol</Text>
+                <View style={{ width: 44 }} />
+            </View>
 
-                {/* University Selection Modal */}
-                <Modal
-                    visible={showUniModal}
-                    animationType="slide"
-                    onRequestClose={() => setShowUniModal(false)}
-                >
-                    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Üniversite Seçin</Text>
-                            <TouchableOpacity onPress={() => setShowUniModal(false)}>
-                                <Text style={styles.closeBtn}>Kapat</Text>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.flex1}>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <Text style={styles.title}>ETUNI'ye Katıl</Text>
+                    <Text style={styles.subtitle}>Üniversite hayatını keşfetmeye başla</Text>
+
+                    <View style={styles.form}>
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Ad Soyad</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Örn: Mehmet Kaplan"
+                                placeholderTextColor="#94a3b8"
+                                value={fullName}
+                                onChangeText={setFullName}
+                            />
+                        </View>
+
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>E-posta</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Örn: mehmet@etuni.com"
+                                placeholderTextColor="#94a3b8"
+                                value={email}
+                                onChangeText={setEmail}
+                                autoCapitalize="none"
+                                keyboardType="email-address"
+                            />
+                        </View>
+
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Şifre</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="••••••••"
+                                placeholderTextColor="#94a3b8"
+                                secureTextEntry
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+                        </View>
+
+                        <View style={styles.inputGroup}>
+                            <Text style={styles.label}>Üniversite</Text>
+                            <TouchableOpacity
+                                style={styles.selectBox}
+                                onPress={() => setShowUniModal(true)}
+                            >
+                                <Text style={[styles.selectBoxText, !selectedUniId && { color: "#94a3b8" }]}>
+                                    {selectedUniId
+                                        ? universities.find(u => u.id === selectedUniId)?.name
+                                        : "Üniversitenizi seçin"}
+                                </Text>
+                                <Ionicons name="chevron-forward" size={18} color="#4B32C3" />
                             </TouchableOpacity>
                         </View>
 
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Üniversite ara..."
-                            value={uniSearch}
-                            onChangeText={setUniSearch}
-                        />
+                        <TouchableOpacity style={styles.btn} onPress={register} disabled={loading}>
+                            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Hesabımı Oluştur</Text>}
+                        </TouchableOpacity>
 
-                        {fetchingUnis ? (
-                            <ActivityIndicator style={{ marginTop: 20 }} />
-                        ) : (
-                            <FlatList
-                                data={universities.filter(u =>
-                                    u.name.toLowerCase().includes(uniSearch.toLowerCase())
-                                )}
-                                keyExtractor={(item) => String(item.id)}
-                                contentContainerStyle={{ padding: 20 }}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        style={styles.modalItem}
-                                        onPress={() => {
-                                            setSelectedUniId(item.id);
-                                            setShowUniModal(false);
-                                        }}
-                                    >
+                        <TouchableOpacity style={styles.linkBtn} onPress={() => router.replace("/login")}>
+                            <Text style={styles.linkText}>Zaten hesabın var mı? <Text style={{ fontWeight: '800' }}>Giriş Yap</Text></Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+
+            {/* University Selection Modal */}
+            <Modal
+                visible={showUniModal}
+                animationType="slide"
+                onRequestClose={() => setShowUniModal(false)}
+            >
+                <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => setShowUniModal(false)} style={styles.backButton}>
+                            <Ionicons name="close" size={24} color="#1e293b" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>Üniversite Seçin</Text>
+                        <View style={{ width: 44 }} />
+                    </View>
+
+                    <View style={{ padding: 16 }}>
+                        <View style={styles.searchContainer}>
+                            <Ionicons name="search" size={20} color="#94a3b8" style={{ marginRight: 8 }} />
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Üniversite ara..."
+                                placeholderTextColor="#94a3b8"
+                                value={uniSearch}
+                                onChangeText={setUniSearch}
+                            />
+                        </View>
+                    </View>
+
+                    {fetchingUnis ? (
+                        <ActivityIndicator style={{ marginTop: 20 }} color="#4B32C3" />
+                    ) : (
+                        <FlatList
+                            data={universities.filter(u =>
+                                u.name.toLowerCase().includes(uniSearch.toLowerCase())
+                            )}
+                            keyExtractor={(item) => String(item.id)}
+                            contentContainerStyle={{ padding: 16 }}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={styles.modalItem}
+                                    onPress={() => {
+                                        setSelectedUniId(item.id);
+                                        setShowUniModal(false);
+                                    }}
+                                >
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                                        <View style={[styles.uniIcon, selectedUniId === item.id && styles.uniIconActive]}>
+                                            <Ionicons name="school" size={20} color={selectedUniId === item.id ? "#fff" : "#4B32C3"} />
+                                        </View>
                                         <Text style={[
                                             styles.modalItemText,
                                             selectedUniId === item.id && { color: "#4B32C3", fontWeight: "700" }
                                         ]}>
                                             {item.name}
                                         </Text>
-                                        {selectedUniId === item.id && <Text style={{ color: "#4B32C3" }}>✓</Text>}
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        )}
-                    </SafeAreaView>
-                </Modal>
-
-                <TouchableOpacity style={styles.btn} onPress={register} disabled={loading}>
-                    {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Kayıt Ol</Text>}
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.linkBtn} onPress={() => router.back()}>
-                    <Text style={styles.linkText}>Zaten hesabın var mı? Giriş Yap</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </KeyboardAvoidingView >
+                                    </View>
+                                    {selectedUniId === item.id && (
+                                        <View style={styles.checkCircle}>
+                                            <Ionicons name="checkmark" size={16} color="#fff" />
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
+                            )}
+                        />
+                    )}
+                </SafeAreaView>
+            </Modal>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: "#f5f6fa" },
-    container: { padding: 20, paddingTop: 50 },
-    title: { fontSize: 28, fontWeight: "900", textAlign: "center", marginBottom: 4, color: "#4B32C3" },
-    subtitle: { fontSize: 16, textAlign: "center", marginBottom: 20, color: "#666" },
+    root: { flex: 1, backgroundColor: "#f8fafc" },
+    flex1: { flex: 1 },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
+    container: { paddingBottom: 40 },
+    title: { fontSize: 26, fontWeight: "900", textAlign: "center", marginTop: 30, color: "#1e293b" },
+    subtitle: { fontSize: 15, textAlign: "center", marginBottom: 30, color: "#64748b" },
+    form: { paddingHorizontal: 20 },
+    inputGroup: { marginBottom: 16 },
+    label: { fontSize: 14, fontWeight: "700", marginBottom: 8, color: "#475569" },
     input: {
         backgroundColor: "#fff",
-        padding: 12,
-        borderRadius: 10,
+        padding: 14,
+        borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#dcdde1",
+        borderColor: "#e2e8f0",
         fontSize: 16,
-        marginBottom: 10,
+        color: "#1e293b",
     },
-    label: { fontSize: 16, fontWeight: "600", marginTop: 10, marginBottom: 8, color: "#333" },
     selectBox: {
         backgroundColor: "#fff",
-        padding: 15,
-        borderRadius: 10,
+        padding: 14,
+        borderRadius: 12,
         borderWidth: 1,
-        borderColor: "#dcdde1",
+        borderColor: "#e2e8f0",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20
     },
-    selectBoxText: { fontSize: 16, color: "#333" },
-    modalHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: "#eee"
+    selectBoxText: { fontSize: 16, color: "#1e293b" },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        paddingHorizontal: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
     },
-    modalTitle: { fontSize: 18, fontWeight: "800", color: "#4B32C3" },
-    closeBtn: { color: "#666", fontWeight: "600" },
     searchInput: {
-        margin: 15,
-        padding: 12,
-        backgroundColor: "#f5f6fa",
-        borderRadius: 10,
-        fontSize: 16
+        flex: 1,
+        paddingVertical: 12,
+        fontSize: 16,
+        color: '#1e293b'
     },
     modalItem: {
-        paddingVertical: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: "#f1f5f9",
+        padding: 16,
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        marginBottom: 10,
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
     },
-    modalItemText: { fontSize: 16, color: "#1e293b" },
+    uniIcon: {
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        backgroundColor: '#f5f3ff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12
+    },
+    uniIconActive: {
+        backgroundColor: '#4B32C3'
+    },
+    modalItemText: { fontSize: 15, color: "#1e293b", flex: 1 },
+    checkCircle: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: '#10b981',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     btn: {
         backgroundColor: "#4B32C3",
-        paddingVertical: 14,
-        borderRadius: 10,
+        paddingVertical: 16,
+        borderRadius: 12,
         alignItems: "center",
         marginTop: 10,
+        shadowColor: "#4B32C3",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 5
     },
-    btnText: { color: "#fff", fontWeight: "900", fontSize: 16 },
+    btnText: { color: "#fff", fontWeight: "800", fontSize: 17 },
     linkBtn: { marginTop: 20, alignItems: "center" },
-    linkText: { color: "#4B32C3", fontWeight: "600" }
+    linkText: { color: "#64748b", fontSize: 14 }
 });

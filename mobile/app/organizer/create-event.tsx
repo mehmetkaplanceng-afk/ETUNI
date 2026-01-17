@@ -18,6 +18,7 @@ import { useRouter } from "expo-router";
 import { authFetch } from "../../api/authFetch";
 import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CreateEventScreen() {
     const router = useRouter();
@@ -233,9 +234,17 @@ export default function CreateEventScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color="#1e293b" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Yeni Etkinlik</Text>
+                <View style={{ width: 44 }} />
+            </View>
+
             <ScrollView style={styles.scrollView}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Yeni Etkinlik Oluştur</Text>
+                    <Text style={styles.title}>Etkinlik Bilgileri</Text>
                     <Text style={styles.subtitle}>Etkinlik detaylarını girerek platformda yayınlayın</Text>
                 </View>
 
@@ -542,7 +551,25 @@ export default function CreateEventScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f8fafc" },
     scrollView: { flex: 1 },
-    header: { padding: 20, backgroundColor: "#fff", borderBottomWidth: 1, borderBottomColor: "#e2e8f0" },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f1f5f9',
+    },
+    backButton: {
+        padding: 8,
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1e293b',
+    },
+    header: { padding: 20, backgroundColor: "#fff" },
     title: { fontSize: 24, fontWeight: "800", color: "#1e293b", marginBottom: 4 },
     subtitle: { fontSize: 14, color: "#64748b" },
     form: { padding: 20 },

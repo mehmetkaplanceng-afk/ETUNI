@@ -72,7 +72,7 @@ export default function OrganizerEvents() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }} edges={['top', 'left', 'right']}>
       <View style={{ padding: 16, backgroundColor: '#fff' }}>
         <Text style={{ fontSize: 20, fontWeight: '800' }}>Etkinliklerim</Text>
         {loading && <ActivityIndicator />}

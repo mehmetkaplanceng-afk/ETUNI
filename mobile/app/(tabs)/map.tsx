@@ -232,14 +232,14 @@ export default function MapScreen() {
 
     if (loading) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={styles.container} edges={['top']}>
                 <ActivityIndicator style={{ marginTop: 50 }} size="large" />
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <Text style={styles.title}>🗺️ Etkinlik Haritası</Text>
                 <Text style={styles.subtitle}>
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     subtitle: { fontSize: 14, color: "#64748b" },
     eventCard: {
         position: "absolute",
-        bottom: 120, // Increased bottom margin to sit above list
+        bottom: 110, // Sit above the list
         left: 20,
         right: 20,
         backgroundColor: "#fff",
