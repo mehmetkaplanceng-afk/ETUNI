@@ -32,6 +32,8 @@ public class AttendanceService {
 
   @org.springframework.transaction.annotation.Transactional
   public byte[] generateAttendanceQrImage(Long attendanceId) {
+    if (attendanceId == null)
+      throw new RuntimeException("ID_REQUIRED");
     Attendance a = attendanceRepo.findById(attendanceId)
         .orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
     String payload = qrUtil.generateForAttendance(a.getId(), a.getTicketCode());
@@ -104,6 +106,33 @@ public class AttendanceService {
   }
 
   @org.springframework.transaction.annotation.Transactional
+  public void createPaidAttendance(Long userId, Long eventId, String transactionId) {
+    UserEntity user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+    Event event = eventRepo.findById(eventId).orElseThrow(() -> new RuntimeException("EVENT_NOT_FOUND"));
+
+    // Check if user already has an attendance for this event
+    var existing = attendanceRepo.findByEventIdAndUserId(eventId, userId);
+    Attendance a = existing.orElseGet(Attendance::new);
+
+    a.setEvent(event);
+    a.setUser(user);
+    a.setVerified(false);
+    a.setStatus("APPROVED"); // Paid is automatically approved
+    a.setScannedAt(LocalDateTime.now());
+
+    if (a.getTicketCode() == null) {
+      String code = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+      while (attendanceRepo.findByTicketCode(code).isPresent()) {
+        code = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+      }
+      a.setTicketCode(code);
+    }
+    attendanceRepo.save(a);
+    logger.info("Paid attendance created/updated for user {} and event {} with transaction {}", userId, eventId,
+        transactionId);
+  }
+
+  @org.springframework.transaction.annotation.Transactional
   public QRValidationResponse scan(ScanRequest req, Long organizerId) {
     var res = qrUtil.validate(req.qrPayload());
     if (!res.valid()) {
@@ -111,8 +140,8 @@ public class AttendanceService {
     }
 
     if (res.attendanceId() != null) {
-      // attendance-level QR
-      Attendance a = attendanceRepo.findById(res.attendanceId())
+      Long attId = res.attendanceId();
+      Attendance a = attendanceRepo.findById(attId)
           .orElseThrow(() -> new RuntimeException("ATTENDANCE_NOT_FOUND"));
       logger.info("SCAN_CHECK: Biletin Etkinliği={}, Organizatörün Bulunduğu Etkinlik={}",
           a.getEvent().getId(), req.currentEventId());

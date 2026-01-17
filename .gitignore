@@ -76,6 +76,10 @@ ios/build/
 secrets/
 *.pem
 *.key
+*-firebase-adminsdk-*.json
+service-account-*.json
+google-services.json
+GoogleService-Info.plist
 
 # ===== Miscellaneous =====
 *.swp

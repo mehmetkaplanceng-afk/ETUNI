@@ -1,77 +1,73 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { authFetch } from '../api/authFetch';
+import { WebView } from 'react-native-webview';
 
 export default function PaymentScreen() {
     const router = useRouter();
     const { eventId, price, title } = useLocalSearchParams();
     const [loading, setLoading] = useState(false);
+    const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
-    // Card details
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiry, setExpiry] = useState('');
-    const [cvv, setCvv] = useState('');
-    const [cardName, setCardName] = useState('');
-
-    const formatCardNumber = (text: string) => {
-        const cleaned = text.replace(/\s/g, '');
-        const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
-        setCardNumber(formatted);
-    };
-
-    const formatExpiry = (text: string) => {
-        const cleaned = text.replace(/\D/g, '');
-        if (cleaned.length >= 2) {
-            setExpiry(cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4));
-        } else {
-            setExpiry(cleaned);
-        }
-    };
-
-    const handlePayment = async () => {
-        if (!cardNumber || !expiry || !cvv || !cardName) {
-            Alert.alert('Hata', 'Lütfen tüm alanları doldurun.');
-            return;
-        }
-
+    const initiateIyzicoPayment = async () => {
         setLoading(true);
-
         try {
-            // Simulate payment processing delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Initiate payment
-            const paymentRes = await authFetch('/api/payments/initiate', {
+            const res = await authFetch('/api/payments/initiate', {
                 method: 'POST',
                 body: JSON.stringify({ eventId: parseInt(eventId as string) })
             });
 
-            if (paymentRes.ok) {
-                const paymentData = await paymentRes.json();
-
-                // Join event
-                const joinRes = await authFetch(`/api/attendance/join/${eventId}`, {
-                    method: 'POST'
-                });
-
-                if (joinRes.ok) {
-                    router.replace(`/payment-success?txn=${paymentData.data.transactionId}&event=${title}`);
-                } else {
-                    Alert.alert('Hata', 'Ödeme başarılı ancak etkinliğe katılım sırasında hata oluştu.');
-                }
+            const json = await res.json();
+            if (json.success && json.data.paymentUrl) {
+                setPaymentUrl(json.data.paymentUrl);
             } else {
-                Alert.alert('Hata', 'Ödeme işlemi başarısız oldu.');
+                Alert.alert('Hata', json.message || 'Ödeme başlatılamadı.');
             }
         } catch (err) {
             console.error(err);
-            Alert.alert('Hata', 'Bir hata oluştu.');
+            Alert.alert('Hata', 'Sunucuya bağlanılamadı.');
         } finally {
             setLoading(false);
         }
     };
+
+    const onNavigationStateChange = (navState: any) => {
+        // Handle deep links from the success/error html pages
+        if (navState.url.includes('etuni://payments/success')) {
+            router.replace('/(tabs)/profile'); // Redirect to tickets/profile
+            Alert.alert('Başarılı', 'Ödemeniz alındı ve biletiniz oluşturuldu.');
+        } else if (navState.url.includes('etuni://payments/error')) {
+            setPaymentUrl(null);
+            Alert.alert('Hata', 'Ödeme işlemi iptal edildi veya başarısız oldu.');
+        }
+    };
+
+    if (paymentUrl) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => setPaymentUrl(null)} style={styles.backButton}>
+                        <Ionicons name="close" size={24} color="#1e293b" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Ödeme Sayfası</Text>
+                    <View style={{ width: 44 }} />
+                </View>
+                <WebView
+                    source={{ uri: paymentUrl }}
+                    onNavigationStateChange={onNavigationStateChange}
+                    startInLoadingState={true}
+                    renderLoading={() => (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color="#4f46e5" />
+                        </View>
+                    )}
+                />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -79,97 +75,41 @@ export default function PaymentScreen() {
                 <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color="#1e293b" />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Ödeme</Text>
+                <Text style={styles.headerTitle}>Ödeme Onayı</Text>
                 <View style={{ width: 44 }} />
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollView}>
-                <View style={styles.headerInfo}>
-                    <Text style={styles.title}>💳 Güvenli Ödeme</Text>
-                    <Text style={styles.subtitle}>İşleminizi tamamlamak için kart bilgilerinizi girin</Text>
-                </View>
-
-                {/* Event Info */}
-                <View style={styles.eventCard}>
-                    <Text style={styles.eventTitle}>{title}</Text>
+            <View style={styles.content}>
+                <View style={styles.card}>
+                    <Text style={styles.cardTitle}>{title}</Text>
                     <View style={styles.priceRow}>
-                        <Text style={styles.priceLabel}>Tutar:</Text>
+                        <Text style={styles.priceLabel}>Toplam Tutar:</Text>
                         <Text style={styles.priceValue}>₺{parseFloat(price as string).toFixed(2)}</Text>
                     </View>
                 </View>
 
-                {/* Payment Form */}
-                <View style={styles.form}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Kart Numarası</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={cardNumber}
-                            onChangeText={formatCardNumber}
-                            placeholder="1234 5678 9012 3456"
-                            placeholderTextColor="#94a3b8"
-                            keyboardType="numeric"
-                            maxLength={19}
-                        />
-                    </View>
-
-                    <View style={styles.row}>
-                        <View style={[styles.inputGroup, { flex: 1 }]}>
-                            <Text style={styles.label}>Son Kullanma</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={expiry}
-                                onChangeText={formatExpiry}
-                                placeholder="MM/YY"
-                                placeholderTextColor="#94a3b8"
-                                keyboardType="numeric"
-                                maxLength={5}
-                            />
+                <TouchableOpacity
+                    style={[styles.payButton, loading && styles.payButtonDisabled]}
+                    onPress={initiateIyzicoPayment}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <View style={styles.buttonContent}>
+                            <Ionicons name="lock-closed" size={20} color="#fff" style={{ marginRight: 8 }} />
+                            <Text style={styles.payButtonText}>Güvenli Öde (Iyzico)</Text>
                         </View>
-                        <View style={[styles.inputGroup, { flex: 1, marginLeft: 12 }]}>
-                            <Text style={styles.label}>CVV</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={cvv}
-                                onChangeText={(text) => setCvv(text.replace(/\D/g, ''))}
-                                placeholder="123"
-                                placeholderTextColor="#94a3b8"
-                                keyboardType="numeric"
-                                maxLength={3}
-                                secureTextEntry
-                            />
-                        </View>
-                    </View>
+                    )}
+                </TouchableOpacity>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Kart Üzerindeki İsim</Text>
-                        <TextInput
-                            style={[styles.input, { textTransform: 'uppercase' }]}
-                            value={cardName}
-                            onChangeText={setCardName}
-                            placeholder="MEHMET KAPLAN"
-                            placeholderTextColor="#94a3b8"
-                            autoCapitalize="characters"
-                        />
-                    </View>
-
-                    <TouchableOpacity
-                        style={[styles.payButton, loading && styles.payButtonDisabled]}
-                        onPress={handlePayment}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.payButtonText}>Ödemeyi Tamamla</Text>
-                        )}
-                    </TouchableOpacity>
-
-                    <Text style={styles.disclaimer}>
-                        🔒 Bu bir demo ödeme ekranıdır. Gerçek ödeme işlemi yapılmamaktadır.
+                <View style={styles.infoBox}>
+                    <Ionicons name="shield-checkmark" size={24} color="#059669" />
+                    <Text style={styles.infoText}>
+                        Ödemeniz Iyzico güvencesiyle 256-bit SSL şifreleme ile korunmaktadır.
                     </Text>
                 </View>
-            </ScrollView>
+            </View>
         </SafeAreaView>
     );
 }
@@ -186,55 +126,40 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f1f5f9',
     },
-    backButton: {
-        padding: 8,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: '800',
-        color: '#1e293b',
-    },
-    scrollView: { padding: 16, paddingBottom: 100 },
-    headerInfo: { marginBottom: 24, alignItems: 'center', marginTop: 10 },
-    title: { fontSize: 28, fontWeight: '800', color: '#1e293b', marginBottom: 4 },
-    subtitle: { fontSize: 14, color: '#64748b' },
-    eventCard: {
-        backgroundColor: '#f3e8ff',
-        borderWidth: 1,
-        borderColor: '#d8b4fe',
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 24
-    },
-    eventTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b', marginBottom: 12 },
-    priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    priceLabel: { fontSize: 14, color: '#64748b' },
-    priceValue: { fontSize: 24, fontWeight: '800', color: '#a855f7' },
-    form: {},
-    inputGroup: { marginBottom: 16 },
-    label: { fontSize: 14, fontWeight: '600', color: '#475569', marginBottom: 8 },
-    input: {
+    backButton: { padding: 8 },
+    headerTitle: { fontSize: 18, fontWeight: '800', color: '#1e293b' },
+    content: { padding: 20, flex: 1, justifyContent: 'center' },
+    card: {
         backgroundColor: '#fff',
+        borderRadius: 24,
+        padding: 30,
+        marginBottom: 30,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.05,
+        shadowRadius: 20,
+        elevation: 10,
         borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 12,
-        padding: 14,
-        fontSize: 16,
-        color: '#1e293b'
+        borderColor: '#f1f5f9'
     },
-    row: { flexDirection: 'row' },
+    cardTitle: { fontSize: 22, fontWeight: '800', color: '#1e293b', marginBottom: 20, textAlign: 'center' },
+    priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    priceLabel: { fontSize: 16, color: '#64748b' },
+    priceValue: { fontSize: 32, fontWeight: '800', color: '#4f46e5' },
     payButton: {
-        backgroundColor: '#a855f7',
-        padding: 18,
-        borderRadius: 12,
+        backgroundColor: '#4f46e5',
+        padding: 20,
+        borderRadius: 16,
         alignItems: 'center',
-        marginTop: 8,
-        shadowColor: '#a855f7',
+        shadowColor: '#4f46e5',
         shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 5
+        shadowRadius: 15,
+        elevation: 8
     },
-    payButtonDisabled: { opacity: 0.6 },
-    payButtonText: { color: '#fff', fontSize: 18, fontWeight: '800' },
-    disclaimer: { textAlign: 'center', fontSize: 11, color: '#94a3b8', marginTop: 16 }
+    buttonContent: { flexDirection: 'row', alignItems: 'center' },
+    payButtonDisabled: { opacity: 0.7 },
+    payButtonText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+    loadingContainer: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)' },
+    infoBox: { flexDirection: 'row', alignItems: 'center', marginTop: 40, paddingHorizontal: 20 },
+    infoText: { flex: 1, marginLeft: 12, fontSize: 13, color: '#475569', lineHeight: 18 }
 });

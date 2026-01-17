@@ -50,7 +50,8 @@ public class SecurityConfig {
                 "/favicon.ico", "/error", "/events", "/events/**", "/login", "/register", "/api/chat/**",
                 "/api/universities", "/api/attendance/*/qr",
                 "/api/universities/**",
-                "/forgot-password", "/reset-password") // <--- ALLOW THESE
+                "/forgot-password", "/reset-password",
+                "/api/payments/iyzico/callback") // <--- ALLOW THESE
             .permitAll()
             .requestMatchers("/dashboard", "/dashboard/**", "/profile", "/profile/**")
             .authenticated()

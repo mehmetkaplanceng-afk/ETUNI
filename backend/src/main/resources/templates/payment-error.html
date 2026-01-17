@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ödeme Başarılı - ETUNI</title>
+    <title>Ödeme Başarısız - ETUNI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -29,7 +29,7 @@
 
         .icon {
             font-size: 64px;
-            color: #10b981;
+            color: #ef4444;
             margin-bottom: 20px;
         }
 
@@ -45,7 +45,7 @@
         }
 
         .btn {
-            background: #4f46e5;
+            background: #ef4444;
             color: white;
             padding: 12px 24px;
             border-radius: 12px;
@@ -56,18 +56,17 @@
         }
 
         .btn:hover {
-            background: #4338ca;
+            background: #dc2626;
         }
     </style>
 </head>
 
 <body>
     <div class="card">
-        <div class="icon">✅</div>
-        <h1>Ödeme Başarılı!</h1>
-        <p>Biletiniz başarıyla oluşturuldu. Uygulama üzerindeki "Biletlerim" sekmesinden QR kodunuza erişebilirsiniz.
-        </p>
-        <a href="etuni://payments/success" class="btn">Uygulamaya Dön</a>
+        <div class="icon">❌</div>
+        <h1>Ödeme Başarısız</h1>
+        <p th:text="${param.message ?: 'Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.'}"></p>
+        <a href="etuni://payments/error" class="btn">Tekrar Dene</a>
     </div>
 </body>
 
