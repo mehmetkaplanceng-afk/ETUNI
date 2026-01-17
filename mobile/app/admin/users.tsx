@@ -36,6 +36,7 @@ export default function AdminUsersScreen() {
     const [formEmail, setFormEmail] = useState("");
     const [formRole, setFormRole] = useState("");
     const [formUniId, setFormUniId] = useState<number | null>(null);
+    const [formStatus, setFormStatus] = useState("ACTIVE");
 
     useEffect(() => {
         loadUsers();
@@ -73,22 +74,27 @@ export default function AdminUsersScreen() {
         setFormEmail(user.email);
         setFormRole(user.role);
         setFormUniId(user.universityId);
+        setFormStatus(user.status || "ACTIVE");
         setModalVisible(true);
     };
 
     const saveUser = async () => {
         if (!editingUser) return;
+        const payload = {
+            fullName: formName,
+            email: formEmail,
+            role: formRole,
+            universityId: formUniId || undefined,
+            status: formStatus
+        };
+        debug("ADMIN: Sending user update:", payload);
         try {
-            await updateUser(editingUser.id, {
-                fullName: formName,
-                email: formEmail,
-                role: formRole,
-                universityId: formUniId || undefined
-            });
+            await updateUser(editingUser.id, payload);
             Alert.alert("Başarılı", "Kullanıcı güncellendi");
             setModalVisible(false);
             loadUsers(query);
         } catch (e: any) {
+            debug("ADMIN: Update failed:", e);
             Alert.alert("Hata", e.message);
         }
     };
@@ -183,6 +189,17 @@ export default function AdminUsersScreen() {
                                 {universities.find(u => u.id === formUniId)?.name || 'Seçiniz...'}
                             </Text>
                             <Ionicons name="chevron-down" size={20} color="#999" />
+                        </TouchableOpacity>
+
+                        <Text style={styles.label}>Durum</Text>
+                        <TouchableOpacity
+                            style={[styles.selectBtn, { backgroundColor: formStatus === 'ACTIVE' ? '#dcfce7' : '#fee2e2' }]}
+                            onPress={() => setFormStatus(formStatus === 'ACTIVE' ? 'DISABLED' : 'ACTIVE')}
+                        >
+                            <Text style={{ color: formStatus === 'ACTIVE' ? '#16a34a' : '#dc2626', fontWeight: '700' }}>
+                                {formStatus === 'ACTIVE' ? 'AKTİF' : 'PASİF'}
+                            </Text>
+                            <Ionicons name="swap-horizontal" size={20} color={formStatus === 'ACTIVE' ? '#16a34a' : '#dc2626'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.saveBtn} onPress={saveUser}>

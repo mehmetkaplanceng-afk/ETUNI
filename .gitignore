@@ -71,8 +71,10 @@ ios/build/
 *.env
 
 # ===== Secrets (NEVER commit) =====
+**/application.yml
 **/application-prod.yml
 **/application-production.yml
+docker-compose.yml
 secrets/
 *.pem
 *.key

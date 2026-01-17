@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "434191919450",
+    "project_id": "etuni-3cf6e",
+    "storage_bucket": "etuni-3cf6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434191919450:android:7e67238aba2971a3cbab63",
+        "android_client_info": {
+          "package_name": "com.anonymous.etuni"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-v9Fu6zu6QKMwE20faA7Gv4jyani4mJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,6 +13,7 @@ export interface AdminUser {
     role: string;
     universityId: number | null;
     universityName: string | null;
+    status: string;
 }
 
 export const getDashboardStats = async (): Promise<DashboardStats> => {
@@ -30,7 +31,7 @@ export const searchUsers = async (query: string = ''): Promise<AdminUser[]> => {
     return json.data || [];
 };
 
-export const updateUser = async (id: number, data: { fullName: string; email: string; role: string; universityId?: number }) => {
+export const updateUser = async (id: number, data: { fullName: string; email: string; role: string; universityId?: number; status?: string }) => {
     const res = await authFetch(`/api/admin/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

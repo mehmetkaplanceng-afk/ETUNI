@@ -1,23 +1,27 @@
 package com.etuni.controller;
 
+import com.etuni.dto.AdminDtos.*;
 import com.etuni.dto.AuthDtos.ApiResponse;
 import com.etuni.model.University;
 import com.etuni.model.UserEntity;
 import com.etuni.repository.UniversityRepository;
-import com.etuni.service.EventService;
-import com.etuni.service.AuthService;
 import com.etuni.repository.UserRepository;
+import com.etuni.service.AuthService;
+import com.etuni.service.EventService;
 import com.etuni.service.NotificationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
 
     private final UserRepository userRepository;
     private final UniversityRepository universityRepository;
@@ -36,7 +40,7 @@ public class AdminController {
 
     @PostMapping("/add-staff")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ApiResponse<String> addStaff(@RequestParam("email") String email,
             @RequestParam("universityId") Long universityId) {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
@@ -52,7 +56,7 @@ public class AdminController {
 
     @PostMapping("/create-and-assign")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ApiResponse<String> createAndAssign(@RequestParam("fullName") String fullName,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
@@ -66,16 +70,9 @@ public class AdminController {
         return ApiResponse.ok("OK", "User created and assigned");
     }
 
-    public static record AdminUserDto(Long id, String fullName, String email, String role, Long universityId,
-            String universityName) {
-    }
-
-    public static record DashboardStats(long totalUsers, long totalEvents, long activeUniversities) {
-    }
-
     @GetMapping("/dashboard-stats")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public ApiResponse<DashboardStats> getDashboardStats() {
         long totalUsers = userRepository.count();
         long totalEvents = eventService.count();
@@ -85,11 +82,10 @@ public class AdminController {
 
     @GetMapping("/search-users")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
-    public ApiResponse<java.util.List<AdminUserDto>> searchUsers(
+    @Transactional(readOnly = true)
+    public ApiResponse<List<AdminUserDto>> searchUsers(
             @RequestParam(value = "q", required = false) String q) {
         var list = userRepository.findAll().stream()
-                .filter(u -> u.getRole() != null && ("STUDENT".equals(u.getRole()) || "ORGANIZER".equals(u.getRole())))
                 .filter(u -> q == null || q.isBlank() || u.getFullName().toLowerCase().contains(q.toLowerCase())
                         || u.getEmail().toLowerCase().contains(q.toLowerCase()))
                 .map(u -> new AdminUserDto(u.getId(), u.getFullName(), u.getEmail(), u.getRole(),
@@ -101,28 +97,28 @@ public class AdminController {
 
     @PostMapping("/assign-events")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ApiResponse<String> assignEvents(@RequestParam("universityId") Long universityId,
             @RequestParam(value = "sourceUniversityId", required = false) Long sourceUniversityId) {
         int updated = eventService.assignEventsToUniversity(universityId, sourceUniversityId);
         return ApiResponse.ok("OK", "Assigned " + updated + " events to university");
     }
 
-    public static record UpdateUserRequest(String fullName, String email, String role, Long universityId) {
-    }
-
-    @org.springframework.web.bind.annotation.PutMapping("/users/{id}")
+    @PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
-    public ApiResponse<String> updateUser(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
-            @org.springframework.web.bind.annotation.RequestBody UpdateUserRequest request) {
+    @Transactional
+    public ApiResponse<String> updateUser(@PathVariable("id") Long id,
+            @RequestBody UpdateUserRequest request) {
         try {
+            log.info("Updating user id={}: role={}, universityId={}, status={}", id, request.role(),
+                    request.universityId(), request.status());
             UserEntity user = userRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
 
             // Check email uniqueness if email is being changed
             if (request.email() != null && !request.email().equals(user.getEmail())) {
                 if (userRepository.findByEmail(request.email()).isPresent()) {
+                    log.warn("Email already exists: {}", request.email());
                     throw new RuntimeException("EMAIL_ALREADY_EXISTS");
                 }
                 user.setEmail(request.email());
@@ -136,6 +132,13 @@ public class AdminController {
             // Update role if provided
             if (request.role() != null && !request.role().isBlank()) {
                 user.setRole(request.role());
+                log.info("Role updated for user {}: {}", id, request.role());
+            }
+
+            // Update status if provided
+            if (request.status() != null && !request.status().isBlank()) {
+                user.setStatus(request.status());
+                log.info("Status updated for user {}: {}", id, request.status());
             }
 
             // Update university if provided
@@ -143,20 +146,28 @@ public class AdminController {
                 University uni = universityRepository.findById(request.universityId())
                         .orElseThrow(() -> new RuntimeException("UNIVERSITY_NOT_FOUND"));
                 user.setUniversity(uni);
+                log.info("University updated for user {}: {}", id, uni.getName());
+            } else {
+                // To allow clearing university, if universityId explicitly null in DTO but DTO
+                // logic can vary.
+                // For now, only update if not null.
             }
 
             userRepository.save(user);
+            log.info("User {} saved successfully in DB", id);
             return ApiResponse.ok("OK", "User updated successfully");
         } catch (RuntimeException e) {
+            log.error("Runtime error updating user {}: {}", id, e.getMessage());
             throw e;
         } catch (Exception e) {
+            log.error("General error updating user {}", id, e);
             throw new RuntimeException("UPDATE_FAILED");
         }
     }
 
     @PostMapping("/broadcast-notification")
     @PreAuthorize("hasRole('ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public ApiResponse<String> broadcastNotification(@RequestParam("title") String title,
             @RequestParam("message") String message) {
         if (title == null || title.isBlank() || message == null || message.isBlank()) {
