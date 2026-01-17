@@ -190,6 +190,21 @@
                             try { j = await res.json(); } catch (e) { }
                             if (res.ok) { alert('İşlem tamam: ' + (j.data || '')); } else { alert('Hata: ' + (j.message || '')); }
                         }
+
+                        async function sendBroadcastNotification() {
+                            const title = document.getElementById('bnTitle').value;
+                            const message = document.getElementById('bnMessage').value;
+                            if (!title || !message) { alert('Lütfen tüm alanları doldurun'); return; }
+                            const form = new URLSearchParams();
+                            form.append('title', title);
+                            form.append('message', message);
+                            const res = await fetch('/api/admin/broadcast-notification', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form.toString(), credentials: 'same-origin' });
+                            let j = {};
+                            try { j = await res.json(); } catch (e) { }
+                            if (res.ok) { alert('Bildirim tüm kullanıcılara gönderildi.'); closeBNModal(); } else { alert('Hata: ' + (j.message || '')); }
+                        }
+                        function openBNModal() { document.getElementById('bnModal').style.display = 'flex'; }
+                        function closeBNModal() { document.getElementById('bnModal').style.display = 'none'; }
                     </script>
                 </div>
 
@@ -219,6 +234,38 @@
                             style="margin-top: 2rem; display: inline-block;">Tüm
                             Kullanıcıları
                             Gör</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📢</div>
+                        <h3>Genel Duyuru</h3>
+                        <p style="color:var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Tüm kayıtlı
+                            kullanıcılara anlık mobil bildirim gönderin.</p>
+                        <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="openBNModal()">Bildirim
+                            Gönder</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Broadcast Notification Modal -->
+            <div id="bnModal"
+                style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index: 1000;">
+                <div
+                    style="width:420px; max-width:95%; background:var(--bg); padding:18px; border-radius:8px; border: 1px solid var(--glass-border);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3>Toplu Bildirim Gönder</h3>
+                        <button class="btn" onclick="closeBNModal()">Kapat</button>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <label style="font-size:0.9rem;color:var(--text-muted)">Bildirim Başlığı</label>
+                        <input id="bnTitle" placeholder="Başlık"
+                            style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white; border-radius:4px;" />
+                        <div style="margin-top:12px;">
+                            <label style="font-size:0.9rem;color:var(--text-muted)">Bildirim Mesajı</label>
+                            <textarea id="bnMessage" placeholder="Mesaj içeriği..." rows="4"
+                                style="width:100%; padding:8px; margin-top:6px; background:var(--dark-muted); border:1px solid var(--glass-border); color:white; border-radius:4px; font-family:inherit;"></textarea>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end;">
+                            <button class="btn btn-primary" onclick="sendBroadcastNotification()">Yayınla</button>
+                        </div>
                     </div>
                 </div>
             </div>
