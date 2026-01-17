@@ -38,9 +38,10 @@
                                 </td>
                                 <td style="padding: 1.5rem;" th:text="${user.selectedUniversityName}">Üniversite</td>
                                 <td style="padding: 1.5rem;">
-                                    <button type="button"
-                                        th:onclick="'editUser(' + ${user.id} + ', \'' + ${user.fullName} + '\', \'' + ${user.email} + '\', \'' + ${user.role} + '\')'"
-                                        class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    <button type="button" th:data-id="${user.id}" th:data-fullname="${user.fullName}"
+                                        th:data-email="${user.email}" th:data-role="${user.role}"
+                                        onclick="editUser(this)" class="btn btn-primary"
+                                        style="padding: 0.5rem 1rem; font-size: 0.85rem;">
                                         ✏️ Düzenle
                                     </button>
                                 </td>
@@ -91,7 +92,12 @@
         </div>
 
         <script>
-            function editUser(id, fullName, email, role) {
+            function editUser(btn) {
+                const id = btn.getAttribute('data-id');
+                const fullName = btn.getAttribute('data-fullname');
+                const email = btn.getAttribute('data-email');
+                const role = btn.getAttribute('data-role');
+
                 document.getElementById('editUserId').value = id;
                 document.getElementById('editFullName').value = fullName;
                 document.getElementById('editEmail').value = email;
