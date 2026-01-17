@@ -93,7 +93,7 @@ public class AdminController {
 
     @org.springframework.web.bind.annotation.PutMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<String> updateUser(@org.springframework.web.bind.annotation.PathVariable Long id,
+    public ApiResponse<String> updateUser(@org.springframework.web.bind.annotation.PathVariable("id") Long id,
             @org.springframework.web.bind.annotation.RequestBody UpdateUserRequest request) {
         try {
             UserEntity user = userRepository.findById(id)
