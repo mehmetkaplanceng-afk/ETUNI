@@ -9,6 +9,8 @@ Notifications.setNotificationHandler({
         shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
     }),
 });
 
@@ -19,9 +21,10 @@ export async function registerForPushNotifications(): Promise<string | null> {
     try {
         // Physical device check
         if (!Device.isDevice) {
-            console.log('Push notifications require a physical device');
+            console.log('DEBUG_NOTIF: Not a physical device, skipping.');
             return null;
         }
+        console.log('DEBUG_NOTIF: Step 1 - Device check passed.');
 
         // Request permissions
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -33,15 +36,16 @@ export async function registerForPushNotifications(): Promise<string | null> {
         }
 
         if (finalStatus !== 'granted') {
-            console.log('Push notification permission denied');
+            console.log('DEBUG_NOTIF: Permission denied. Status:', finalStatus);
             return null;
         }
+        console.log('DEBUG_NOTIF: Step 2 - Permissions granted.');
 
         // Get Expo push token (projectId auto-detected from app.json)
+        console.log('DEBUG_NOTIF: Step 3 - Requesting Expo token...');
         const tokenData = await Notifications.getExpoPushTokenAsync();
         const token = tokenData.data;
-
-        console.log('Got push token:', token.substring(0, 30) + '...');
+        console.log('DEBUG_NOTIF: Step 4 - Got token:', token);
 
         // Configure Android notification channel
         if (Platform.OS === 'android') {
@@ -57,8 +61,8 @@ export async function registerForPushNotifications(): Promise<string | null> {
         await sendTokenToBackend(token);
 
         return token;
-    } catch (error) {
-        console.error('Error registering for push notifications:', error);
+    } catch (error: any) {
+        console.error('DEBUG_NOTIF: ERROR during registration:', error?.message || error);
         return null;
     }
 }

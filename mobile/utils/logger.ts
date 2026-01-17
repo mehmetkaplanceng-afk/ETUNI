@@ -1,7 +1,5 @@
 export function debug(...args: any[]) {
-  if (typeof __DEV__ !== "undefined" && __DEV__) {
-    console.log(...args);
-  }
+  console.log("[DEBUG]", ...args);
 }
 
 export function info(...args: any[]) {

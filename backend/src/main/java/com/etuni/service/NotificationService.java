@@ -52,22 +52,23 @@ public class NotificationService {
     }
 
     public int sendBroadcastNotification(String title, String message) {
+        // Tüm kullanıcılara bildirim gönder
         List<UserEntity> allUsers = userRepository.findAll();
         int count = 0;
         for (UserEntity user : allUsers) {
             try {
-                // Save to database
+                // Veritabanına kaydet (tüm kullanıcılar için)
                 Notification n = new Notification();
                 n.setUser(user);
                 n.setTitle(title);
                 n.setMessage(message);
                 notificationRepository.save(n);
+                count++;
 
-                // Send push notification if user has a push token
+                // Push bildirimi sadece token'ı olanlara gönder
                 if (user.getPushToken() != null && !user.getPushToken().trim().isEmpty()) {
                     pushNotificationService.sendPushNotification(user.getPushToken(), title, message);
                 }
-                count++;
             } catch (Exception e) {
                 System.err.println("Broadcast failed for user " + user.getId() + ": " + e.getMessage());
             }

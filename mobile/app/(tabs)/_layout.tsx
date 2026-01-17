@@ -2,12 +2,14 @@ import { Tabs, useRouter, useFocusEffect } from "expo-router";
 import React, { useCallback, useState, useEffect } from "react";
 import { Platform, View, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getToken } from "../../api/authFetch";
 import { debug } from "../../utils/logger";
 import { registerForPushNotifications, setupNotificationListeners } from "../../utils/notificationService";
 
 export default function TabLayout() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   // Varsayılan olarak yükleniyor olsun, böylece ekran hemen açılmaz
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -74,8 +76,8 @@ export default function TabLayout() {
           backgroundColor: "#ffffff",
           borderTopWidth: 1,
           borderTopColor: "#e2e8f0",
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+          height: Platform.OS === 'ios' ? 88 : 64 + insets.bottom,
+          paddingBottom: Platform.OS === 'ios' ? 30 : Math.max(insets.bottom, 4),
           paddingTop: 10,
           elevation: 8,
           shadowColor: "#000",

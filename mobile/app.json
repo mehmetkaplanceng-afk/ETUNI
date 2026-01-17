@@ -26,7 +26,8 @@
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.anonymous.etuni"
+      "package": "com.anonymous.etuni",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -84,7 +85,7 @@
     "owner": "mehmetkaplanceng",
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
+      "reactCompiler": false
     }
   }
 }
