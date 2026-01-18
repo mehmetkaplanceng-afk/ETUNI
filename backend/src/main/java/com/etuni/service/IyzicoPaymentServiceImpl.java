@@ -28,16 +28,16 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
     private final UserRepository userRepo;
     private final EventRepository eventRepo;
 
-    @Value("${iyzico.api.key}")
+    @Value("${iyzico.api.key:}")
     private String apiKey;
 
-    @Value("${iyzico.api.secret}")
+    @Value("${iyzico.api.secret:}")
     private String apiSecret;
 
     @Value("${iyzico.api.baseurl:https://sandbox-api.iyzipay.com}")
     private String baseUrl;
 
-    @Value("${api.url:https://api.etuni.com}")
+    @Value("${api.url:http://localhost:8080}")
     private String appApiUrl;
 
     public IyzicoPaymentServiceImpl(UserRepository userRepo, EventRepository eventRepo) {
