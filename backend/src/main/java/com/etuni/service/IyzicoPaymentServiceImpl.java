@@ -84,7 +84,7 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
             buyer.setEmail(user.getEmail());
             buyer.setIdentityNumber("74455555555");
             buyer.setRegistrationAddress("ETUNI Campus");
-            buyer.setIp(request.getIp());
+            buyer.setIp("85.34.78.112"); // Default IP for iyzipay compatibility
             buyer.setCity("Istanbul");
             buyer.setCountry("Turkey");
             buyer.setZipCode("34000");
