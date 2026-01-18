@@ -26,6 +26,9 @@ public class MockPaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentInitiationResponse initiatePayment(Long eventId, Long userId, BigDecimal amount) {
+        // Log to confirm activity
+        System.out.println(">>> MOCK PAYMENT SERVICE INITIATED <<<");
+
         // Generate a mock token
         String token = "MOCK-" + UUID.randomUUID().toString();
 
