@@ -56,11 +56,13 @@ export default function PaymentScreen() {
                     <TouchableOpacity onPress={() => setPaymentUrl(null)} style={styles.backButton}>
                         <Ionicons name="close" size={24} color="#1e293b" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Ödeme Sayfası</Text>
+                    <Text style={styles.headerTitle}>Güvenli Ödeme v2</Text>
                     <View style={{ width: 44 }} />
                 </View>
                 <WebView
                     source={{ uri: paymentUrl }}
+                    originWhitelist={['*']}
+                    incognito={true}
                     onNavigationStateChange={onNavigationStateChange}
                     startInLoadingState={true}
                     renderLoading={() => (

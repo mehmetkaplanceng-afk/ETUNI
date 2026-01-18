@@ -5,7 +5,7 @@
     <main>
         <div class="container" style="padding: 60px 0; max-width: 500px;">
             <div class="auth-container animate-fade">
-                <h2 style="text-align: center; margin-bottom: 2rem; color: #fff;">Güvenli Ödeme</h2>
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #fff;">Güvenli Ödeme v2</h2>
 
                 <div
                     style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;">
@@ -33,22 +33,22 @@
                             <label
                                 style="display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.85rem;">Kart
                                 Numarası</label>
-                            <input type="text" required placeholder="0000 0000 0000 0000" maxlength="19"
-                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                            <input type="text" id="cardNumber" required placeholder="0000 0000 0000 0000" maxlength="19"
+                                style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: monospace;">
                         </div>
 
                         <div style="display: flex; gap: 1rem;">
                             <div style="flex: 1;">
                                 <label
                                     style="display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.85rem;">SKT</label>
-                                <input type="text" required placeholder="AA/YY" maxlength="5"
-                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                                <input type="text" id="expiryDate" required placeholder="AA/YY" maxlength="5"
+                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: monospace;">
                             </div>
                             <div style="flex: 1;">
                                 <label
                                     style="display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.85rem;">CVV</label>
-                                <input type="text" required placeholder="123" maxlength="3"
-                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                                <input type="text" id="cvv" required placeholder="123" maxlength="3"
+                                    style="width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-family: monospace;">
                             </div>
                         </div>
                     </div>
@@ -75,6 +75,48 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            // Input Masking Logic
+            document.addEventListener('DOMContentLoaded', function () {
+                const cardNumber = document.getElementById('cardNumber');
+                const expiryDate = document.getElementById('expiryDate');
+                const cvv = document.getElementById('cvv');
+
+                // Card Number Formatting
+                cardNumber.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                    if (value.length > 16) value = value.slice(0, 16); // Limit to 16 digits
+
+                    // Add spaces every 4 digits
+                    let formattedValue = '';
+                    for (let i = 0; i < value.length; i++) {
+                        if (i > 0 && i % 4 === 0) formattedValue += ' ';
+                        formattedValue += value[i];
+                    }
+                    e.target.value = formattedValue;
+                });
+
+                // Expiry Date Formatting
+                expiryDate.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                    if (value.length > 4) value = value.slice(0, 4); // Limit to 4 digits (MMYY)
+
+                    if (value.length >= 2) {
+                        e.target.value = value.slice(0, 2) + '/' + value.slice(2);
+                    } else {
+                        e.target.value = value;
+                    }
+                });
+
+                // CVV Formatting
+                cvv.addEventListener('input', function (e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 3) value = value.slice(0, 3);
+                    e.target.value = value;
+                });
+            });
+        </script>
     </main>
 </body>
 
