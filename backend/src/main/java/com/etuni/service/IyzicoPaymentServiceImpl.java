@@ -132,7 +132,9 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
             List<BasketItem> basketItems = new ArrayList<>();
             BasketItem firstBasketItem = new BasketItem();
             firstBasketItem.setId(event.getId().toString());
-            firstBasketItem.setName(event.getTitle());
+            // Hardcode ASCII for testing encoding issue
+            firstBasketItem.setName("Event Ticket");
+            // firstBasketItem.setName(event.getTitle());
             firstBasketItem.setCategory1("Event Ticket");
             firstBasketItem.setItemType(BasketItemType.VIRTUAL.name());
             firstBasketItem.setPrice(amount);
