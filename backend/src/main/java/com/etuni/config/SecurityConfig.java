@@ -51,7 +51,7 @@ public class SecurityConfig {
                 "/api/universities", "/api/attendance/*/qr",
                 "/api/universities/**",
                 "/forgot-password", "/reset-password",
-                "/api/payments/iyzico/callback") // <--- ALLOW THESE
+                "/api/payments/callback", "/mock-payment") // <--- ALLOW THESE
             .permitAll()
             .requestMatchers("/dashboard", "/dashboard/**", "/profile", "/profile/**")
             .authenticated()

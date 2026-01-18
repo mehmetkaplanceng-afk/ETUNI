@@ -51,29 +51,48 @@
             border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
-            display: inline-block;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 10px;
             transition: background 0.2s;
         }
 
         .btn:hover {
-            background: #4338ca;
+            opacity: 0.9;
         }
     </style>
 </head>
 
-<div class="card">
-    <div class="icon">✅</div>
-    <h1>Ödeme Başarılı!</h1>
-    <p>Biletiniz başarıyla oluşturuldu. QR kodunuza erişebilirsiniz.</p>
+<body>
+    <div class="card">
+        <div class="icon">✅</div>
+        <h1>Ödeme Başarılı!</h1>
+        <p>Biletiniz başarıyla oluşturuldu. Şimdi uygulamaya dönebilirsiniz.</p>
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        <!-- Button for Mobile App (Deep Link) -->
-        <a href="etuni://payments/success" class="btn" style="background-color: #4f46e5;">Uygulamaya Dön</a>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Button for Mobile App (Deep Link) -->
+            <a th:href="'etuni://payments/success?txn=' + ${transactionId}" class="btn"
+                style="background-color: #4f46e5;">Uygulamaya Dön</a>
 
-        <!-- Button for Web (Dashboard) -->
-        <a href="/dashboard" class="btn" style="background-color: #10b981;">Panele Dön</a>
+            <!-- Button for Web (Dashboard) -->
+            <a href="/dashboard" class="btn" style="background-color: #10b981;">Panele Dön</a>
+        </div>
     </div>
-</div>
+
+    <!-- Auto Redirect Script -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.onload = function () {
+            var transactionId = /*[[${transactionId}]]*/ '';
+            if (transactionId) {
+                // Attempt to open deep link automatically
+                window.location.href = 'etuni://payments/success?txn=' + transactionId;
+            }
+        };
+        /*]]>*/
+    </script>
 </body>
 
 </html>

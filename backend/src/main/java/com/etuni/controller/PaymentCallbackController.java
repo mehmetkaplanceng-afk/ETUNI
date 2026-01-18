@@ -13,26 +13,26 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/api/payments/iyzico")
-public class IyzicoCallbackController {
+@RequestMapping("/api/payments")
+public class PaymentCallbackController {
 
-    private static final Logger log = LoggerFactory.getLogger(IyzicoCallbackController.class);
+    private static final Logger log = LoggerFactory.getLogger(PaymentCallbackController.class);
 
     private final PaymentService paymentService;
     private final AttendanceService attendanceService;
 
-    public IyzicoCallbackController(PaymentService paymentService, AttendanceService attendanceService) {
+    public PaymentCallbackController(PaymentService paymentService, AttendanceService attendanceService) {
         this.paymentService = paymentService;
         this.attendanceService = attendanceService;
     }
 
     @PostMapping("/callback")
-    public ModelAndView handleIyzicoCallback(
+    public ModelAndView handleCallback(
             @RequestParam("token") String token,
             @RequestParam("eventId") Long eventId,
             @RequestParam("userId") Long userId) {
 
-        log.info("Received Iyzico callback for Token: {}, EventId: {}, UserId: {}", token, eventId, userId);
+        log.info("Received payment callback for Token: {}, EventId: {}, UserId: {}", token, eventId, userId);
 
         var verification = paymentService.verifyPayment(token);
 
