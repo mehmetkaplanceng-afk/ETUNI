@@ -35,11 +35,15 @@ export default function PaymentScreen() {
     };
 
     const onNavigationStateChange = (navState: any) => {
-        // Handle deep links from the success/error html pages
-        if (navState.url.includes('etuni://payments/success')) {
-            router.replace('/(tabs)/profile'); // Redirect to tickets/profile
+        const url = navState.url;
+
+        // Handle deep links OR standard web success page
+        // This ensures that even if etuni:// fails, loading the success page triggers the app flow
+        if (url.includes('etuni://payments/success') || url.includes('/payment/success')) {
+            // Extract txn if needed, but for now just redirect
+            router.replace('/(tabs)/tickets');
             Alert.alert('Başarılı', 'Ödemeniz alındı ve biletiniz oluşturuldu.');
-        } else if (navState.url.includes('etuni://payments/error')) {
+        } else if (url.includes('etuni://payments/error') || url.includes('/payment/error')) {
             setPaymentUrl(null);
             Alert.alert('Hata', 'Ödeme işlemi iptal edildi veya başarısız oldu.');
         }
@@ -98,7 +102,7 @@ export default function PaymentScreen() {
                     ) : (
                         <View style={styles.buttonContent}>
                             <Ionicons name="lock-closed" size={20} color="#fff" style={{ marginRight: 8 }} />
-                            <Text style={styles.payButtonText}>Güvenli Öde (Iyzico)</Text>
+                            <Text style={styles.payButtonText}>Güvenli Öde</Text>
                         </View>
                     )}
                 </TouchableOpacity>
@@ -106,7 +110,7 @@ export default function PaymentScreen() {
                 <View style={styles.infoBox}>
                     <Ionicons name="shield-checkmark" size={24} color="#059669" />
                     <Text style={styles.infoText}>
-                        Ödemeniz Iyzico güvencesiyle 256-bit SSL şifreleme ile korunmaktadır.
+                        Ödemeniz 256-bit SSL şifreleme ile korunmaktadır.
                     </Text>
                 </View>
             </View>
