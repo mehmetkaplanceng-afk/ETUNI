@@ -97,12 +97,19 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
             request.setCallbackUrl(
                     appApiUrl + "/api/payments/iyzico/callback?eventId=" + eventId + "&userId=" + userId);
 
+            log.info("System Encoding: {}", System.getProperty("file.encoding"));
+            log.info("User Name for Payment: {}", user.getFullName());
+
             Buyer buyer = new Buyer();
             buyer.setId(user.getId().toString());
-            buyer.setName(user.getFullName().split(" ")[0]);
-            buyer.setSurname(
-                    user.getFullName().contains(" ") ? user.getFullName().substring(user.getFullName().indexOf(" ") + 1)
-                            : "Soyisim");
+            // Hardcode ASCII for testing encoding issue
+            buyer.setName("Mehmet");
+            buyer.setSurname("Kaplan");
+            // buyer.setName(user.getFullName().split(" ")[0]);
+            // buyer.setSurname(
+            // user.getFullName().contains(" ") ?
+            // user.getFullName().substring(user.getFullName().indexOf(" ") + 1)
+            // : "Soyisim");
             buyer.setGsmNumber("+905350000000");
             buyer.setEmail(user.getEmail());
             buyer.setIdentityNumber("74455555555");
