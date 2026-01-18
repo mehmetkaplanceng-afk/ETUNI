@@ -206,42 +206,43 @@ export default function AdminUsersScreen() {
                             <Text style={styles.saveBtnText}>Kaydet</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
-            </Modal>
 
-            {/* Role Selector Modal */}
-            <Modal visible={showRoleSelect} transparent animationType="fade">
-                <TouchableOpacity style={styles.overlay} onPress={() => setShowRoleSelect(false)}>
-                    <View style={styles.selectorContainer}>
-                        {['STUDENT', 'ORGANIZER', 'UNIVERSITY_STAFF', 'ADMIN'].map(role => (
-                            <TouchableOpacity key={role} style={styles.selectorItem} onPress={() => { setFormRole(role); setShowRoleSelect(false); }}>
-                                <Text style={styles.selectorText}>{role}</Text>
-                                {formRole === role && <Ionicons name="checkmark" size={20} color="#4B32C3" />}
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </TouchableOpacity>
-            </Modal>
-
-            {/* University Selector Modal */}
-            <Modal visible={showUniSelect} animationType="slide">
-                <View style={styles.fullScreenSelector}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Üniversite Seç</Text>
-                        <TouchableOpacity onPress={() => setShowUniSelect(false)}>
-                            <Text style={{ color: '#4B32C3', fontSize: 16 }}>Kapat</Text>
+                    {/* Role Selector Overlay */}
+                    {showRoleSelect && (
+                        <TouchableOpacity style={styles.internalOverlay} activeOpacity={1} onPress={() => setShowRoleSelect(false)}>
+                            <View style={styles.selectorContainer}>
+                                <Text style={styles.selectorTitle}>Rol Seç</Text>
+                                {['STUDENT', 'ORGANIZER', 'UNIVERSITY_STAFF', 'ADMIN'].map(role => (
+                                    <TouchableOpacity key={role} style={styles.selectorItem} onPress={() => { setFormRole(role); setShowRoleSelect(false); }}>
+                                        <Text style={styles.selectorText}>{role}</Text>
+                                        {formRole === role && <Ionicons name="checkmark" size={20} color="#4B32C3" />}
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </TouchableOpacity>
-                    </View>
-                    <FlatList
-                        data={universities}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.selectorItem} onPress={() => { setFormUniId(item.id); setShowUniSelect(false); }}>
-                                <Text style={styles.selectorText}>{item.name}</Text>
-                                {formUniId === item.id && <Ionicons name="checkmark" size={20} color="#4B32C3" />}
-                            </TouchableOpacity>
-                        )}
-                    />
+                    )}
+
+                    {/* University Selector Overlay */}
+                    {showUniSelect && (
+                        <View style={styles.internalFullScreenSelector}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>Üniversite Seç</Text>
+                                <TouchableOpacity onPress={() => setShowUniSelect(false)}>
+                                    <Text style={{ color: '#4B32C3', fontSize: 16 }}>Kapat</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <FlatList
+                                data={universities}
+                                keyExtractor={item => item.id.toString()}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity style={styles.selectorItem} onPress={() => { setFormUniId(item.id); setShowUniSelect(false); }}>
+                                        <Text style={styles.selectorText}>{item.name}</Text>
+                                        {formUniId === item.id && <Ionicons name="checkmark" size={20} color="#4B32C3" />}
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        </View>
+                    )}
                 </View>
             </Modal>
         </View>
@@ -278,8 +279,11 @@ const styles = StyleSheet.create({
 
     // Selector Styles
     overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+    internalOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20, zIndex: 1000 },
     selectorContainer: { backgroundColor: '#fff', borderRadius: 16, padding: 10, maxHeight: 400 },
+    selectorTitle: { fontSize: 18, fontWeight: '700', padding: 15, borderBottomWidth: 1, borderBottomColor: '#eee', textAlign: 'center' },
     fullScreenSelector: { flex: 1, backgroundColor: '#fff' },
+    internalFullScreenSelector: { ...StyleSheet.absoluteFillObject, backgroundColor: '#fff', zIndex: 1001 },
     selectorItem: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#f0f0f0', flexDirection: 'row', justifyContent: 'space-between' },
     selectorText: { fontSize: 16, color: '#333' }
 });
