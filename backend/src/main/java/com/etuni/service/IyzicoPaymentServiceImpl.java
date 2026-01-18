@@ -55,6 +55,11 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentInitiationResponse initiatePayment(Long eventId, Long userId, BigDecimal amount) {
+        // Debug Config
+        log.info("Iyzico Config Check - BaseURL: {}", baseUrl);
+        log.info("Iyzico Config Check - API Key: {}",
+                apiKey != null && apiKey.length() > 10 ? apiKey.substring(0, 10) + "..." : apiKey);
+
         // Check if iyzico credentials are configured
         if (apiKey == null || apiKey.trim().isEmpty() || apiSecret == null || apiSecret.trim().isEmpty()) {
             log.warn("Iyzico payment attempted but credentials are not configured");
