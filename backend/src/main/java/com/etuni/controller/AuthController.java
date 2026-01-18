@@ -1,9 +1,12 @@
 package com.etuni.controller;
 
 import com.etuni.dto.AuthDtos.*;
+import com.etuni.model.UserEntity;
+import com.etuni.repository.UserRepository;
 import com.etuni.service.AuthService;
-import com.etuni.service.PasswordResetService; // <--- Import added
+import com.etuni.service.PasswordResetService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,11 +14,14 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
   private final AuthService authService;
-  private final com.etuni.service.PasswordResetService passwordResetService;
+  private final PasswordResetService passwordResetService;
+  private final UserRepository userRepository;
 
-  public AuthController(AuthService authService, com.etuni.service.PasswordResetService passwordResetService) {
+  public AuthController(AuthService authService, PasswordResetService passwordResetService,
+      UserRepository userRepository) {
     this.authService = authService;
     this.passwordResetService = passwordResetService;
+    this.userRepository = userRepository;
   }
 
   @PostMapping("/register")
@@ -48,6 +54,22 @@ public class AuthController {
 
   @PostMapping("/logout")
   public ApiResponse<String> logout(jakarta.servlet.http.HttpServletResponse response) {
+    // Clear user's push token to prevent duplicate notifications
+    var auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null && auth.isAuthenticated()) {
+      try {
+        Long userId = Long.parseLong(auth.getPrincipal().toString());
+        UserEntity user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+          user.setPushToken(null);
+          userRepository.save(user);
+        }
+      } catch (Exception e) {
+        // Log but don't fail logout
+        System.err.println("Failed to clear push token during logout: " + e.getMessage());
+      }
+    }
+
     // Clear security cookie
     jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt_token", null);
     cookie.setHttpOnly(true);

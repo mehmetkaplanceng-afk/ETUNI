@@ -48,6 +48,15 @@ export async function clearToken() {
 
 export async function logoutFromServer() {
   try {
+    // First, delete the push token from backend
+    try {
+      await authFetch("/api/push-token", { method: "DELETE" });
+      debug("AUTH: Push token deleted from backend");
+    } catch (e) {
+      debug("AUTH: Failed to delete push token, continuing with logout");
+    }
+
+    // Then perform server logout
     await authFetch("/api/auth/logout", { method: "POST" });
   } catch (e) {
     debug("AUTH: Server logout failed or already cleared");
