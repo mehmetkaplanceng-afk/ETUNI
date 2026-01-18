@@ -63,6 +63,14 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
         log.info("Iyzico Config Check - Secret Key: {}",
                 apiSecret != null && apiSecret.length() > 10 ? apiSecret.trim().substring(0, 10) + "..." : apiSecret);
 
+        // Debug Connectivity & Credentials
+        try {
+            com.iyzipay.model.ApiTest apiTest = com.iyzipay.model.ApiTest.retrieve(getOptions());
+            log.info("Iyzico ApiTest Result: Status={} Error={}", apiTest.getStatus(), apiTest.getErrorMessage());
+        } catch (Exception e) {
+            log.error("Iyzico ApiTest Connection Failed", e);
+        }
+
         // Check if iyzico credentials are configured
         if (apiKey == null || apiKey.trim().isEmpty() || apiSecret == null || apiSecret.trim().isEmpty()) {
             log.warn("Iyzico payment attempted but credentials are not configured");
