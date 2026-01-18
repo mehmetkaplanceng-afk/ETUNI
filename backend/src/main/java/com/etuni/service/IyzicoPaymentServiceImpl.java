@@ -55,6 +55,13 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentInitiationResponse initiatePayment(Long eventId, Long userId, BigDecimal amount) {
+        // Check if iyzico credentials are configured
+        if (apiKey == null || apiKey.trim().isEmpty() || apiSecret == null || apiSecret.trim().isEmpty()) {
+            log.warn("Iyzico payment attempted but credentials are not configured");
+            return new PaymentInitiationResponse(null, null, false,
+                    "Payment service is not configured. Please contact support.");
+        }
+
         try {
             UserEntity user = userRepo.findById(userId)
                     .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
