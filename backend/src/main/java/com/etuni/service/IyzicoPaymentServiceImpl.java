@@ -47,9 +47,9 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
 
     private Options getOptions() {
         Options options = new Options();
-        options.setApiKey(apiKey);
-        options.setSecretKey(apiSecret);
-        options.setBaseUrl(baseUrl);
+        options.setApiKey(apiKey != null ? apiKey.trim() : null);
+        options.setSecretKey(apiSecret != null ? apiSecret.trim() : null);
+        options.setBaseUrl(baseUrl != null ? baseUrl.trim() : null);
         return options;
     }
 
@@ -58,7 +58,9 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
         // Debug Config
         log.info("Iyzico Config Check - BaseURL: {}", baseUrl);
         log.info("Iyzico Config Check - API Key: {}",
-                apiKey != null && apiKey.length() > 10 ? apiKey.substring(0, 10) + "..." : apiKey);
+                apiKey != null && apiKey.length() > 10 ? apiKey.trim().substring(0, 10) + "..." : apiKey);
+        log.info("Iyzico Config Check - Secret Key: {}",
+                apiSecret != null && apiSecret.length() > 10 ? apiSecret.trim().substring(0, 10) + "..." : apiSecret);
 
         // Check if iyzico credentials are configured
         if (apiKey == null || apiKey.trim().isEmpty() || apiSecret == null || apiSecret.trim().isEmpty()) {
