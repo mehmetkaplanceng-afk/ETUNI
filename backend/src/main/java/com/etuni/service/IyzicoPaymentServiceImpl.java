@@ -65,7 +65,7 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
 
         // Debug Connectivity & Credentials
         try {
-            com.iyzipay.model.ApiTest apiTest = com.iyzipay.model.ApiTest.retrieve(getOptions());
+            com.iyzipay.IyzipayResource apiTest = com.iyzipay.model.ApiTest.retrieve(getOptions());
             log.info("Iyzico ApiTest Result: Status={} Error={}", apiTest.getStatus(), apiTest.getErrorMessage());
         } catch (Exception e) {
             log.error("Iyzico ApiTest Connection Failed", e);
