@@ -47,9 +47,10 @@ public class IyzicoPaymentServiceImpl implements PaymentService {
 
     private Options getOptions() {
         Options options = new Options();
-        options.setApiKey(apiKey != null ? apiKey.trim() : null);
-        options.setSecretKey(apiSecret != null ? apiSecret.trim() : null);
-        options.setBaseUrl(baseUrl != null ? baseUrl.trim() : null);
+        // Hardcoded for debugging
+        options.setApiKey("sandbox-81RXLy5N6aIBH7MK1RlyUvRKX5ltAckZ");
+        options.setSecretKey("sandbox-3JIDzvswVBPEGEOvVfVb32d34Y4K3oKk");
+        options.setBaseUrl("https://sandbox-api.iyzipay.com");
         return options;
     }
 
