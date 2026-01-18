@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Primary
+// @Primary - Disabled in favor of MockPaymentService
 public class IyzicoPaymentServiceImpl implements PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(IyzicoPaymentServiceImpl.class);

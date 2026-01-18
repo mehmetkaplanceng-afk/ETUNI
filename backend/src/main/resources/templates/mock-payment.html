@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>ETUNI Mock Payment</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 1rem 0;
+        }
+
+        .event-name {
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .test-info {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #bdc3c7;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Ödeme Test Ekranı</h2>
+
+        <div class="amount" th:text="${amount} + ' ₺'">0.00 ₺</div>
+        <div class="event-name" th:text="${eventName}">Etkinlik Adı</div>
+
+        <!-- Success Form -->
+        <form action="/api/payments/iyzico/callback" method="POST">
+            <input type="hidden" name="token" th:value="${token}" />
+            <input type="hidden" name="eventId" th:value="${eventId}" />
+            <input type="hidden" name="userId" th:value="${userId}" />
+            <button type="submit" class="btn btn-success">✅ Ödemeyi Onayla (Başarılı)</button>
+        </form>
+
+        <!-- Failure Form (Simulated by redirecting to error or posting invalid token if needed) -->
+        <!-- For simplicity in this mock, Failure just redirects to error page directly -->
+        <a href="/payment-error?message=USER_CANCELLED" class="btn btn-danger"
+            style="text-decoration: none; box-sizing: border-box;">❌ İptal Et (Başarısız)</a>
+
+        <div class="test-info">
+            <p>Bu bir simülasyon ekranıdır. Kart bilgisi gerekmez.</p>
+            <p>Token: <span th:text="${token}"></span></p>
+        </div>
+    </div>
+
+</body>
+
+</html>
