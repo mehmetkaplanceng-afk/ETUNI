@@ -40,7 +40,7 @@ public class IyzicoCallbackController {
         if (verification.verified()) {
             try {
                 attendanceService.createPaidAttendance(userId, eventId, token);
-                mav.setViewName("redirect:/payment-success?eventId=" + eventId);
+                mav.setViewName("redirect:/payment/success?txn=" + token);
             } catch (Exception e) {
                 log.error("Error creating attendance after successful payment", e);
                 mav.setViewName("redirect:/payment-error?message=INTERNAL_ERROR");

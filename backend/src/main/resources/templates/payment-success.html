@@ -61,14 +61,19 @@
     </style>
 </head>
 
-<body>
-    <div class="card">
-        <div class="icon">✅</div>
-        <h1>Ödeme Başarılı!</h1>
-        <p>Biletiniz başarıyla oluşturuldu. Uygulama üzerindeki "Biletlerim" sekmesinden QR kodunuza erişebilirsiniz.
-        </p>
-        <a href="etuni://payments/success" class="btn">Uygulamaya Dön</a>
+<div class="card">
+    <div class="icon">✅</div>
+    <h1>Ödeme Başarılı!</h1>
+    <p>Biletiniz başarıyla oluşturuldu. QR kodunuza erişebilirsiniz.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Button for Mobile App (Deep Link) -->
+        <a href="etuni://payments/success" class="btn" style="background-color: #4f46e5;">Uygulamaya Dön</a>
+
+        <!-- Button for Web (Dashboard) -->
+        <a href="/dashboard" class="btn" style="background-color: #10b981;">Panele Dön</a>
     </div>
+</div>
 </body>
 
 </html>
